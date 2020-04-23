@@ -1,5 +1,5 @@
 # frank
-Frank coding experiments
+Frank coding experiments for distant pairs and swarms of software engineers, each in isolation, working from home
 
 Ask to join this repo as a contributor
 
