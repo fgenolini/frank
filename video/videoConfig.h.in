@@ -1,0 +1,3 @@
+// the configured options and settings for video
+#define VIDEO_VERSION_MAJOR @video_VERSION_MAJOR@
+#define VIDEO_VERSION_MINOR @video_VERSION_MINOR@
