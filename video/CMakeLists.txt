@@ -7,14 +7,17 @@ project(video VERSION 1.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Command line executable
-add_executable(video video_main.cpp list_devices.cpp)
+# Command line executable with a simple OpenCV GUI
+add_executable(video video_main.cpp list_devices.cpp opencv_ui.cpp)
 
 # Open Computer Vision (github.com/opencv/opencv)
 find_package(OpenCV REQUIRED)
 
 # C++ Guidelines Support Library (github.com/microsoft/gsl)
 find_package(Microsoft.GSL CONFIG)
+
+# OpenCV User Interface as a header-only library (github.com/Dovyski/cvui)
+file(DOWNLOAD https://raw.githubusercontent.com/Dovyski/cvui/master/cvui.h ${CMAKE_BINARY_DIR}/cvui.h)
 
 target_link_libraries(video ${OpenCV_LIBS} Microsoft.GSL::GSL)
 

@@ -9,14 +9,14 @@ using namespace gsl;
 
 #pragma comment(lib, "strmiids")
 
-namespace video
+namespace frank::video
 {
 
-  HRESULT devices_from_category(REFGUID category, IEnumMoniker** devices)
+  HRESULT devices_from_category(REFGUID category, IEnumMoniker **devices)
   {
-    ICreateDevEnum* system_device{};
+    ICreateDevEnum *system_device{};
     auto class_creator = CoCreateInstance(CLSID_SystemDeviceEnum, nullptr,
-      CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&system_device));
+                                          CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&system_device));
     if (FAILED(class_creator))
     {
       printf("Could not create system device enumerator\n");
@@ -25,7 +25,7 @@ namespace video
 
     auto _ = finally([system_device] {
       system_device->Release();
-      });
+    });
 
     auto category_enumerator = system_device->CreateClassEnumerator(category, devices, 0);
     if (category_enumerator == S_FALSE)
@@ -37,15 +37,15 @@ namespace video
     return category_enumerator;
   }
 
-  void device_information(IEnumMoniker* devices)
+  void device_information(IEnumMoniker *devices)
   {
-    IMoniker* moniker{};
+    IMoniker *moniker{};
     while (devices->Next(1, &moniker, nullptr) == S_OK)
     {
       auto _ = finally([moniker] {
         moniker->Release();
-        });
-      IPropertyBag* property_bag{};
+      });
+      IPropertyBag *property_bag{};
       auto bind_to_storage = moniker->BindToStorage(0, 0, IID_PPV_ARGS(&property_bag));
       if (FAILED(bind_to_storage))
       {
@@ -55,7 +55,7 @@ namespace video
 
       auto _1 = finally([property_bag] {
         property_bag->Release();
-        });
+      });
       VARIANT property;
       VariantInit(&property);
       auto get_description = property_bag->Read(L"Description", &property, 0);
@@ -90,7 +90,7 @@ namespace video
   void audio_devices()
   {
     printf("Audio input devices:\n");
-    IEnumMoniker* audio_devices{};
+    IEnumMoniker *audio_devices{};
     auto enumerate = devices_from_category(CLSID_AudioInputDeviceCategory, &audio_devices);
     if (FAILED(enumerate))
     {
@@ -100,14 +100,14 @@ namespace video
 
     auto _ = finally([audio_devices] {
       audio_devices->Release();
-      });
+    });
     device_information(audio_devices);
   }
 
   bool video_devices()
   {
     printf("Video input devices:\n");
-    IEnumMoniker* video_devices{};
+    IEnumMoniker *video_devices{};
     auto enumerate = devices_from_category(CLSID_VideoInputDeviceCategory, &video_devices);
     if (FAILED(enumerate))
     {
@@ -117,7 +117,7 @@ namespace video
 
     auto _ = finally([video_devices] {
       video_devices->Release();
-      });
+    });
     device_information(video_devices);
     return true;
   }
@@ -133,11 +133,11 @@ namespace video
 
     auto _ = finally([] {
       CoUninitialize();
-      });
+    });
     auto video = video_devices();
     printf("\n");
     audio_devices();
     return video;
   }
 
-}
+} // namespace frank::video
