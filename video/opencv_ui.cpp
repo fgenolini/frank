@@ -9,7 +9,7 @@
 
 namespace frank::video
 {
-  
+
   [[noreturn]] void opencv_ui()
   {
     constexpr auto ESCAPE_KEY = 27;
