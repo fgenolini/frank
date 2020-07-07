@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.com/fgenolini/frank.svg?branch=master)](https://travis-ci.com/fgenolini/frank)
-![LinuxBuild](https://github.com/fgenolini/frank/workflows/LinuxBuild/badge.svg?branch=master)
+
+[![LinuxBuild](https://github.com/fgenolini/frank/workflows/LinuxBuild/badge.svg?branch=master)](https://github.com/fgenolini/frank/actions?query=workflow%3ALinuxBuild)
 
 # frank
 Frank coding experiments for distant pairs and swarms of software engineers, each in isolation, working from home
