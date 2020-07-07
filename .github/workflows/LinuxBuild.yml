@@ -1,7 +1,7 @@
 # Download, configure, and install OpenCV before building frank
 # Relies on
 #   Linux Ubuntu 20.04
-#   OpenCV 4.3.0
+#   OpenCV 4.2.0
 #
 # Copied from the CVUI CI action (github.com/Dovyski/cvui)
 name: LinuxBuild
@@ -30,7 +30,7 @@ jobs:
       matrix:
         # Supported version for OpenCV
         opencv: [
-          4.3.0
+          4.2.0
         ]
         compiler: [g++]
     steps:
@@ -72,23 +72,16 @@ jobs:
                 libopencore-amrnb-dev libopencore-amrwb-dev \
                 libtbb2 libtiff-dev \
                 python-dev python-numpy \
-                x264 v4l-utils
-    - name: Download OpenCV ${{ matrix.opencv }}
+                x264 v4l-utils \
+                libopencv-dev python3-opencv
+    - name: Download Microsoft GSL
       run: |
-        curl -sL https://github.com/opencv/opencv/archive/${{ matrix.opencv }}.zip > opencv.zip
-        unzip -q opencv.zip
-    - name: Download OpenCV-contrib ${{ matrix.opencv }}
-      if: ${{ env.USE_OPENCV_EXTRA_MODULES == 'ON' }}
+        curl -sL https://github.com/microsoft/GSL/archive/master.zip > GSL.zip
+        unzip -q GSL.zip
+    - name: Install Microsoft GSL (${{ matrix.compiler }})
       run: |
-        curl -sL https://github.com/opencv/opencv_contrib/archive/${{ matrix.opencv }}.zip > opencv_contrib.zip
-        unzip -q opencv_contrib.zip
-    - name: Install OpenCV (${{ matrix.opencv }}, ${{ matrix.compiler }})
-      run: |
-        # OpenCV install code. Modified from 
-        # - https://github.com/jayrambhia/Install-OpenCV
-        # - https://github.com/florianblume/install-opencv-action
-        # Install everything according to the configuration variables
-        cd opencv-${{ matrix.opencv }}
+        # Microsoft GSL install code
+        cd GSL-master
         # Create a new 'build' folder.
         mkdir build
         cd build
@@ -96,28 +89,15 @@ jobs:
         nice cmake -D CMAKE_BUILD_TYPE=RELEASE \
               -D CMAKE_CXX_COMPILER=${{ matrix.COMPILER }} \
               -D CMAKE_INSTALL_PREFIX=/usr/local \
-              -D WITH_TBB=${{ env.OPENCV_WITH_TBB }} \
-              -D WITH_IPP=${{ env.OPENCV_WITH_IPP }} \
-              -D BUILD_NEW_PYTHON_SUPPORT=OFF \
-              -D WITH_V4L=OFF \
               -D ENABLE_PRECOMPILED_HEADERS=${{ env.ENABLE_PRECOMPILED_HEADERS }} \
-              -D INSTALL_C_EXAMPLES=OFF \
-              -D INSTALL_PYTHON_EXAMPLES=OFF \
-              -D BUILD_EXAMPLES=OFF \
-              -D WITH_QT=OFF \
-              -D ${{ env.OPENCV_EXTRA_MODULES_NAME }}=../../opencv_contrib-${{ matrix.opencv }}/modules \
-              -D WITH_OPENGL=OFF ..
-        # Run 'make' with four threads.
+              ..
         nice make
         # Install to OS.
         sudo nice make install
-        # Add configuration to OpenCV to tell it where the library files are located on the file system (/usr/local/lib)
-        sudo sh -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/opencv.conf'
-        sudo ldconfig
-        echo "OpenCV installed."
+        echo "Microsoft GSL installed."
         # We need to return to the repo "root" folder, so we can then 'cd' into the C++ project folder.
         cd ..
-    - name: Build frank (${{ matrix.opencv }}, ${{ matrix.compiler }})
+    - name: Build frank (${{ matrix.compiler }})
       run: |
         mkdir build.release
         cd build.release
