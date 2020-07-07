@@ -34,20 +34,6 @@ jobs:
         ]
         compiler: [g++]
     steps:
-    - name: Adjust TBB settings
-      if: ${{ matrix.opencv == '3.0.0' }}
-      run: |
-        echo '::set-env name=OPENCV_WITH_TBB::OFF'
-        echo '::set-env name=ENABLE_PRECOMPILED_HEADERS::OFF'
-        echo 'OPENCV_WITH_TBB: ' $OPENCV_WITH_TBB
-        echo 'ENABLE_PRECOMPILED_HEADERS: ' $ENABLE_PRECOMPILED_HEADERS
-    - name: Adjust extra modules settings
-      if: ${{ startsWith(matrix.opencv, '2.') }}
-      run: |
-        echo '::set-env name=USE_OPENCV_EXTRA_MODULES::OFF'
-        echo '::set-env name=OPENCV_EXTRA_MODULES_NAME::NOT_OPENCV_EXTRA_MODULES_PATH'
-        echo 'USE_OPENCV_EXTRA_MODULES: ' $USE_OPENCV_EXTRA_MODULES
-        echo 'OPENCV_EXTRA_MODULES_NAME: ' $OPENCV_EXTRA_MODULES_NAME
     - name: Checkout code
       uses: actions/checkout@v1
 
@@ -58,11 +44,8 @@ jobs:
         sudo apt-get update
         sudo apt-get remove x264 libx264-dev -y
         sudo apt-get install -y \
-                build-essential checkinstall cmake pkg-config yasm \
-                git gfortran \
-                qt5-default \
-                python-dev python-numpy \
-                x264 v4l-utils \
+                build-essential checkinstall cmake pkg-config \
+                git \
                 libopencv-dev python3-opencv
     - name: Download Microsoft GSL
       run: |
@@ -91,10 +74,7 @@ jobs:
       run: |
         mkdir build.release
         cd build.release
-        nice cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=${{ matrix.COMPILER }} -DADD_PYTHON_EXAMPLES=ON
+        nice cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=${{ matrix.COMPILER }}
         nice make
         cd ..
-        mkdir build.debug
-        cd build.debug
-        nice cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=${{ matrix.COMPILER }} -DADD_PYTHON_EXAMPLES=${{ env.ADD_PYTHON_EXAMPLES }}
-        nice make
+
