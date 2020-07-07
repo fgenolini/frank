@@ -1,6 +1,5 @@
 #pragma once
 
-namespace frank::video
-{
-  [[noreturn]] extern void opencv_ui();
+namespace frank::video {
+[[noreturn]] extern void opencv_ui();
 }

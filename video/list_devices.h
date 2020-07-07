@@ -1,6 +1,5 @@
 #pragma once
 
-namespace frank::video
-{
-  extern bool list_input_devices();
+namespace frank::video {
+extern bool list_input_devices();
 }
