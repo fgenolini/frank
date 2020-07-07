@@ -9,11 +9,11 @@ name: LinuxBuild
 on:
   push:
     branches:
-    - master
+    - master-not-now
 
   pull_request:
     branches:
-    - master
+    - master-not-now
 
 env:
   # Decide if some OpenCV extensions should be enabled or not for
