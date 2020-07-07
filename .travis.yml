@@ -29,6 +29,7 @@ before_install:
 - eval "${MATRIX_EVAL}"
 - chmod +x ./scripts/dependencies.sh
 - if [ $TRAVIS_OS_NAME == linux ]; then ./scripts/dependencies.sh; fi
+- cmake --version
 script:
 - chmod +x ./build.sh
 - if [ $TRAVIS_OS_NAME == linux ]; then ./build.sh --cc=gcc --cxx=g++; fi
