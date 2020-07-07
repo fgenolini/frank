@@ -73,3 +73,8 @@ jobs:
         nice make
         cd ..
 
+    - name: Run tests
+      run: |
+        cd build.release
+        nice ctest
+        cd ..
