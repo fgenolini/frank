@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.16)
 
 # Use computer video (camera) to detect shapes
 project(video VERSION 1.0)

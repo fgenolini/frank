@@ -8,7 +8,7 @@
 # (Ubuntu 20.04, with OpenCV 4.2.0, and the latest Microsoft GSL from github master),
 # see the github CI action on this repository
 
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.16)
 
 project(frank VERSION 1.0.0)
 
