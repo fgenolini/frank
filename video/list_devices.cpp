@@ -126,15 +126,62 @@ bool list_input_devices() {
 // Non-Windows implementations of video/audio device enumeration
 // POSIX, Linux, Mac OSX...
 
+#include <filesystem>
+#include <iostream>
+#include <fstream>
+
+#include "list_devices.h"
+
+namespace fs = std::filesystem;
+
 namespace frank::video {
+
 bool list_input_devices() {
+  std::cerr << "Video4linux input devices\n";
+
   // On Linux: list all files called
   //   /sys/class/video4linux/video0/name
   //   /sys/class/video4linux/video1/name
   //   ...
-  return false;
+  const fs::path video4linux { "/sys/class/video4linux" };
+  if (!fs::exists(video4linux)) {
+    std::cerr << "No video4linux\n";
+    return false;
+  }
+
+  int device_count{};
+  for (const auto& entry : fs::directory_iterator(video4linux)) {
+    const auto video_device = entry.path().filename().string();
+    if (!entry.is_directory()) {
+      continue;
+    }
+
+    std::cout << "file: " << video_device << '\n';
+    fs::path name;
+    name += entry.path();
+    name /= "name";
+    if (!fs::exists(name)) {
+      continue;
+    }
+
+    std::ifstream f(name, std::ifstream::in);
+    if (f.is_open()) {
+      std::cout << "name: " << f.rdbuf() << '\n';
+    }
+
+    ++device_count;
+  }
+
+  if (device_count < 1) {
+    std::cerr << "No video4linux input device\n";
+    return false;
+  }
+
+  std::cout << device_count << " video input devices" << '\n';
+  return true;
 }
 
 } // namespace frank::video
 
 #endif
+
