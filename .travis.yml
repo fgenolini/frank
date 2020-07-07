@@ -1,0 +1,18 @@
+language: cpp
+dist: focal
+compiler:
+  - gcc
+os:
+  - linux
+before_install:
+  - echo $LANG
+  - echo $LC_ALL
+  - if [ $TRAVIS_OS_NAME == linux ]; then ./scripts/dependencies.sh; fi
+script:
+  - if [ $TRAVIS_OS_NAME == linux ]; then ./build.sh --cc=gcc --cxx=g++; fi
+branches:
+  only:
+  - master
+env:
+  global:
+  - LANG="en_GB.UTF-8"
