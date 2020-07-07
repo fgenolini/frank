@@ -9,20 +9,12 @@ name: LinuxBuild
 on:
   push:
     branches:
-    - master-not-now
+    - master
 
   pull_request:
     branches:
-    - master-not-now
+    - master
 
-env:
-  # Decide if some OpenCV extensions should be enabled or not for
-  OPENCV_WITH_IPP: ON
-  OPENCV_WITH_TBB: ON
-  ADD_PYTHON_EXAMPLES: ON
-  OPENCV_EXTRA_MODULES_NAME: OPENCV_EXTRA_MODULES_PATH
-  USE_OPENCV_EXTRA_MODULES: ON
-  ENABLE_PRECOMPILED_HEADERS: ON
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -47,10 +39,12 @@ jobs:
                 build-essential checkinstall cmake pkg-config \
                 git \
                 libopencv-dev python3-opencv
+
     - name: Download Microsoft GSL
       run: |
         curl -sL https://github.com/microsoft/GSL/archive/master.zip > GSL.zip
         unzip -q GSL.zip
+
     - name: Install Microsoft GSL (${{ matrix.compiler }})
       run: |
         # Microsoft GSL install code
@@ -70,6 +64,7 @@ jobs:
         echo "Microsoft GSL installed."
         # We need to return to the repo "root" folder, so we can then 'cd' into the C++ project folder.
         cd ..
+
     - name: Build frank (${{ matrix.compiler }})
       run: |
         mkdir build.release
