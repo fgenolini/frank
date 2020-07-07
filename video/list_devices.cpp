@@ -127,7 +127,14 @@ bool list_input_devices() {
 // POSIX, Linux, Mac OSX...
 
 namespace frank::video {
-bool list_input_devices() { return false; }
+bool list_input_devices() {
+  // On Linux: list all files called
+  //   /sys/class/video4linux/video0/name
+  //   /sys/class/video4linux/video1/name
+  //   ...
+  return false;
+}
+
 } // namespace frank::video
 
 #endif
