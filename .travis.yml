@@ -27,10 +27,13 @@ before_install:
 - echo $LANG
 - echo $LC_ALL
 - eval "${MATRIX_EVAL}"
+- chmod +x ./scripts/dependencies.sh
 - if [ $TRAVIS_OS_NAME == linux ]; then ./scripts/dependencies.sh; fi
 script:
+- chmod +x ./build.sh
 - if [ $TRAVIS_OS_NAME == linux ]; then ./build.sh --cc=gcc --cxx=g++; fi
 after_success:
+- chmod +x ./scripts/build_support.sh
 - if [ $TRAVIS_OS_NAME == linux ]; then ./scripts/build_support.sh archive_frank; fi
 branches:
   only:
