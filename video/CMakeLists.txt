@@ -14,7 +14,8 @@ add_executable(video video_main.cpp list_devices.cpp opencv_ui.cpp)
 find_package(OpenCV REQUIRED)
 
 # C++ Guidelines Support Library (github.com/microsoft/gsl)
-find_package(Microsoft.GSL CONFIG)
+# Include only, no binary, no library
+find_package(Microsoft.GSL REQUIRED)
 
 # OpenCV User Interface as a header-only library (github.com/Dovyski/cvui)
 file(DOWNLOAD https://raw.githubusercontent.com/Dovyski/cvui/master/cvui.h ${CMAKE_BINARY_DIR}/cvui.h)
