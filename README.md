@@ -1,3 +1,5 @@
+![LinuxBuild](https://github.com/fgenolini/frank/workflows/LinuxBuild/badge.svg?branch=master)
+
 # frank
 Frank coding experiments for distant pairs and swarms of software engineers, each in isolation, working from home
 
