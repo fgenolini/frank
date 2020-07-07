@@ -13,7 +13,7 @@ CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DI
 check_include_files(Windows.h HAVE_WINDOWS_H)
 
 # Command line executable with a simple OpenCV GUI
-add_executable(video video_main.cpp list_devices.cpp opencv_ui.cpp)
+add_executable(video video_main.cpp run_tests.cpp list_devices.cpp opencv_ui.cpp)
 
 # Open Computer Vision (github.com/opencv/opencv)
 find_package(OpenCV REQUIRED)
@@ -32,3 +32,5 @@ target_include_directories(video PUBLIC
                            "${PROJECT_BINARY_DIR}"
                            "${CMAKE_BINARY_DIR}"
                            )
+
+add_test(null_test video test null)
