@@ -24,4 +24,5 @@ target_link_libraries(video ${OpenCV_LIBS} Microsoft.GSL::GSL)
 configure_file(videoConfig.h.in videoConfig.h)
 target_include_directories(video PUBLIC
                            "${PROJECT_BINARY_DIR}"
+                           "${CMAKE_BINARY_DIR}"
                            )
