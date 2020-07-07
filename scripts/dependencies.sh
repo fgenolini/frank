@@ -4,6 +4,7 @@ sudo apt-get update
 sudo apt-get remove x264 libx264-dev -y
 # In the .travis.yml file:
 # sudo apt-get install -y build-essential checkinstall cmake pkg-config git libopencv-dev python3-opencv
+sudo apt upgrade cmake
 
 pwd
 curl -sL https://github.com/microsoft/GSL/archive/master.zip > GSL.zip
