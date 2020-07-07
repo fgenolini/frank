@@ -1,18 +1,39 @@
 language: cpp
-dist: focal
-compiler:
-  - gcc
-os:
-  - linux
+env:
+  global:
+  - LINUX_DIST=focal
+  - LANG="en_GB.UTF-8"
+  - RUN_TESTS=false
+  - COVERAGE=false
+matrix:
+  include:
+    - os: linux
+      dist: focal
+      sudo: true
+      addons:
+        apt:
+          packages:
+            - build-essential
+            - g++-9
+            - checkinstall
+            - cmake
+            - pkg-config
+            - git
+            - libopencv-dev
+            - python3-opencv
+      env:
+        - MATRIX_EVAL="CC=gcc-9 CXX=g++-9"
 before_install:
-  - echo $LANG
-  - echo $LC_ALL
-  - if [ $TRAVIS_OS_NAME == linux ]; then ./scripts/dependencies.sh; fi
+- echo $LANG
+- echo $LC_ALL
+- eval "${MATRIX_EVAL}"
+- if [ $TRAVIS_OS_NAME == linux ]; then ./scripts/dependencies.sh; fi
 script:
-  - if [ $TRAVIS_OS_NAME == linux ]; then ./build.sh --cc=gcc --cxx=g++; fi
+- if [ $TRAVIS_OS_NAME == linux ]; then ./build.sh --cc=gcc --cxx=g++; fi
+after_success:
+- if [ $TRAVIS_OS_NAME == linux ]; then ./scripts/build_support.sh archive_frank; fi
 branches:
   only:
   - master
-env:
-  global:
-  - LANG="en_GB.UTF-8"
+notifications:
+  email: false
