@@ -1,0 +1,130 @@
+# Download, configure, and install OpenCV before building frank
+# Relies on
+#   Linux Ubuntu 20.04
+#   OpenCV 4.3.0
+#
+# Copied from the CVUI CI action (github.com/Dovyski/cvui)
+name: LinuxBuild
+
+on:
+  push:
+    branches:
+    - master
+
+  pull_request:
+    branches:
+    - master
+
+env:
+  # Decide if some OpenCV extensions should be enabled or not for
+  OPENCV_WITH_IPP: ON
+  OPENCV_WITH_TBB: ON
+  ADD_PYTHON_EXAMPLES: ON
+  OPENCV_EXTRA_MODULES_NAME: OPENCV_EXTRA_MODULES_PATH
+  USE_OPENCV_EXTRA_MODULES: ON
+  ENABLE_PRECOMPILED_HEADERS: ON
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        # Supported version for OpenCV
+        opencv: [
+          4.3.0
+        ]
+        compiler: [g++]
+    steps:
+    - name: Adjust TBB settings
+      if: ${{ matrix.opencv == '3.0.0' }}
+      run: |
+        echo '::set-env name=OPENCV_WITH_TBB::OFF'
+        echo '::set-env name=ENABLE_PRECOMPILED_HEADERS::OFF'
+        echo 'OPENCV_WITH_TBB: ' $OPENCV_WITH_TBB
+        echo 'ENABLE_PRECOMPILED_HEADERS: ' $ENABLE_PRECOMPILED_HEADERS
+    - name: Adjust extra modules settings
+      if: ${{ startsWith(matrix.opencv, '2.') }}
+      run: |
+        echo '::set-env name=USE_OPENCV_EXTRA_MODULES::OFF'
+        echo '::set-env name=OPENCV_EXTRA_MODULES_NAME::NOT_OPENCV_EXTRA_MODULES_PATH'
+        echo 'USE_OPENCV_EXTRA_MODULES: ' $USE_OPENCV_EXTRA_MODULES
+        echo 'OPENCV_EXTRA_MODULES_NAME: ' $OPENCV_EXTRA_MODULES_NAME
+    - name: Checkout code
+      uses: actions/checkout@v1
+
+    - name: Install dev dependencies
+      run: |
+        # OpenCV dependencies. Modified from 
+        # - https://github.com/jayrambhia/Install-OpenCV
+        # - https://github.com/florianblume/install-opencv-action
+        sudo add-apt-repository "deb http://security.ubuntu.com/ubuntu focal-security main"
+        sudo apt-get update
+        sudo apt-get remove x264 libx264-dev -y
+        sudo apt-get install -y \
+                build-essential checkinstall cmake pkg-config yasm \
+                git gfortran libjpeg8-dev libjasper1 libjasper-dev libpng-dev \
+                libavcodec-dev libavformat-dev libswscale-dev libdc1394-22-dev \
+                libxine2-dev libv4l-dev \
+                libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
+                qt5-default libgtk2.0-dev libtbb-dev \
+                libatlas-base-dev \
+                libfaac-dev libmp3lame-dev libtheora-dev \
+                libvorbis-dev libxvidcore-dev \
+                libopencore-amrnb-dev libopencore-amrwb-dev \
+                libtbb2 libtiff-dev \
+                python-dev python-numpy \
+                x264 v4l-utils
+    - name: Download OpenCV ${{ matrix.opencv }}
+      run: |
+        curl -sL https://github.com/opencv/opencv/archive/${{ matrix.opencv }}.zip > opencv.zip
+        unzip -q opencv.zip
+    - name: Download OpenCV-contrib ${{ matrix.opencv }}
+      if: ${{ env.USE_OPENCV_EXTRA_MODULES == 'ON' }}
+      run: |
+        curl -sL https://github.com/opencv/opencv_contrib/archive/${{ matrix.opencv }}.zip > opencv_contrib.zip
+        unzip -q opencv_contrib.zip
+    - name: Install OpenCV (${{ matrix.opencv }}, ${{ matrix.compiler }})
+      run: |
+        # OpenCV install code. Modified from 
+        # - https://github.com/jayrambhia/Install-OpenCV
+        # - https://github.com/florianblume/install-opencv-action
+        # Install everything according to the configuration variables
+        cd opencv-${{ matrix.opencv }}
+        # Create a new 'build' folder.
+        mkdir build
+        cd build
+        # Set build instructions for Ubuntu distro.
+        nice cmake -D CMAKE_BUILD_TYPE=RELEASE \
+              -D CMAKE_CXX_COMPILER=${{ matrix.COMPILER }} \
+              -D CMAKE_INSTALL_PREFIX=/usr/local \
+              -D WITH_TBB=${{ env.OPENCV_WITH_TBB }} \
+              -D WITH_IPP=${{ env.OPENCV_WITH_IPP }} \
+              -D BUILD_NEW_PYTHON_SUPPORT=OFF \
+              -D WITH_V4L=OFF \
+              -D ENABLE_PRECOMPILED_HEADERS=${{ env.ENABLE_PRECOMPILED_HEADERS }} \
+              -D INSTALL_C_EXAMPLES=OFF \
+              -D INSTALL_PYTHON_EXAMPLES=OFF \
+              -D BUILD_EXAMPLES=OFF \
+              -D WITH_QT=OFF \
+              -D ${{ env.OPENCV_EXTRA_MODULES_NAME }}=../../opencv_contrib-${{ matrix.opencv }}/modules \
+              -D WITH_OPENGL=OFF ..
+        # Run 'make' with four threads.
+        nice make
+        # Install to OS.
+        sudo nice make install
+        # Add configuration to OpenCV to tell it where the library files are located on the file system (/usr/local/lib)
+        sudo sh -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/opencv.conf'
+        sudo ldconfig
+        echo "OpenCV installed."
+        # We need to return to the repo "root" folder, so we can then 'cd' into the C++ project folder.
+        cd ..
+    - name: Build frank (${{ matrix.opencv }}, ${{ matrix.compiler }})
+      run: |
+        mkdir build.release
+        cd build.release
+        nice cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=${{ matrix.COMPILER }} -DADD_PYTHON_EXAMPLES=ON
+        nice make
+        cd ..
+        mkdir build.debug
+        cd build.debug
+        nice cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=${{ matrix.COMPILER }} -DADD_PYTHON_EXAMPLES=${{ env.ADD_PYTHON_EXAMPLES }}
+        nice make
