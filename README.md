@@ -7,14 +7,6 @@ video: OpenCV for up to 4 directly connected video inputs (webcams)
 
 Frank coding experiments for distant pairs and swarms of software engineers, each in isolation, working from home
 
-Ask to join this repo as a contributor
-
-## Put your suggestions as a card
-In the Projects there is a Kanban called "getting involved": add a card
-
-### Adding a Kanban card
-Create an issue, then go to Projects and add a card by selecting the card of interest and drag and drop it to the relevant column
-
 ## Subdirectories
 ### video
 Computer vision using OpenCV, to detect what is present on the computer's webcam, or any other video input, with optional audio input.
