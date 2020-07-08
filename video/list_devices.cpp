@@ -1,6 +1,6 @@
 #include "config.h"
 
-#if defined(HAVE_WINDOWS_H)
+#if defined(WIN32) && defined(HAVE_WINDOWS_H)
 #include <dshow.h>
 #include <windows.h>
 
@@ -121,14 +121,16 @@ bool list_input_devices() {
 
 } // namespace frank::video
 
-#else
+#elif !defined(WIN32)
 
 // Non-Windows implementations of video/audio device enumeration
 // POSIX, Linux, Mac OSX...
 
+#include <cstdlib>
 #include <filesystem>
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <string>
 
 #include "list_devices.h"
 
@@ -136,7 +138,8 @@ namespace fs = std::filesystem;
 
 namespace frank::video {
 
-bool list_input_devices() {
+#if defined(UNIX) && !defined(APPLE) && !defined(MINGW) && !defined(MSYS) && !defined(CYGWIN)
+bool list_linux_input_devices() {
   std::cerr << "Video4linux input devices\n";
 
   // On Linux: list all files called
@@ -179,6 +182,40 @@ bool list_input_devices() {
 
   std::cout << device_count << " video input devices" << '\n';
   return true;
+}
+#endif
+
+#if defined(UNIX) && defined(APPLE)
+bool list_mac_osx_input_devices() {
+  std::cerr << "AVFoundation input devices\n";
+  std::string swift_script {
+    "echo "
+    "'import AVFoundation;"
+    "print(\"-----\");"
+    "let devices = AVCaptureDevice.devices(for: .video);"
+    "for device in devices {"
+      "print(\"---\");"
+      "print(device.localizedName);"
+      "print(device.modelID);"
+      "print(device.activeFormat);"
+      "print(\"-\");"
+      "print(device.formats)"
+    "}'"
+    "|swift -"
+  };
+  system(swift_script.c_str());
+  return true;
+}
+#endif
+
+bool list_input_devices() {
+#if defined(UNIX) && !defined(APPLE) && !defined(MINGW) && !defined(MSYS) && !defined(CYGWIN)
+  return list_linux_input_devices();
+#elif defined(UNIX) && defined(APPLE)
+  return list_mac_osx_input_devices();
+#else
+  return false;
+#endif
 }
 
 } // namespace frank::video
