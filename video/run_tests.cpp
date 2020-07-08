@@ -10,4 +10,3 @@ namespace frank::video {
 }
 
 } // namespace frank::video
-

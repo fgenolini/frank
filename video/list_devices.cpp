@@ -138,7 +138,8 @@ namespace fs = std::filesystem;
 
 namespace frank::video {
 
-#if defined(UNIX) && !defined(APPLE) && !defined(MINGW) && !defined(MSYS) && !defined(CYGWIN)
+#if defined(UNIX) && !defined(APPLE) && !defined(MINGW) && !defined(MSYS) &&   \
+    !defined(CYGWIN)
 bool list_linux_input_devices() {
   std::cerr << "Video4linux input devices\n";
 
@@ -146,14 +147,14 @@ bool list_linux_input_devices() {
   //   /sys/class/video4linux/video0/name
   //   /sys/class/video4linux/video1/name
   //   ...
-  const fs::path video4linux { "/sys/class/video4linux" };
+  const fs::path video4linux{"/sys/class/video4linux"};
   if (!fs::exists(video4linux)) {
     std::cerr << "No video4linux\n";
     return false;
   }
 
   int device_count{};
-  for (const auto& entry : fs::directory_iterator(video4linux)) {
+  for (const auto &entry : fs::directory_iterator(video4linux)) {
     const auto video_device = entry.path().filename().string();
     if (!entry.is_directory()) {
       continue;
@@ -188,28 +189,27 @@ bool list_linux_input_devices() {
 #if defined(UNIX) && defined(APPLE)
 bool list_mac_osx_input_devices() {
   std::cerr << "AVFoundation input devices\n";
-  std::string swift_script {
-    "echo "
-    "'import AVFoundation;"
-    "print(\"-----\");"
-    "let devices = AVCaptureDevice.devices(for: .video);"
-    "for device in devices {"
-      "print(\"---\");"
-      "print(device.localizedName);"
-      "print(device.modelID);"
-      "print(device.activeFormat);"
-      "print(\"-\");"
-      "print(device.formats)"
-    "}'"
-    "|swift -"
-  };
+  std::string swift_script{"echo "
+                           "'import AVFoundation;"
+                           "print(\"-----\");"
+                           "let devices = AVCaptureDevice.devices(for: .video);"
+                           "for device in devices {"
+                           "print(\"---\");"
+                           "print(device.localizedName);"
+                           "print(device.modelID);"
+                           "print(device.activeFormat);"
+                           "print(\"-\");"
+                           "print(device.formats)"
+                           "}'"
+                           "|swift -"};
   system(swift_script.c_str());
   return true;
 }
 #endif
 
 bool list_input_devices() {
-#if defined(UNIX) && !defined(APPLE) && !defined(MINGW) && !defined(MSYS) && !defined(CYGWIN)
+#if defined(UNIX) && !defined(APPLE) && !defined(MINGW) && !defined(MSYS) &&   \
+    !defined(CYGWIN)
   return list_linux_input_devices();
 #elif defined(UNIX) && defined(APPLE)
   return list_mac_osx_input_devices();
@@ -221,4 +221,3 @@ bool list_input_devices() {
 } // namespace frank::video
 
 #endif
-
