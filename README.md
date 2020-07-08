@@ -26,3 +26,6 @@ If you use VS Code, edit your user settings to configure CMake:
         "OpenCV_DIR": "/projects/OpenCV"
     }
 ```
+
+## Coding standard
+All C++ source files are formatted using the clang-format LLVM style, disabling automated sorting of includes
