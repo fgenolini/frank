@@ -24,6 +24,7 @@ find_package(Microsoft.GSL REQUIRED)
 
 # OpenCV User Interface as a header-only library (github.com/Dovyski/cvui)
 file(DOWNLOAD https://raw.githubusercontent.com/Dovyski/cvui/master/cvui.h ${CMAKE_BINARY_DIR}/cvui.h)
+file(DOWNLOAD https://raw.githubusercontent.com/Dovyski/cvui/master/EnhancedWindow.h ${CMAKE_BINARY_DIR}/EnhancedWindow.h)
 
 target_link_libraries(video ${OpenCV_LIBS} Microsoft.GSL::GSL)
 
@@ -34,4 +35,3 @@ target_include_directories(video PUBLIC
                            )
 
 add_test(null_test video test null)
-

@@ -7,4 +7,3 @@
 #cmakedefine MINGW
 #cmakedefine MSYS
 #cmakedefine CYGWIN
-
