@@ -1,3 +1,4 @@
 #!/bin/bash
-echo 'import AVFoundation; print("-----"); let devices = AVCaptureDevice.devices(for: .video); for device in devices { print("---"); print(device.localizedName); print(device.modelID); print(device.activeFormat); print("-"); print(device.formats) }' | swift -
-
+# Example of how to list video input devices on macos using the Swift REPL
+# This script is not actually used by the C++ frank::video
+echo 'import AVFoundation;let devices = AVCaptureDevice.devices(for: .video);for device in devices{print(device.localizedName)}'|swift -
