@@ -11,11 +11,12 @@
 // EnhancedWindow.h must be included after cvui.h
 #include "EnhancedWindow.h"
 
+#include "input_device.h"
 #include "opencv_ui.h"
 
 namespace frank::video {
 
-[[noreturn]] void opencv_ui() {
+[[noreturn]] void opencv_ui(std::vector<input_device> &connected_webcams) {
   constexpr auto MAXIMUM_VIDEO_COUNT = 4;
   constexpr auto WINDOW_NAME = "Frank video";
   constexpr auto WINDOW1_NAME = "Frank video 1";
@@ -46,6 +47,7 @@ namespace frank::video {
 
   auto main_window =
       [take_picture](const cv::String &window_name, EnhancedWindow &settings,
+                     std::vector<input_device> &input_devices,
                      std::vector<bool> &has_webcams, cv::VideoCapture *webcam,
                      bool *video_enabled) {
         auto main_frame = cv::Mat(200, 500, CV_8UC3);
@@ -63,7 +65,13 @@ namespace frank::video {
         settings.begin(main_frame);
         if (!settings.isMinimized()) {
           for (auto i = 0; i < has_webcams.size(); ++i) {
-            std::string video_name{"Video " + std::to_string(i)};
+            std::string video_name{};
+            if (input_devices.size() <= i) {
+              video_name = "Video " + std::to_string(i);
+            } else {
+              video_name = std::to_string(i) + " " + input_devices[i].name();
+            }
+
             cvui::checkbox(video_name, &video_enabled[i]);
           }
         }
@@ -90,13 +98,10 @@ namespace frank::video {
                                           WINDOW2_NAME, WINDOW3_NAME};
   bool video_enabled[MAXIMUM_VIDEO_COUNT]{};
   std::vector<bool> has_webcams{};
-  has_webcams.push_back(true);
-  video_enabled[0] = true;
-
-  // TODO: read list of webcams from list_devices.cpp
-  for (auto i = 1; i < window_names.size() && i < MAXIMUM_VIDEO_COUNT; ++i) {
-    has_webcams.push_back(false);
-    video_enabled[i] = false;
+  for (auto i = 0; i < window_names.size() && i < MAXIMUM_VIDEO_COUNT; ++i) {
+    auto has_webcam = connected_webcams.size() > i;
+    has_webcams.push_back(has_webcam);
+    video_enabled[i] = has_webcam;
   }
 
   std::vector<std::unique_ptr<cv::VideoCapture>> input_video_devices{};
@@ -111,10 +116,10 @@ namespace frank::video {
     input_video_devices.push_back(std::move(webcam));
   }
 
-  EnhancedWindow settings(200, 50, 200, 100, "Settings");
+  EnhancedWindow settings(200, 50, 250, 100, "Settings");
   cvui::init(&window_names[0], window_names.size());
   while (true) {
-    main_window(window_names[0], settings, has_webcams,
+    main_window(window_names[0], settings, connected_webcams, has_webcams,
                 input_video_devices[0].get(), video_enabled);
     for (auto i = 1; i < window_names.size(); ++i) {
       if (!has_webcams[i]) {
