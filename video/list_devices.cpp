@@ -1,6 +1,10 @@
 #include <string>
 #include <vector>
 
+#include <gsl/gsl_util>
+
+using namespace gsl;
+
 #include "config.h"
 #include "input_device.h"
 #include "list_devices.h"
@@ -9,10 +13,6 @@
 #include <comutil.h>
 #include <dshow.h>
 #include <windows.h>
-
-#include <gsl/gsl_util>
-
-using namespace gsl;
 
 #pragma comment(lib, "strmiids")
 #pragma comment(lib, "comsuppw.lib")
@@ -182,6 +182,27 @@ std::vector<input_device> list_linux_input_devices() {
     }
 
     std::cout << "file: " << video_device << '\n';
+    fs::path index;
+    index += entry.path();
+    index /= "index";
+    if (!fs::exists(index)) {
+      continue;
+    }
+
+    std::ifstream index_file(index, std::ifstream::in);
+    if (index_file.is_open()) {
+      auto _ = finally([&index_file] { index_file.close(); });
+      auto file_contents = index_file.rdbuf();
+      auto contents_size = file_contents->pubseekoff(0, index_file.end, index_file.in);
+      file_contents->pubseekpos(0, index_file.in);
+      auto contents = new char[contents_size];
+      file_contents->sgetn(contents, contents_size);
+      std::string video_device_index{contents};
+      if (video_device_index.compare(0, 1, "0") != 0) {
+        continue;
+      }
+    }
+
     fs::path name;
     name += entry.path();
     name /= "name";
@@ -190,12 +211,19 @@ std::vector<input_device> list_linux_input_devices() {
     }
 
     input_device new_device{};
-    new_devices.set_identifier(video_device);
-    std::ifstream f(name, std::ifstream::in);
-    if (f.is_open()) {
-      auto new_device_name = f.rdbuf();
-      std::cout << "name: " << new_device_name << '\n';
-      new_device.set_name(new_device_name);
+    std::string video_device_identifier = "" + video_device;
+    new_device.set_identifier(video_device_identifier);
+    std::ifstream name_file(name, std::ifstream::in);
+    if (name_file.is_open()) {
+      auto _ = finally([&name_file] { name_file.close(); });
+      auto file_contents = name_file.rdbuf();
+      auto contents_size = file_contents->pubseekoff(0, name_file.end, name_file.in);
+      file_contents->pubseekpos(0, name_file.in);
+      auto contents = new char[contents_size];
+      file_contents->sgetn(contents, contents_size);
+      std::cout << "name: " << contents << '\n';
+      std::string video_device_name{contents};
+      new_device.set_name(video_device_name);
     }
 
     new_devices.push_back(new_device);

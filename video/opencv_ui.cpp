@@ -2,6 +2,10 @@
 #include <cstdlib>
 #include <memory>
 
+#include <gsl/gsl_util>
+
+using namespace gsl;
+
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/opencv.hpp>
 
@@ -16,31 +20,31 @@
 
 namespace frank::video {
 
-[[noreturn]] void opencv_ui(std::vector<input_device> &connected_webcams) {
+bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
   constexpr auto MAXIMUM_VIDEO_COUNT = 4;
   constexpr auto WINDOW_NAME = "Frank video";
   constexpr auto WINDOW1_NAME = "Frank video 1";
   constexpr auto WINDOW2_NAME = "Frank video 2";
   constexpr auto WINDOW3_NAME = "Frank video 3";
 
-  auto wait_or_exit = []() {
+  auto exit_requested = []() {
     constexpr auto ESCAPE_KEY = 27;
     constexpr auto SHORT_DELAY = 20;
 
-    if (cv::waitKey(SHORT_DELAY) == ESCAPE_KEY) {
-      exit(EXIT_SUCCESS);
-    }
+    return cv::waitKey(SHORT_DELAY) == ESCAPE_KEY;
   };
 
-  auto take_picture = [wait_or_exit](cv::VideoCapture *webcam,
+  auto take_picture = [exit_requested](cv::VideoCapture *webcam,
                                      int webcam_index) {
+    cv::Mat pic{};
     while (!webcam->isOpened()) {
       std::cout << "Could not open webcam " << webcam_index << '\n';
       webcam->open(webcam_index, cv::CAP_ANY);
-      wait_or_exit();
+      if (exit_requested()) {
+        return pic;
+      }
     }
 
-    cv::Mat pic;
     *webcam >> pic;
     return pic;
   };
@@ -59,7 +63,7 @@ namespace frank::video {
 
         auto button_clicked = cvui::button(main_frame, 110, 80, "Quit");
         if (button_clicked) {
-          exit(EXIT_SUCCESS);
+          return true;
         }
 
         settings.begin(main_frame);
@@ -78,6 +82,7 @@ namespace frank::video {
 
         settings.end();
         cvui::imshow(window_name, main_frame);
+        return false;
       };
 
   auto other_window = [take_picture](const cv::String &window_name,
@@ -116,11 +121,21 @@ namespace frank::video {
     input_video_devices.push_back(std::move(webcam));
   }
 
+  auto _ = finally([&input_video_devices] {
+    std::cout << "Releasing webcams" << '\n';
+    for (auto &video_capture: input_video_devices) {
+      video_capture.release();
+    }
+  });
+
   EnhancedWindow settings(200, 50, 250, 100, "Settings");
   cvui::init(&window_names[0], window_names.size());
   while (true) {
-    main_window(window_names[0], settings, connected_webcams, has_webcams,
-                input_video_devices[0].get(), video_enabled);
+    if (main_window(window_names[0], settings, connected_webcams, has_webcams,
+                input_video_devices[0].get(), video_enabled)) {
+      return true;
+    }
+
     for (auto i = 1; i < window_names.size(); ++i) {
       if (!has_webcams[i]) {
         continue;
@@ -130,10 +145,21 @@ namespace frank::video {
                    input_video_devices[i].get());
     }
 
-    wait_or_exit();
+    if (exit_requested()) {
+      return true;
+    }
   }
 
-  exit(EXIT_SUCCESS);
+  return true;
+}
+
+[[noreturn]] void opencv_ui(std::vector<input_device> &connected_webcams) {
+  if (opencv_with_webcams(connected_webcams)) {
+      exit(EXIT_SUCCESS);
+  } else {
+      exit(EXIT_FAILURE);
+  }
 }
 
 } // namespace frank::video
+
