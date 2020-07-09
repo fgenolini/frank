@@ -1,5 +1,9 @@
 #pragma once
 
+#include <vector>
+
+#include "input_device.h"
+
 namespace frank::video {
-extern bool list_input_devices();
+extern std::vector<input_device> list_input_devices();
 }
