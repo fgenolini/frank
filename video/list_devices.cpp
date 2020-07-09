@@ -1,16 +1,21 @@
-#include "config.h"
-
-#if defined(WIN32) && defined(HAVE_WINDOWS_H)
-#include <dshow.h>
-#include <windows.h>
+#include <string>
+#include <vector>
 
 #include <gsl/gsl_util>
 
-#include "list_devices.h"
-
 using namespace gsl;
 
+#include "config.h"
+#include "input_device.h"
+#include "list_devices.h"
+
+#if defined(WIN32)
+#include <comutil.h>
+#include <dshow.h>
+#include <windows.h>
+
 #pragma comment(lib, "strmiids")
+#pragma comment(lib, "comsuppw.lib")
 
 namespace frank::video {
 
@@ -36,8 +41,9 @@ HRESULT devices_from_category(REFGUID category, IEnumMoniker **devices) {
   return category_enumerator;
 }
 
-void device_information(IEnumMoniker *devices) {
+std::vector<input_device> device_information(IEnumMoniker *devices) {
   IMoniker *moniker{};
+  std::vector<input_device> new_devices{};
   while (devices->Next(1, &moniker, nullptr) == S_OK) {
     auto _ = finally([moniker] { moniker->Release(); });
     IPropertyBag *property_bag{};
@@ -56,8 +62,20 @@ void device_information(IEnumMoniker *devices) {
       get_description = property_bag->Read(L"FriendlyName", &property, 0);
     }
 
+    auto convert_text = [](BSTR unicode_com_text) {
+      auto source_text = _bstr_t(unicode_com_text);
+      auto length_excluding_terminating_zero = source_text.length();
+      auto length_including_zero =
+          (rsize_t)length_excluding_terminating_zero + 1;
+      auto converted_text = new char[length_including_zero]{};
+      strcpy_s(converted_text, length_including_zero, source_text);
+      return std::string(converted_text);
+    };
+
+    input_device new_device{};
     if (SUCCEEDED(get_description)) {
       printf("%S\n", property.bstrVal);
+      new_device.set_name(convert_text(property.bstrVal));
     }
 
     VariantClear(&property);
@@ -70,10 +88,14 @@ void device_information(IEnumMoniker *devices) {
     auto get_device_path = property_bag->Read(L"DevicePath", &property, 0);
     if (SUCCEEDED(get_device_path)) {
       printf("  Device path: %S\n", property.bstrVal);
+      new_device.set_identifier(convert_text(property.bstrVal));
     }
 
     VariantClear(&property);
+    new_devices.push_back(new_device);
   }
+
+  return new_devices;
 }
 
 void audio_devices() {
@@ -90,33 +112,34 @@ void audio_devices() {
   device_information(audio_devices);
 }
 
-bool video_devices() {
+std::vector<input_device> video_devices() {
   printf("Video input devices:\n");
   IEnumMoniker *video_devices{};
   auto enumerate =
       devices_from_category(CLSID_VideoInputDeviceCategory, &video_devices);
   if (FAILED(enumerate)) {
     printf("Could not list video input devices\n");
-    return false;
+    std::vector<input_device> no_device{};
+    return no_device;
   }
 
   auto _ = finally([video_devices] { video_devices->Release(); });
-  device_information(video_devices);
-  return true;
+  return device_information(video_devices);
 }
 
-bool list_input_devices() {
+std::vector<input_device> list_input_devices() {
   auto com = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
   if (FAILED(com)) {
     printf("Could not initialise COM\n");
-    return false;
+    std::vector<input_device> no_device{};
+    return no_device;
   }
 
   auto _ = finally([] { CoUninitialize(); });
-  auto video = video_devices();
+  auto devices = video_devices();
   printf("\n");
   audio_devices();
-  return video;
+  return devices;
 }
 
 } // namespace frank::video
@@ -130,36 +153,56 @@ bool list_input_devices() {
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <string>
-
-#include "list_devices.h"
 
 namespace fs = std::filesystem;
 
 namespace frank::video {
 
-#if defined(UNIX) && !defined(APPLE) && !defined(MINGW) && !defined(MSYS) && !defined(CYGWIN)
-bool list_linux_input_devices() {
+#if defined(UNIX) && !defined(APPLE) && !defined(MINGW) && !defined(MSYS) &&   \
+    !defined(CYGWIN)
+std::vector<input_device> list_linux_input_devices() {
   std::cerr << "Video4linux input devices\n";
 
   // On Linux: list all files called
   //   /sys/class/video4linux/video0/name
   //   /sys/class/video4linux/video1/name
   //   ...
-  const fs::path video4linux { "/sys/class/video4linux" };
+  const fs::path video4linux{"/sys/class/video4linux"};
   if (!fs::exists(video4linux)) {
     std::cerr << "No video4linux\n";
-    return false;
+    std::vector<input_device> no_device{};
+    return no_device;
   }
 
-  int device_count{};
-  for (const auto& entry : fs::directory_iterator(video4linux)) {
+  std::vector<input_device> new_devices{};
+  for (const auto &entry : fs::directory_iterator(video4linux)) {
     const auto video_device = entry.path().filename().string();
     if (!entry.is_directory()) {
       continue;
     }
 
     std::cout << "file: " << video_device << '\n';
+    fs::path index;
+    index += entry.path();
+    index /= "index";
+    if (!fs::exists(index)) {
+      continue;
+    }
+
+    std::ifstream index_file(index, std::ifstream::in);
+    if (index_file.is_open()) {
+      auto _ = finally([&index_file] { index_file.close(); });
+      auto file_contents = index_file.rdbuf();
+      auto contents_size = file_contents->pubseekoff(0, index_file.end, index_file.in);
+      file_contents->pubseekpos(0, index_file.in);
+      auto contents = new char[contents_size];
+      file_contents->sgetn(contents, contents_size);
+      std::string video_device_index{contents};
+      if (video_device_index.compare(0, 1, "0") != 0) {
+        continue;
+      }
+    }
+
     fs::path name;
     name += entry.path();
     name /= "name";
@@ -167,58 +210,71 @@ bool list_linux_input_devices() {
       continue;
     }
 
-    std::ifstream f(name, std::ifstream::in);
-    if (f.is_open()) {
-      std::cout << "name: " << f.rdbuf() << '\n';
+    input_device new_device{};
+    std::string video_device_identifier = "" + video_device;
+    new_device.set_identifier(video_device_identifier);
+    std::ifstream name_file(name, std::ifstream::in);
+    if (name_file.is_open()) {
+      auto _ = finally([&name_file] { name_file.close(); });
+      auto file_contents = name_file.rdbuf();
+      auto contents_size = file_contents->pubseekoff(0, name_file.end, name_file.in);
+      file_contents->pubseekpos(0, name_file.in);
+      auto contents = new char[contents_size];
+      file_contents->sgetn(contents, contents_size);
+      std::cout << "name: " << contents << '\n';
+      std::string video_device_name{contents};
+      new_device.set_name(video_device_name);
     }
 
-    ++device_count;
+    new_devices.push_back(new_device);
   }
 
-  if (device_count < 1) {
+  if (new_devices.size() < 1) {
     std::cerr << "No video4linux input device\n";
-    return false;
+    return new_devices;
   }
 
-  std::cout << device_count << " video input devices" << '\n';
-  return true;
+  std::cout << new_devices.size() << " video input devices" << '\n';
+  return new_devices;
 }
 #endif
 
 #if defined(UNIX) && defined(APPLE)
-bool list_mac_osx_input_devices() {
+std::vector<input_device> list_mac_osx_input_devices() {
   std::cerr << "AVFoundation input devices\n";
-  std::string swift_script {
-    "echo "
-    "'import AVFoundation;"
-    "print(\"-----\");"
-    "let devices = AVCaptureDevice.devices(for: .video);"
-    "for device in devices {"
-      "print(\"---\");"
-      "print(device.localizedName);"
-      "print(device.modelID);"
-      "print(device.activeFormat);"
-      "print(\"-\");"
-      "print(device.formats)"
-    "}'"
-    "|swift -"
-  };
+  std::string swift_script{"echo "
+                           "'import AVFoundation;"
+                           "print(\"-----\");"
+                           "let devices = AVCaptureDevice.devices(for: .video);"
+                           "for device in devices {"
+                           "print(\"---\");"
+                           "print(device.localizedName);"
+                           "print(device.modelID);"
+                           "print(device.activeFormat);"
+                           "print(\"-\");"
+                           "print(device.formats)"
+                           "}'"
+                           "|swift -"};
   system(swift_script.c_str());
-  return true;
+
+  // TODO: read stdout from swift script
+  std::vector<input_device> no_device{};
+  return no_device;
 }
 #endif
 
-bool list_input_devices() {
-#if defined(UNIX) && !defined(APPLE) && !defined(MINGW) && !defined(MSYS) && !defined(CYGWIN)
+std::vector<input_device> list_input_devices() {
+#if defined(UNIX) && !defined(APPLE) && !defined(MINGW) && !defined(MSYS) &&   \
+    !defined(CYGWIN)
   return list_linux_input_devices();
 #elif defined(UNIX) && defined(APPLE)
   return list_mac_osx_input_devices();
 #else
-  return false;
+  std::vector<input_device> no_device{};
+  return no_device;
 #endif
 }
 
 } // namespace frank::video
 
 #endif
-

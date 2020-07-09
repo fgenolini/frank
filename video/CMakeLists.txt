@@ -10,10 +10,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 include(CheckIncludeFiles)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
-check_include_files(Windows.h HAVE_WINDOWS_H)
-
 # Command line executable with a simple OpenCV GUI
-add_executable(video video_main.cpp run_tests.cpp list_devices.cpp opencv_ui.cpp)
+add_executable(video video_main.cpp run_tests.cpp list_devices.cpp opencv_ui.cpp input_device.cpp)
 
 # Open Computer Vision (github.com/opencv/opencv)
 find_package(OpenCV REQUIRED)
@@ -24,6 +22,7 @@ find_package(Microsoft.GSL REQUIRED)
 
 # OpenCV User Interface as a header-only library (github.com/Dovyski/cvui)
 file(DOWNLOAD https://raw.githubusercontent.com/Dovyski/cvui/master/cvui.h ${CMAKE_BINARY_DIR}/cvui.h)
+file(DOWNLOAD https://raw.githubusercontent.com/Dovyski/cvui/master/EnhancedWindow.h ${CMAKE_BINARY_DIR}/EnhancedWindow.h)
 
 target_link_libraries(video ${OpenCV_LIBS} Microsoft.GSL::GSL)
 
@@ -34,4 +33,3 @@ target_include_directories(video PUBLIC
                            )
 
 add_test(null_test video test null)
-

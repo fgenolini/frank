@@ -1,10 +1,11 @@
 
-#cmakedefine HAVE_WINDOWS_H
-
 #cmakedefine UNIX
+
+#ifndef WIN32
 #cmakedefine WIN32
+#endif
+
 #cmakedefine APPLE
 #cmakedefine MINGW
 #cmakedefine MSYS
 #cmakedefine CYGWIN
-
