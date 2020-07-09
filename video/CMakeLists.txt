@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 include(CheckIncludeFiles)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
-check_include_files(Windows.h HAVE_WINDOWS_H)
+check_include_files(windows.h HAVE_WINDOWS_H)
 
 # Command line executable with a simple OpenCV GUI
 add_executable(video video_main.cpp run_tests.cpp list_devices.cpp opencv_ui.cpp)
