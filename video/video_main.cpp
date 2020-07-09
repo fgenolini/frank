@@ -20,10 +20,11 @@ int main(int argc, char const *argv[]) {
     frank::video::run_tests(argc, argv);
   }
 
-  if (!frank::video::list_input_devices()) {
+  auto input_devices = frank::video::list_input_devices();
+  if (input_devices.size() < 1) {
     std::cerr << "Could not list video / audio input devices"
               << "\n";
   }
 
-  frank::video::opencv_ui();
+  frank::video::opencv_ui(input_devices);
 }
