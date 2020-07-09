@@ -1,6 +1,6 @@
 #include "config.h"
 
-#if defined(WIN32) && defined(HAVE_WINDOWS_H)
+#if defined(WIN32)
 #include <dshow.h>
 #include <windows.h>
 
