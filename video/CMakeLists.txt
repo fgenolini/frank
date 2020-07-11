@@ -11,7 +11,9 @@ include(CheckIncludeFiles)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 # Command line executable with a simple OpenCV GUI
-add_executable(video video_main.cpp run_tests.cpp list_devices.cpp opencv_ui.cpp input_device.cpp)
+add_executable(video video_main.cpp run_tests.cpp
+               list_devices.cpp opencv_ui.cpp
+               input_device.cpp opencv_window.cpp)
 
 # Open Computer Vision (github.com/opencv/opencv)
 find_package(OpenCV REQUIRED)

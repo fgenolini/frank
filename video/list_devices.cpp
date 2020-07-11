@@ -193,7 +193,8 @@ std::vector<input_device> list_linux_input_devices() {
     if (index_file.is_open()) {
       auto _ = finally([&index_file] { index_file.close(); });
       auto file_contents = index_file.rdbuf();
-      auto contents_size = file_contents->pubseekoff(0, index_file.end, index_file.in);
+      auto contents_size =
+          file_contents->pubseekoff(0, index_file.end, index_file.in);
       file_contents->pubseekpos(0, index_file.in);
       auto contents = new char[contents_size];
       file_contents->sgetn(contents, contents_size);
@@ -217,7 +218,8 @@ std::vector<input_device> list_linux_input_devices() {
     if (name_file.is_open()) {
       auto _ = finally([&name_file] { name_file.close(); });
       auto file_contents = name_file.rdbuf();
-      auto contents_size = file_contents->pubseekoff(0, name_file.end, name_file.in);
+      auto contents_size =
+          file_contents->pubseekoff(0, name_file.end, name_file.in);
       file_contents->pubseekpos(0, name_file.in);
       auto contents = new char[contents_size];
       file_contents->sgetn(contents, contents_size);
