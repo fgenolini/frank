@@ -122,7 +122,8 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
   auto _ = finally([&input_video_devices] {
     std::cout << "Releasing webcams" << '\n';
     for (auto &video_capture : input_video_devices) {
-      video_capture.release();
+      auto capturing_device = video_capture.get();
+      capturing_device->release();
     }
   });
 
