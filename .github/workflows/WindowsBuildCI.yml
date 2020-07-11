@@ -1,0 +1,59 @@
+# Download, configure, and install OpenCV before building frank
+# Relies on
+#   Microsoft Windows Server 2019 (windows-latest)
+#   OpenCV 4.2.0
+#
+
+name: WindowsBuildCI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  CMAKE_VERSION: 3.17.3
+  BUILD_TYPE: Release
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    name: ${{matrix.config.name}}
+    runs-on: ${{matrix.config.os}}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        - {
+            name: "Windows MSVC 2019", artifact: "Windows-MSVC.tar.xz",
+            os: windows-2019,
+            build_type: "Release", cc: "cl", cxx: "cl",
+            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+          }
+        # Supported version for OpenCV
+        opencv: [
+          4.2.0
+        ]
+
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+
+    - name: Configure
+      run: |
+         mkdir build
+         cd build
+         cmake ..
+
+    - name: Build
+      run: |
+        cmake --build build --config Release
+
+    - name: Test
+      run: |
+        cd build
+        ctest
