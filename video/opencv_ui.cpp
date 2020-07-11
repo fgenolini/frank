@@ -50,41 +50,41 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
     return pic;
   };
 
-  auto main_window =
-      [take_picture](const cv::String &window_name, EnhancedWindow &settings,
-                     std::vector<input_device> &input_devices,
-                     std::vector<bool> &has_webcams, cv::VideoCapture *webcam,
-                     bool *video_enabled) {
-        auto main_frame = cv::Mat(200, 500, CV_8UC3);
-        main_frame = cv::Scalar(49, 52, 49);
-        cvui::context(window_name);
-        if (has_webcams[0] && video_enabled[0]) {
-          main_frame = take_picture(webcam, 0);
+  auto main_window = [take_picture](EnhancedWindow &settings,
+                                    std::vector<input_device> &input_devices,
+                                    std::vector<bool> &has_webcams,
+                                    bool *video_enabled,
+                                    opencv_window &window) {
+    auto main_frame = cv::Mat(200, 500, CV_8UC3);
+    main_frame = cv::Scalar(49, 52, 49);
+    cvui::context(window.name());
+    if (has_webcams[0] && video_enabled[0]) {
+      main_frame = take_picture(window.webcam(), 0);
+    }
+
+    auto button_clicked = cvui::button(main_frame, 110, 80, "Quit");
+    if (button_clicked) {
+      return true;
+    }
+
+    settings.begin(main_frame);
+    if (!settings.isMinimized()) {
+      for (auto i = 0; i < has_webcams.size(); ++i) {
+        std::string video_name{};
+        if (input_devices.size() <= i) {
+          video_name = "Video " + std::to_string(i);
+        } else {
+          video_name = std::to_string(i) + " " + input_devices[i].name();
         }
 
-        auto button_clicked = cvui::button(main_frame, 110, 80, "Quit");
-        if (button_clicked) {
-          return true;
-        }
+        cvui::checkbox(video_name, &video_enabled[i]);
+      }
+    }
 
-        settings.begin(main_frame);
-        if (!settings.isMinimized()) {
-          for (auto i = 0; i < has_webcams.size(); ++i) {
-            std::string video_name{};
-            if (input_devices.size() <= i) {
-              video_name = "Video " + std::to_string(i);
-            } else {
-              video_name = std::to_string(i) + " " + input_devices[i].name();
-            }
-
-            cvui::checkbox(video_name, &video_enabled[i]);
-          }
-        }
-
-        settings.end();
-        cvui::imshow(window_name, main_frame);
-        return false;
-      };
+    settings.end();
+    cvui::imshow(window.name(), main_frame);
+    return false;
+  };
 
   auto other_window = [take_picture](opencv_window const &window) {
     auto other_frame = cv::Mat(200, 500, CV_8UC3);
@@ -126,14 +126,14 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
     }
   });
 
-  auto low_threshold = 50;
-  auto high_threshold = 150;
-  auto use_canny = false;
+  opencv_window window_template(window_names[0], input_video_devices[0].get(),
+                                0, has_webcams[0], video_enabled[0], false, 50,
+                                150);
   EnhancedWindow settings(200, 50, 250, 100, "Settings");
   cvui::init(&window_names[0], window_names.size());
   while (true) {
-    if (main_window(window_names[0], settings, connected_webcams, has_webcams,
-                    input_video_devices[0].get(), video_enabled)) {
+    if (main_window(settings, connected_webcams, has_webcams, video_enabled,
+                    window_template)) {
       return true;
     }
 
@@ -142,8 +142,10 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
         continue;
       }
 
-      opencv_window window(window_names[i], input_video_devices[i].get(), i,
-                           has_webcams[i], video_enabled[i]);
+      opencv_window window(
+          window_names[i], input_video_devices[i].get(), i, has_webcams[i],
+          video_enabled[i], window_template.use_canny(),
+          window_template.low_threshold(), window_template.high_threshold());
       other_window(window);
     }
 
