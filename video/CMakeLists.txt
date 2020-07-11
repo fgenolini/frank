@@ -11,7 +11,7 @@ include(CheckIncludeFiles)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 # Command line executable with a simple OpenCV GUI
-add_executable(video video_main.cpp run_tests.cpp
+add_executable(video video_main.cpp run_tests.cpp run_application.cpp
                list_devices.cpp opencv_ui.cpp
                input_device.cpp opencv_window.cpp)
 
@@ -34,7 +34,7 @@ target_include_directories(video PUBLIC
                            "${CMAKE_BINARY_DIR}"
                            )
 
-add_test(null_test video test null)
+add_test(null_test video --test)
 
 install (TARGETS video RUNTIME DESTINATION bin)
 
