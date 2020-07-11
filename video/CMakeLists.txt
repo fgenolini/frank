@@ -35,3 +35,7 @@ target_include_directories(video PUBLIC
                            )
 
 add_test(null_test video test null)
+
+install (TARGETS video RUNTIME DESTINATION bin)
+
+include(CPack)

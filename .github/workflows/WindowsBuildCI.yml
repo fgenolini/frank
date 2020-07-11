@@ -101,8 +101,20 @@ jobs:
       run: |
         cmake --build build --config Release
 
-    - name: Test
+    - name: Test frank video
       id: test_frank_video
       run: |
         cd build
         ctest
+
+    - name: Create NSIS installer for frank video
+      id: make_installer_frank_video
+      run: |
+        cd build
+        cmake --build . --config Release --target PACKAGE
+
+    - name: Upload installer for frank video
+      uses: actions/upload-artifact@v1
+      with:
+        name: frank-installer
+        path: build/frank-1.0.0-win64.exe

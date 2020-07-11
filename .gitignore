@@ -351,3 +351,6 @@ MigrationBackup/
 
 # CMake build folder
 build/
+
+# Temporary test folder
+Testing/
