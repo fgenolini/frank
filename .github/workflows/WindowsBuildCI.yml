@@ -55,18 +55,30 @@ jobs:
         cd ${{github.workspace}}
         pwd
         tar -xf opencv-4.3.0.zip
-        cd opencv
-        cd build
-        cd cmake
+      
+    - name: Download Microsoft GSL source
+      id: download_gsl
+      shell: cmake -P {0}
+      run: |
+        file(DOWNLOAD "https://github.com/microsoft/GSL/archive/v3.1.0.zip" gsl-3.1.0.zip)
+    
+    - name: Extract Microsoft GSL source
+      id: extract_gsl
+      run: |
+        cd ${{github.workspace}}
+        pwd
+        tar -xf gsl-3.1.0.zip
 
-    - name: Configure
+    - name: Configure frank video
+      id: configure_frank_video
       run: |
         pwd
         mkdir build
         cd build
-        cmake -DOpenCV_DIR:STRING=${{github.workspace}}\opencv\build\cmake ..
+        cmake -DOpenCV_DIR:STRING="${{github.workspace}}\opencv\build\cmake" -DMicrosoft.GSL_DIR:STRING="${{github.workspace}}\GSL-3.1.0" ..
 
-    - name: Build
+    - name: Build frank video
+      id: build_frank_video
       run: |
         cmake --build build --config Release
 
