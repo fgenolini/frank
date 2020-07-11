@@ -1,7 +1,9 @@
-# Download, configure, and install OpenCV before building frank
+# Download, configure, and install OpenCV and Microsoft GSL before building frank
 # Relies on
-#   Microsoft Windows Server 2019 (windows-latest)
+#   Microsoft Windows Server 2019 (windows-2019)
+#   Visual Studio 2019 (standard C++ 17)
 #   OpenCV 4.3.0
+#   Microsoft GSL 3.1.0
 #
 
 name: WindowsBuildCI
@@ -103,4 +105,4 @@ jobs:
       id: test_frank_video
       run: |
         cd build
-        ctest --progress --extra-verbose
+        ctest
