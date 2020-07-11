@@ -56,6 +56,7 @@ jobs:
       run: |
         cd ${{github.workspace}}
         tar -xf opencv-4.3.0.zip
+        echo "::add-path::${{github.workspace}}/opencv/build/bin"
       
     - name: Download Microsoft GSL source
       id: download_gsl
