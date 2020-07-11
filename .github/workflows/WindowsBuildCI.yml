@@ -78,16 +78,13 @@ jobs:
     - name: Build Microsoft GSL
       id: build_gsl
       run: |
-        cd ${{github.workspace}}\GSL-3.1.0
-        mkdir build
-        cd build
+        cd ${{github.workspace}}\GSL-3.1.0\build
         cmake --build . --config Release
     
     - name: Install Microsoft GSL
       id: install_gsl
       run: |
-        cd ${{github.workspace}}\GSL-3.1.0
-        cd build
+        cd ${{github.workspace}}\GSL-3.1.0\build
         cmake --install . --prefix "${{github.workspace}}/GSL"
 
     - name: Configure frank video
