@@ -1,7 +1,7 @@
 # Download, configure, and install OpenCV before building frank
 # Relies on
 #   Microsoft Windows Server 2019 (windows-latest)
-#   OpenCV 4.1.2 (from choco)
+#   OpenCV 4.3.0
 #
 
 name: WindowsBuildCI
@@ -36,7 +36,7 @@ jobs:
           }
         # Supported version for OpenCV
         opencv: [
-          4.1.2
+          4.3.0
         ]
 
     steps:
@@ -45,7 +45,13 @@ jobs:
     
     - name: Install OpenCV
       run: |
-         choco install opencv  
+         git clone https://github.com/opencv/opencv.git --branch 4.3.0 --depth 1
+         cd opencv
+         mkdir build
+         cd build
+         cmake ..
+         cmake --build . --config Release
+         cmake --install .
 
     - name: Configure
       run: |
