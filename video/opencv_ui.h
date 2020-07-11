@@ -6,6 +6,7 @@
 
 namespace frank::video {
 
-[[noreturn]] extern void opencv_ui(std::vector<input_device> &connected_webcams);
+[[noreturn]] extern void
+opencv_ui(std::vector<input_device> &connected_webcams);
 
 } // namespace frank::video
