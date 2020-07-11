@@ -2,6 +2,8 @@
 
 ![LinuxBuild](https://github.com/fgenolini/frank/workflows/LinuxBuild/badge.svg?branch=master)
 
+![WindowsBuildCI](https://github.com/fgenolini/frank/workflows/WindowsBuildCI/badge.svg?branch=master)
+
 # frank
 video: OpenCV for up to 4 directly connected video inputs (webcams)
 
