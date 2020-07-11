@@ -150,7 +150,7 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
     }
   }
 
-  return true;
+  return false;
 }
 
 [[noreturn]] void opencv_ui(std::vector<input_device> &connected_webcams) {
