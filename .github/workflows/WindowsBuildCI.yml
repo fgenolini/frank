@@ -25,7 +25,7 @@ jobs:
     name: ${{matrix.config.name}}
     runs-on: ${{matrix.config.os}}
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         config:
         - {
@@ -90,7 +90,6 @@ jobs:
     - name: Configure frank video
       id: configure_frank_video
       run: |
-        pwd
         mkdir build
         cd build
         cmake -D"OpenCV_DIR":STRING="${{github.workspace}}/opencv/build/cmake" -D"Microsoft.GSL_DIR":STRING="${{github.workspace}}/GSL/share/cmake/Microsoft.GSL" ..
@@ -101,6 +100,7 @@ jobs:
         cmake --build build --config Release
 
     - name: Test
+      id: test_frank_video
       run: |
         cd build
-        ctest
+        ctest --progress --extra-verbose
