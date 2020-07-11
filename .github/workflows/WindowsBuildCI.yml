@@ -75,7 +75,7 @@ jobs:
         pwd
         mkdir build
         cd build
-        cmake -DOpenCV_DIR:STRING="${{github.workspace}}\opencv\build\cmake" -DMicrosoft.GSL_DIR:STRING="${{github.workspace}}\GSL-3.1.0" ..
+        cmake -D"OpenCV_DIR":STRING="${{github.workspace}}\opencv\build\cmake" -D"Microsoft.GSL_DIR":STRING="${{github.workspace}}\GSL-3.1.0" ..
 
     - name: Build frank video
       id: build_frank_video
