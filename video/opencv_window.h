@@ -7,17 +7,22 @@ namespace frank::video {
 class opencv_window {
 public:
   opencv_window(cv::String name, cv::VideoCapture *webcam, int webcam_index,
-                bool has_webcam, bool video_enabled, bool use_canny = false,
-                int low_threshold = 50, int high_threshold = 150);
+                bool first_time, bool has_webcam, bool video_enabled,
+                bool use_canny = false, int low_threshold = 50,
+                int high_threshold = 150);
 
   cv::String name() const;
   cv::VideoCapture *webcam() const;
   int high_threshold() const;
   int low_threshold() const;
   int webcam_index() const;
+  bool exit_requested() const;
+  bool first_time() const;
   bool has_webcam() const;
   bool use_canny() const;
   bool video_enabled() const;
+  void set_exit_requested(bool exit_requested);
+  void set_first_time(bool first_time);
   void set_high_threshold(int high_threshold);
   void set_low_threshold(int low_threshold);
   void set_use_canny(bool use_canny);
@@ -28,6 +33,8 @@ private:
   int high_threshold_;
   int low_threshold_;
   int webcam_index_;
+  bool exit_requested_;
+  bool first_time_;
   bool has_webcam_;
   bool use_canny_;
   bool video_enabled_;

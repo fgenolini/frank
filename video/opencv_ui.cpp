@@ -35,13 +35,22 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
     return cv::waitKey(SHORT_DELAY) == ESCAPE_KEY;
   };
 
-  auto take_picture = [exit_requested](cv::VideoCapture *webcam,
-                                       int webcam_index) {
+  auto take_picture = [exit_requested](opencv_window &window) {
     cv::Mat pic{};
+    auto webcam = window.webcam();
+    if (!webcam) {
+      return pic;
+    }
+
+    auto webcam_index = window.webcam_index();
     while (!webcam->isOpened()) {
-      std::cout << "Could not open webcam " << webcam_index << '\n';
-      webcam->open(webcam_index, cv::CAP_ANY);
+      auto has_opened = webcam->open(webcam_index, cv::CAP_ANY);
+      if (!has_opened) {
+        std::cout << "Could not open webcam " << webcam_index << '\n';
+      }
+
       if (exit_requested()) {
+        window.set_exit_requested(true);
         return pic;
       }
     }
@@ -55,14 +64,20 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
                                     std::vector<bool> &has_webcams,
                                     bool *video_enabled,
                                     opencv_window &window) {
+    auto first_time = window.first_time();
+    auto webcam_index = window.webcam_index();
     auto use_canny = window.use_canny();
     auto low_threshold = window.low_threshold();
     auto high_threshold = window.high_threshold();
     auto main_frame = cv::Mat(200, 500, CV_8UC3);
     main_frame = cv::Scalar(49, 52, 49);
     cvui::context(window.name());
-    if (has_webcams[0] && video_enabled[0]) {
-      auto picture = take_picture(window.webcam(), 0);
+    if (!first_time && has_webcams[0] && video_enabled[0]) {
+      auto picture = take_picture(window);
+      if (window.exit_requested()) {
+        return;
+      }
+
       if (use_canny) {
         cv::cvtColor(picture, main_frame, cv::COLOR_BGR2GRAY);
         cv::Canny(main_frame, main_frame, low_threshold, high_threshold, 3);
@@ -72,9 +87,14 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
       }
     }
 
-    auto button_clicked = cvui::button(main_frame, 110, 80, "Quit");
-    if (button_clicked) {
-      return true;
+    if (first_time && has_webcams[0]) {
+      cvui::printf(main_frame, 10, 10, "Opening webcam %d...", webcam_index);
+    }
+
+    auto should_exit = cvui::button(main_frame, 110, 80, "Quit");
+    if (should_exit) {
+      window.set_exit_requested(true);
+      return;
     }
 
     settings.begin(main_frame);
@@ -99,18 +119,22 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
     window.set_use_canny(use_canny);
     window.set_low_threshold(low_threshold);
     window.set_high_threshold(high_threshold);
-    return false;
   };
 
-  auto other_window = [take_picture](opencv_window const &window) {
+  auto other_window = [take_picture](opencv_window &window) {
+    auto first_time = window.first_time();
     auto use_canny = window.use_canny();
     auto low_threshold = window.low_threshold();
     auto high_threshold = window.high_threshold();
     auto other_frame = cv::Mat(200, 500, CV_8UC3);
     other_frame = cv::Scalar(49, 52, 49);
     cvui::context(window.name());
-    if (window.has_webcam() && window.video_enabled()) {
-      auto picture = take_picture(window.webcam(), window.webcam_index());
+    if (!first_time && window.has_webcam() && window.video_enabled()) {
+      auto picture = take_picture(window);
+      if (window.exit_requested()) {
+        return;
+      }
+
       if (use_canny) {
         cv::cvtColor(picture, other_frame, cv::COLOR_BGR2GRAY);
         cv::Canny(other_frame, other_frame, low_threshold, high_threshold, 3);
@@ -118,6 +142,11 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
       } else {
         other_frame = picture;
       }
+    }
+
+    if (first_time && window.has_webcam()) {
+      cvui::printf(other_frame, 10, 10, "Opening webcam %d...",
+                   window.webcam_index());
     }
 
     cvui::imshow(window.name(), other_frame);
@@ -133,16 +162,16 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
     video_enabled[i] = has_webcam;
   }
 
+  if (!has_webcams[0]) {
+    // Index 0 for OpenCV is also any default video input device, assume there
+    // is at least one
+    has_webcams[0] = true;
+  }
+
   std::vector<std::unique_ptr<cv::VideoCapture>> input_video_devices{};
   for (auto i = 0; i < has_webcams.size(); ++i) {
-    if (!has_webcams[i]) {
-      input_video_devices.push_back(
-          std::move(std::unique_ptr<cv::VideoCapture>()));
-      continue;
-    }
-
-    auto webcam = std::make_unique<cv::VideoCapture>(i);
-    input_video_devices.push_back(std::move(webcam));
+    auto input_video_device = std::make_unique<cv::VideoCapture>();
+    input_video_devices.push_back(std::move(input_video_device));
   }
 
   auto _ = finally([&input_video_devices] {
@@ -153,14 +182,18 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
     }
   });
 
+  constexpr auto webcam_index = 0;
+  constexpr auto first_time = true;
+  constexpr auto use_canny = false;
   opencv_window window_template(window_names[0], input_video_devices[0].get(),
-                                0, has_webcams[0], video_enabled[0], false, 50,
-                                150);
+                                webcam_index, first_time, has_webcams[0],
+                                video_enabled[0], use_canny, 50, 150);
   EnhancedWindow settings(200, 50, 250, 250, "Settings");
   cvui::init(&window_names[0], window_names.size());
   while (true) {
-    if (main_window(settings, connected_webcams, has_webcams, video_enabled,
-                    window_template)) {
+    main_window(settings, connected_webcams, has_webcams, video_enabled,
+                window_template);
+    if (window_template.exit_requested()) {
       return true;
     }
 
@@ -169,16 +202,22 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
         continue;
       }
 
-      opencv_window window(
-          window_names[i], input_video_devices[i].get(), i, has_webcams[i],
-          video_enabled[i], window_template.use_canny(),
-          window_template.low_threshold(), window_template.high_threshold());
+      opencv_window window(window_names[i], input_video_devices[i].get(), i,
+                           window_template.first_time(), has_webcams[i],
+                           video_enabled[i], window_template.use_canny(),
+                           window_template.low_threshold(),
+                           window_template.high_threshold());
       other_window(window);
+      if (window.exit_requested()) {
+        return true;
+      }
     }
 
     if (exit_requested()) {
       return true;
     }
+
+    window_template.set_first_time(false);
   }
 
   return false;
