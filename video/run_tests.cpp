@@ -8,7 +8,7 @@ namespace frank::video {
 
 [[noreturn]] void run_tests(int argc, char const *argv[]) {
   std::set_terminate([]() {
-    std::cout << "Unhandled exception\n";
+    std::cerr << "Unhandled exception\n";
     std::abort();
   });
   if (argc < 3) {
