@@ -6,6 +6,6 @@
 
 namespace frank::video {
 
-extern std::vector<input_device> list_input_devices();
+extern std::vector<input_device> win32_list_devices();
 
 }

@@ -7,6 +7,7 @@ namespace frank::video {
 class input_device {
 public:
   input_device();
+  input_device(std::string name);
 
   std::string identifier() const;
   std::string name() const;

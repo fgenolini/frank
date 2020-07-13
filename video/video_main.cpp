@@ -11,9 +11,8 @@ int main(int argc, char const *argv[]) {
 
   if (argc < 2) {
     std::cout << argv[0] << " v" << VIDEO_VERSION_MAJOR << "."
-              << VIDEO_VERSION_MINOR << "\n";
-    std::cout << "Usage: " << argv[0] << " number"
-              << "\n";
+              << VIDEO_VERSION_MINOR << '\n';
+    std::cout << "Usage: " << argv[0] << " number_of_video_inputs\n";
     exit(EXIT_FAILURE);
   }
 

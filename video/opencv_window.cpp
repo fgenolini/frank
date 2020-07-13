@@ -1,4 +1,3 @@
-
 #include "opencv_window.h"
 
 namespace frank::video {

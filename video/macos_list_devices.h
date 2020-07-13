@@ -6,6 +6,6 @@
 
 namespace frank::video {
 
-extern std::vector<input_device> list_input_devices();
+extern std::vector<input_device> macos_list_devices();
 
 }
