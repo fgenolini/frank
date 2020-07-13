@@ -4,14 +4,12 @@
 
 // Implementation of video/audio device enumeration on Apple Mac OSX
 
+#include <array>
 #include <cstdlib>
-#include <filesystem>
-#include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
-
-namespace fs = std::filesystem;
 
 #include <gsl/gsl_util>
 
@@ -26,22 +24,38 @@ std::vector<input_device> macos_list_devices() {
   std::cout << "AVFoundation input devices\n";
   std::string swift_script{"echo "
                            "'import AVFoundation;"
-                           "print(\"-----\");"
                            "let devices = AVCaptureDevice.devices(for: .video);"
                            "for device in devices {"
-                           "print(\"---\");"
                            "print(device.localizedName);"
-                           "print(device.modelID);"
-                           "print(device.activeFormat);"
-                           "print(\"-\");"
-                           "print(device.formats)"
                            "}'"
                            "|swift -"};
-  system(swift_script.c_str());
+  auto pipe = popen(swift_script.c_str(), "r");
+  if (!pipe) {
+    std::vector<input_device> no_device{};
+    return no_device;
+  }
 
-  // TODO: read stdout from swift script
-  std::vector<input_device> no_device{};
-  return no_device;
+  auto _ = finally([pipe] { pclose(pipe); });
+  constexpr auto BUFFER_SIZE = 4096;
+  std::array<char, BUFFER_SIZE> buffer{};
+  std::string result{};
+  while (!feof(pipe)) {
+    if (!fgets(buffer.data(), BUFFER_SIZE, pipe)) {
+      break;
+    }
+
+    result += buffer.data();
+  }
+
+  std::vector<input_device> device_list{};
+  std::stringstream stream(result);
+  std::string line{};
+  while (std::getline(stream, line)) {
+    input_device new_device(line);
+    device_list.push_back(new_device);
+  }
+
+  return device_list;
 }
 
 } // namespace frank::video
