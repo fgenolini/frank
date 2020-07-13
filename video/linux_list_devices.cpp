@@ -104,4 +104,6 @@ std::vector<input_device> linux_list_devices() {
   return new_devices;
 }
 
+} // namespace frank::video
+
 #endif
