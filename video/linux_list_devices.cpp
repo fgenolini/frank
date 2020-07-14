@@ -23,7 +23,7 @@ namespace fs = std::filesystem;
 namespace frank::video {
 
 // Linux listing of video input devices using video4linux
-std::vector<string> linux_list_device_names() {
+std::vector<std::string> linux_list_device_names() {
   // On Linux: list all files called
   //   /sys/class/video4linux/video0/name
   //   /sys/class/video4linux/video1/name
@@ -32,11 +32,11 @@ std::vector<string> linux_list_device_names() {
   const fs::path video4linux{"/sys/class/video4linux"};
   if (!fs::exists(video4linux)) {
     std::cerr << "No video4linux\n";
-    std::vector<string> no_device{};
+    std::vector<std::string> no_device{};
     return no_device;
   }
 
-  std::vector<string> new_devices{};
+  std::vector<std::string> new_devices{};
   for (const auto &entry : fs::directory_iterator(video4linux)) {
     const auto video_device = entry.path().filename().string();
     if (!entry.is_directory()) {
