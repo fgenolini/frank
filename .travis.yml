@@ -28,8 +28,9 @@ matrix:
       sudo: true
 before_install:
 - chmod +x ./scripts/dependencies.sh
+- chmod +x ./scripts/dependencies-osx.sh
 - if [ $TRAVIS_OS_NAME == linux ]; then ./scripts/dependencies.sh; fi
-- if [ $TRAVIS_OS_NAME == osx ]; then ./scripts/dependencies.sh; fi
+- if [ $TRAVIS_OS_NAME == osx ]; then ./scripts/dependencies-osx.sh; fi
 script:
 - chmod +x ./build.sh
 - chmod +x ./build-osx.sh
