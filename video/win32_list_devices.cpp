@@ -5,6 +5,7 @@
 #include <dshow.h>
 #include <windows.h>
 
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -12,7 +13,6 @@
 
 using namespace gsl;
 
-#include "input_device.h"
 #include "win32_list_devices.h"
 
 #pragma comment(lib, "strmiids")
@@ -26,7 +26,7 @@ HRESULT devices_from_category(REFGUID category, IEnumMoniker **devices) {
       CoCreateInstance(CLSID_SystemDeviceEnum, nullptr, CLSCTX_INPROC_SERVER,
                        IID_PPV_ARGS(&system_device));
   if (FAILED(class_creator)) {
-    printf("Could not create system device enumerator\n");
+    std::cerr << "Could not create system device enumerator\n";
     return class_creator;
   }
 
@@ -35,23 +35,23 @@ HRESULT devices_from_category(REFGUID category, IEnumMoniker **devices) {
   auto category_enumerator =
       system_device->CreateClassEnumerator(category, devices, 0);
   if (category_enumerator == S_FALSE) {
-    printf("Empty category\n");
+    std::cerr << "Empty category\n";
     category_enumerator = VFW_E_NOT_FOUND;
   }
 
   return category_enumerator;
 }
 
-std::vector<input_device> device_information(IEnumMoniker *devices) {
+std::vector<std::string> device_information(IEnumMoniker *devices) {
   IMoniker *moniker{};
-  std::vector<input_device> new_devices{};
+  std::vector<std::string> new_devices{};
   while (devices->Next(1, &moniker, nullptr) == S_OK) {
     auto _ = finally([moniker] { moniker->Release(); });
     IPropertyBag *property_bag{};
     auto bind_to_storage =
         moniker->BindToStorage(0, 0, IID_PPV_ARGS(&property_bag));
     if (FAILED(bind_to_storage)) {
-      printf("Could not bind to storage\n");
+      std::cerr << "Could not bind to storage\n";
       continue;
     }
 
@@ -73,10 +73,10 @@ std::vector<input_device> device_information(IEnumMoniker *devices) {
       return std::string(converted_text);
     };
 
-    input_device new_device{};
+    std::string new_device{};
     if (SUCCEEDED(get_description)) {
       printf("%S\n", property.bstrVal);
-      new_device.set_name(convert_text(property.bstrVal));
+      new_device = convert_text(property.bstrVal);
     }
 
     VariantClear(&property);
@@ -89,7 +89,9 @@ std::vector<input_device> device_information(IEnumMoniker *devices) {
     auto get_device_path = property_bag->Read(L"DevicePath", &property, 0);
     if (SUCCEEDED(get_device_path)) {
       printf("  Device path: %S\n", property.bstrVal);
-      new_device.set_identifier(convert_text(property.bstrVal));
+      if (new_device.size() < 1) {
+        new_device = convert_text(property.bstrVal);
+      }
     }
 
     VariantClear(&property);
@@ -100,12 +102,12 @@ std::vector<input_device> device_information(IEnumMoniker *devices) {
 }
 
 void audio_devices() {
-  printf("Audio input devices:\n");
+  std::cout << "Audio input devices:\n";
   IEnumMoniker *audio_devices{};
   auto enumerate =
       devices_from_category(CLSID_AudioInputDeviceCategory, &audio_devices);
   if (FAILED(enumerate)) {
-    printf("Could not list audio input devices\n");
+    std::cerr << "Could not list audio input devices\n";
     return;
   }
 
@@ -113,14 +115,14 @@ void audio_devices() {
   device_information(audio_devices);
 }
 
-std::vector<input_device> video_devices() {
-  printf("Video input devices:\n");
+std::vector<std::string> video_devices() {
+  std::cout << "Video input devices:\n";
   IEnumMoniker *video_devices{};
   auto enumerate =
       devices_from_category(CLSID_VideoInputDeviceCategory, &video_devices);
   if (FAILED(enumerate)) {
-    printf("Could not list video input devices\n");
-    std::vector<input_device> no_device{};
+    std::cerr << "Could not list video input devices\n";
+    std::vector<std::string> no_device{};
     return no_device;
   }
 
@@ -128,19 +130,31 @@ std::vector<input_device> video_devices() {
   return device_information(video_devices);
 }
 
-std::vector<input_device> win32_list_devices() {
+std::vector<std::string> win32_list_device_names() {
   auto com = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
   if (FAILED(com)) {
-    printf("Could not initialise COM\n");
-    std::vector<input_device> no_device{};
+    std::cerr << "Could not initialise COM\n";
+    std::vector<std::string> no_device{};
     return no_device;
   }
 
   auto _ = finally([] { CoUninitialize(); });
   auto devices = video_devices();
-  printf("\n");
+  std::cout << '\n';
   audio_devices();
   return devices;
+}
+
+std::vector<std::string>
+win32_list_devices(std::vector<std::string> const *mocked_device_names) {
+  auto device_names = win32_list_device_names();
+  if (mocked_device_names) {
+    device_names = *mocked_device_names;
+  } else {
+    std::cout << device_names.size() << " video input devices\n";
+  }
+
+  return device_names;
 }
 
 } // namespace frank::video

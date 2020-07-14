@@ -18,7 +18,9 @@ add_library(video_cv opencv_ui.cpp list_devices.cpp win32_list_devices.cpp
 add_executable(video video_main.cpp run_application.cpp)
 
 # Command line executable with a simple OpenCV GUI
-add_executable(video_test video_test_main.cpp run_tests.cpp)
+add_executable(video_test video_test_main.cpp
+               test/test_list_devices.cpp
+               )
 
 # Open Computer Vision (github.com/opencv/opencv)
 find_package(OpenCV REQUIRED)
@@ -40,16 +42,44 @@ target_include_directories(video PUBLIC
                            "${PROJECT_BINARY_DIR}"
                            "${CMAKE_BINARY_DIR}"
                            )
-target_include_directories(video_test PUBLIC
-                           "${PROJECT_BINARY_DIR}"
-                           "${CMAKE_BINARY_DIR}"
-                           )
 target_include_directories(video_cv PUBLIC
                            "${PROJECT_BINARY_DIR}"
                            "${CMAKE_BINARY_DIR}"
                            )
 
-add_test(null_test video_test --test)
+find_file(HAVE_CATCH_HPP catch.hpp PATH_SUFFIXES catch2 catch)
+
+if(HAVE_CATCH_HPP)
+  get_filename_component(CATCH_PATH ${HAVE_CATCH_HPP} DIRECTORY)
+  target_include_directories(video_test INTERFACE ${CATCH_PATH}
+                             "${PROJECT_BINARY_DIR}"
+                             "${CMAKE_BINARY_DIR}"
+                            )
+else()
+  include(ExternalProject)
+  ExternalProject_Add(
+    git_catch
+    PREFIX ${CMAKE_BINARY_DIR}/catch2
+    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+    TIMEOUT 10
+    UPDATE_COMMAND ${GIT_EXECUTABLE} pull
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    LOG_DOWNLOAD ON
+  )
+
+  ExternalProject_Get_Property(git_catch source_dir)
+  add_dependencies(video_test git_catch)
+  target_include_directories(video_test PUBLIC
+                             ${source_dir}/single_include
+                             ${source_dir}/single_include/catch2
+                             "${PROJECT_BINARY_DIR}"
+                             "${CMAKE_BINARY_DIR}"
+                            )
+endif()
+
+add_test(video_list_devices video_test "Scenario: frank video list devices")
 
 install(TARGETS video RUNTIME DESTINATION bin)
 
