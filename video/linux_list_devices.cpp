@@ -87,7 +87,7 @@ std::vector<std::string> linux_list_device_names() {
     file_contents->sgetn(contents, contents_size);
     std::cout << "name: " << contents << '\n';
     std::string video_device_name{contents};
-    string new_device{video_device_name};
+    std::string new_device{video_device_name};
     new_devices.push_back(new_device);
   }
 
