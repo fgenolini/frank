@@ -57,6 +57,7 @@ if(HAVE_CATCH_HPP)
                             )
 else()
   include(ExternalProject)
+  find_package(Git)
   ExternalProject_Add(
     git_catch
     PREFIX ${CMAKE_BINARY_DIR}/catch2
