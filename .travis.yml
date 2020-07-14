@@ -26,6 +26,11 @@ matrix:
     - os: osx
       osx_image: xcode12
       sudo: true
+      addons:
+        homebrew:
+          packages:
+            - opencv
+          update: true
 before_install:
 - chmod +x ./scripts/dependencies.sh
 - chmod +x ./scripts/dependencies-osx.sh

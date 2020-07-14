@@ -9,6 +9,6 @@ cd build
       -D CMAKE_INSTALL_PREFIX=/usr/local \
       ..
 cmake --build . --config Release
-sudo cmake --install
+sudo cmake --install .
 cd ..
 cd ..
