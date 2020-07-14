@@ -10,11 +10,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 include(CheckIncludeFiles)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
+add_library(video_cv opencv_ui.cpp list_devices.cpp win32_list_devices.cpp
+            linux_list_devices.cpp macos_list_devices.cpp input_device.cpp
+            opencv_window.cpp)
+
 # Command line executable with a simple OpenCV GUI
-add_executable(video video_main.cpp run_tests.cpp run_application.cpp
-               opencv_ui.cpp list_devices.cpp win32_list_devices.cpp
-               linux_list_devices.cpp macos_list_devices.cpp input_device.cpp
-               opencv_window.cpp)
+add_executable(video video_main.cpp run_application.cpp)
+
+# Command line executable with a simple OpenCV GUI
+add_executable(video_test video_test_main.cpp run_tests.cpp)
 
 # Open Computer Vision (github.com/opencv/opencv)
 find_package(OpenCV REQUIRED)
@@ -27,16 +31,26 @@ find_package(Microsoft.GSL REQUIRED)
 file(DOWNLOAD https://raw.githubusercontent.com/Dovyski/cvui/master/cvui.h ${CMAKE_BINARY_DIR}/cvui.h)
 file(DOWNLOAD https://raw.githubusercontent.com/Dovyski/cvui/master/EnhancedWindow.h ${CMAKE_BINARY_DIR}/EnhancedWindow.h)
 
-target_link_libraries(video ${OpenCV_LIBS} Microsoft.GSL::GSL)
+target_link_libraries(video video_cv ${OpenCV_LIBS} Microsoft.GSL::GSL)
+target_link_libraries(video_test video_cv ${OpenCV_LIBS} Microsoft.GSL::GSL)
+target_link_libraries(video_cv ${OpenCV_LIBS} Microsoft.GSL::GSL)
 
 configure_file(videoConfig.h.in videoConfig.h)
 target_include_directories(video PUBLIC
                            "${PROJECT_BINARY_DIR}"
                            "${CMAKE_BINARY_DIR}"
                            )
+target_include_directories(video_test PUBLIC
+                           "${PROJECT_BINARY_DIR}"
+                           "${CMAKE_BINARY_DIR}"
+                           )
+target_include_directories(video_cv PUBLIC
+                           "${PROJECT_BINARY_DIR}"
+                           "${CMAKE_BINARY_DIR}"
+                           )
 
-add_test(null_test video --test)
+add_test(null_test video_test --test)
 
-install (TARGETS video RUNTIME DESTINATION bin)
+install(TARGETS video RUNTIME DESTINATION bin)
 
 include(CPack)
