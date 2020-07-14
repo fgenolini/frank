@@ -4,8 +4,7 @@ unzip -q GSL.zip
 cd GSL-master
 mkdir -p build
 cd build
-/usr/bin/cmake -D CMAKE_BUILD_TYPE=RELEASE \
-      -D CMAKE_CXX_COMPILER=g++-9 \
+cmake -D CMAKE_BUILD_TYPE=RELEASE \
       -D CMAKE_INSTALL_PREFIX=/usr/local \
       ..
 cmake --build . --config Release

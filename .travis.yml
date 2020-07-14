@@ -23,15 +23,28 @@ matrix:
             - python3-opencv
       env:
         - MATRIX_EVAL="CC=gcc-9 CXX=g++-9"
+    - os: osx
+      osx_image: xcode12
+      sudo: true
+      addons:
+        homebrew:
+          packages:
+            - opencv
+          update: true
 before_install:
 - chmod +x ./scripts/dependencies.sh
+- chmod +x ./scripts/dependencies-osx.sh
 - if [ $TRAVIS_OS_NAME == linux ]; then ./scripts/dependencies.sh; fi
+- if [ $TRAVIS_OS_NAME == osx ]; then ./scripts/dependencies-osx.sh; fi
 script:
 - chmod +x ./build.sh
-- if [ $TRAVIS_OS_NAME == linux ]; then ./build.sh --cc=gcc --cxx=g++; fi
+- chmod +x ./build-osx.sh
+- if [ $TRAVIS_OS_NAME == linux ]; then ./build.sh; fi
+- if [ $TRAVIS_OS_NAME == osx ]; then ./build-osx.sh; fi
 after_success:
 - chmod +x ./scripts/build_support.sh
-- if [ $TRAVIS_OS_NAME == linux ]; then ./scripts/build_support.sh archive_frank; fi
+- if [ $TRAVIS_OS_NAME == linux ]; then ./scripts/build_support.sh archive_frank_linux; fi
+- if [ $TRAVIS_OS_NAME == osx ]; then ./scripts/build_support.sh archive_frank_osx; fi
 branches:
   only:
   - master

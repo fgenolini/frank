@@ -1,11 +1,11 @@
 #pragma once
 
+#include <string>
 #include <vector>
-
-#include "input_device.h"
 
 namespace frank::video {
 
-extern std::vector<input_device> win32_list_devices();
+extern std::vector<std::string> win32_list_devices(
+    std::vector<std::string> const *mocked_device_names = nullptr);
 
 }

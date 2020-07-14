@@ -15,12 +15,11 @@
 
 using namespace gsl;
 
-#include "input_device.h"
 #include "macos_list_devices.h"
 
 namespace frank::video {
 
-std::vector<input_device> macos_list_devices() {
+std::vector<std::string> macos_list_device_names() {
   std::cout << "AVFoundation input devices\n";
   std::string swift_script{"echo "
                            "'import AVFoundation;"
@@ -31,7 +30,7 @@ std::vector<input_device> macos_list_devices() {
                            "|swift -"};
   auto pipe = popen(swift_script.c_str(), "r");
   if (!pipe) {
-    std::vector<input_device> no_device{};
+    std::vector<std::string> no_device{};
     return no_device;
   }
 
@@ -47,15 +46,26 @@ std::vector<input_device> macos_list_devices() {
     result += buffer.data();
   }
 
-  std::vector<input_device> device_list{};
+  std::vector<std::string> device_list{};
   std::stringstream stream(result);
   std::string line{};
   while (std::getline(stream, line)) {
-    input_device new_device(line);
-    device_list.push_back(new_device);
+    device_list.push_back(line);
   }
 
   return device_list;
+}
+
+std::vector<std::string>
+macos_list_devices(std::vector<std::string> const *mocked_device_names) {
+  auto device_names = macos_list_device_names();
+  if (mocked_device_names) {
+    device_names = *mocked_device_names;
+  } else {
+    std::cout << device_names.size() << " video input devices\n";
+  }
+
+  return device_names;
 }
 
 } // namespace frank::video

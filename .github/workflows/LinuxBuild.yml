@@ -56,7 +56,6 @@ jobs:
         nice cmake -D CMAKE_BUILD_TYPE=RELEASE \
               -D CMAKE_CXX_COMPILER=${{ matrix.COMPILER }} \
               -D CMAKE_INSTALL_PREFIX=/usr/local \
-              -D ENABLE_PRECOMPILED_HEADERS=${{ env.ENABLE_PRECOMPILED_HEADERS }} \
               ..
         nice make
         # Install to OS.

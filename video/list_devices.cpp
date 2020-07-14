@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include "config.h"
@@ -10,24 +11,39 @@
 
 namespace frank::video {
 
-std::vector<input_device> list_input_devices() {
+std::vector<input_device>
+list_input_devices(std::vector<std::string> const *mocked_device_names) {
+  auto make_devices = [](std::vector<std::string> device_names) {
+    std::vector<input_device> returned_devices{};
+    for (auto const &device_name : std::as_const(device_names)) {
+      input_device returned_device(device_name);
+      returned_devices.push_back(returned_device);
+    }
+
+    return returned_devices;
+  };
+
+  auto get_device_names = [mocked_device_names]() {
 #if defined(WIN32)
-  return win32_list_devices();
+    return win32_list_devices(mocked_device_names);
 #elif defined(UNIX)
 #if defined(APPLE)
-  return macos_list_devices();
+    return macos_list_devices(mocked_device_names);
 #elif !defined(MINGW) && !defined(MSYS) && !defined(CYGWIN)
-  return linux_list_devices();
+    return linux_list_devices(mocked_device_names);
 #else
-  std::cout << "Unsupported UNIX / POSIX variant\n";
-  std::vector<input_device> no_device{};
-  return no_device;
+    std::cout << "Unsupported UNIX / POSIX variant\n";
+    std::vector<std::string> no_device{};
+    return no_device;
 #endif
 #else
-  std::cout << "Unsupported platform\n";
-  std::vector<input_device> no_device{};
-  return no_device;
+    std::cout << "Unsupported platform\n";
+    std::vector<std::string> no_device{};
+    return no_device;
 #endif
+  };
+
+  return make_devices(get_device_names());
 }
 
 } // namespace frank::video
