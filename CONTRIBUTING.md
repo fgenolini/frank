@@ -37,3 +37,5 @@ If you use VS Code, edit your user settings to configure CMake:
 * Microsoft GSL, standard C++ Guidelines Support Library
 * Catch 2, unit testing for C++
 * trompeloeil, mocking for C++
+
+If building on Microsoft Windows, the NSIS installer is also required.
