@@ -105,6 +105,36 @@ target_include_directories(video_cv PUBLIC
 
 add_test(video_list_devices video_test "Scenario: frank video list devices")
 
-install(TARGETS video RUNTIME DESTINATION bin)
+# CPack installer
+install(TARGETS video RUNTIME DESTINATION bin COMPONENT Applications)
+install(TARGETS video_test RUNTIME DESTINATION bin COMPONENT Tests)
+
+set(CPACK_COMPONENTS_ALL Applications Tests)
+
+if (WIN32)
+  message("Configuring NSIS installer for Microsoft Windows")
+  message("Using Visual Studio ${MSVC_VERSION}, toolset ${MSVC_TOOLSET_VERSION}")
+
+  set(CPACK_GENERATOR NSIS)
+  set(CPACK_ALL_INSTALL_TYPES User Full)
+  set(CPACK_COMPONENTS_APPLICATIONS_INSTALL_TYPES User Full)
+  set(CPACK_COMPONENTS_TESTS_INSTALL_TYPES Full)
+  include(InstallRequiredSystemLibraries)
+endif()
+
+set(CPACK_PACKAGE_NAME "FrankVideo")
+set(CPACK_PACKAGE_VENDOR "github fgenolini frank")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
+    "frank video - viewer for 4 webcams with edge detection")
+set(CPACK_PACKAGE_VERSION "1.0.0")
+set(CPACK_PACKAGE_VERSION_MAJOR "1")
+set(CPACK_PACKAGE_VERSION_MINOR "0")
+set(CPACK_PACKAGE_VERSION_PATCH "0")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "frank video")
+set(CPACK_COMPONENT_APPLICATIONS_DISPLAY_NAME "frank applications")
+set(CPACK_COMPONENT_APPLICATIONS_DESCRIPTION
+    "OpenCV GUI viewer for up to 4 video input devices (webcams), with optional edge detection")
+set(CPACK_COMPONENT_TESTS_DESCRIPTION
+    "Tests and checks for all the frank applications, for software quality assurance")
 
 include(CPack)
