@@ -1,7 +1,12 @@
 cmake_minimum_required(VERSION 3.16)
 
+set(CPACK_PACKAGE_VERSION_MAJOR "1")
+set(CPACK_PACKAGE_VERSION_MINOR "0")
+set(CPACK_PACKAGE_VERSION_PATCH "0")
+
 # Use computer video (camera) to detect shapes
-project(video VERSION 1.0.0)
+project(video VERSION
+        ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH})
 
 # C++ standard required = C++ 17
 set(CMAKE_CXX_STANDARD 17)
@@ -12,19 +17,15 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
                ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 if (WIN32)
-  message("Building for Microsoft Windows")
   add_library(video_cv opencv_ui.cpp list_devices.cpp win32_list_devices.cpp
               input_device.cpp opencv_window.cpp)
 elseif(APPLE AND UNIX)
-  message("Building for Mac OSX")
   add_library(video_cv opencv_ui.cpp list_devices.cpp macos_list_devices.cpp
               input_device.cpp opencv_window.cpp)
 elseif(UNIX AND (NOT APPLE) AND (NOT MINGW) AND (NOT MSYS) AND (NOT CYGWIN))
-  message("Building for Linux")
   add_library(video_cv opencv_ui.cpp list_devices.cpp linux_list_devices.cpp
               input_device.cpp opencv_window.cpp)
 else()
-  message("Building for other")
   add_library(video_cv opencv_ui.cpp list_devices.cpp
               input_device.cpp opencv_window.cpp)
 endif()
@@ -106,16 +107,32 @@ target_include_directories(video_cv PUBLIC
 add_test(video_list_devices video_test "Scenario: frank video list devices")
 
 # CPack installer
+include(GNUInstallDirs)
 install(TARGETS video RUNTIME DESTINATION bin COMPONENT Applications)
 install(TARGETS video_test RUNTIME DESTINATION bin COMPONENT Tests)
 
 set(CPACK_COMPONENTS_ALL Applications Tests)
 
 if (WIN32)
-  message("Configuring NSIS installer for Microsoft Windows")
-  message("Using Visual Studio ${MSVC_VERSION}, toolset ${MSVC_TOOLSET_VERSION}")
+  string(REPLACE "\\" "/" Installed_OpenCV_PATH "${_OpenCV_LIB_PATH}")
+  set(OpenCV_VER "${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}")
+  foreach(OpenCV_DLL_File in LISTS
+          opencv_core opencv_highgui opencv_features2d opencv_imgcodecs
+          opencv_imgproc opencv_objdetect opencv_photo opencv_stitching
+          opencv_video opencv_videoio opencv_ml opencv_gapi opencv_flann
+          opencv_dnn opencv_calib3d)
+    if(EXISTS "${Installed_OpenCV_PATH}/${OpenCV_DLL_File}${OpenCV_VER}.dll")
+      install(FILES
+              ${Installed_OpenCV_PATH}/${OpenCV_DLL_File}${OpenCV_VER}.dll
+              TYPE BIN)
+    endif()
+  endforeach()
+  if(EXISTS "${Installed_OpenCV_PATH}/opencv_videoio_ffmpeg${OpenCV_VER}_64.dll")
+    install(FILES
+            ${Installed_OpenCV_PATH}/opencv_videoio_ffmpeg${OpenCV_VER}_64.dll
+            TYPE BIN)
+  endif()
 
-  set(CPACK_GENERATOR NSIS)
   set(CPACK_ALL_INSTALL_TYPES User Full)
   set(CPACK_COMPONENTS_APPLICATIONS_INSTALL_TYPES User Full)
   set(CPACK_COMPONENTS_TESTS_INSTALL_TYPES Full)
@@ -126,10 +143,8 @@ set(CPACK_PACKAGE_NAME "FrankVideo")
 set(CPACK_PACKAGE_VENDOR "github fgenolini frank")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
     "frank video - viewer for 4 webcams with edge detection")
-set(CPACK_PACKAGE_VERSION "1.0.0")
-set(CPACK_PACKAGE_VERSION_MAJOR "1")
-set(CPACK_PACKAGE_VERSION_MINOR "0")
-set(CPACK_PACKAGE_VERSION_PATCH "0")
+set(CPACK_PACKAGE_VERSION
+    ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH})
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "frank video")
 set(CPACK_COMPONENT_APPLICATIONS_DISPLAY_NAME "frank applications")
 set(CPACK_COMPONENT_APPLICATIONS_DESCRIPTION
