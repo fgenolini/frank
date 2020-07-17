@@ -25,3 +25,12 @@ If you use VS Code, edit your user settings to configure CMake:
         "OpenCV_DIR": "/projects/OpenCV"
     }
 ```
+
+## Dependencies
+* Microsoft Windows, or Linux, or Apple Mac OSX
+* C++ compiler, with standard C++ 17 support
+* CMake 3.16, or above
+* OpenCV 4.2.0, or above, computer vision for C++
+* Microsoft GSL, standard C++ Guidelines Support Library
+* Catch 2, unit testing for C++
+* trompeloeil, mocking for C++

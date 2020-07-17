@@ -57,10 +57,10 @@ std::vector<std::string> macos_list_device_names() {
 }
 
 std::vector<std::string>
-macos_list_devices(std::vector<std::string> const *mocked_device_names) {
+macos_list_devices(device_register const *name_devices) {
   auto device_names = macos_list_device_names();
-  if (mocked_device_names) {
-    device_names = *mocked_device_names;
+  if (name_devices) {
+    device_names = name_devices->name_devices();
   } else {
     std::cout << device_names.size() << " video input devices\n";
   }
