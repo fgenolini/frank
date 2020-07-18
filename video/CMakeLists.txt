@@ -119,6 +119,8 @@ set(CPACK_COMPONENTS_ALL Applications Tests)
 
 if (WIN32)
   set(CPACK_GENERATOR WIX)
+  set_property(INSTALL "bin/${APP_NAME}.exe"
+               PROPERTY CPACK_START_MENU_SHORTCUTS "frank video")
   set(CPACK_WIX_UPGRADE_GUID "475EB28F-7E72-497E-8F9D-DD607B91003E")
   string(REPLACE "\\" "/" Installed_OpenCV_PATH "${_OpenCV_LIB_PATH}")
   set(OpenCV_VER "${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}")
