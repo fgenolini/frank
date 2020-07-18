@@ -123,22 +123,33 @@ if (WIN32)
   set(CMAKE_INSTALL_UCRT_LIBRARIES TRUE)
   set(CPACK_GENERATOR WIX)
   set(CPACK_WIX_UPGRADE_GUID "475EB28F-7E72-497E-8F9D-DD607B91003E")
+  message("OpenCV lib path: ${_OpenCV_LIB_PATH}")
   string(REPLACE "\\" "/" Installed_OpenCV_PATH "${_OpenCV_LIB_PATH}")
+  message("Installed OpenCV lib path: ${Installed_OpenCV_PATH}")
   set(OpenCV_VER "${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}")
+  message("OpenCV version: ${OpenCV_VER}")
   set(ALL_RUNTIMES "")
-  foreach(OpenCV_DLL_File in LISTS
+  foreach(OpenCV_DLL_File
           opencv_core opencv_highgui opencv_features2d opencv_imgcodecs
           opencv_imgproc opencv_objdetect opencv_photo opencv_stitching
           opencv_video opencv_videoio opencv_ml opencv_gapi opencv_flann
           opencv_dnn opencv_calib3d)
-    if(EXISTS "${Installed_OpenCV_PATH}/${OpenCV_DLL_File}${OpenCV_VER}.dll")
+    set(OPENCV_DLL_FILE "${Installed_OpenCV_PATH}/${OpenCV_DLL_File}${OpenCV_VER}.dll")
+    message("OpenCV DLL file: ${OPENCV_DLL_FILE}")
+    if(EXISTS "${OPENCV_DLL_FILE}")
       list(APPEND ALL_RUNTIMES
-           "${Installed_OpenCV_PATH}/${OpenCV_DLL_File}${OpenCV_VER}.dll")
+           "${OPENCV_DLL_FILE}")
+    else()
+      message("Could not find OpenCV DLL: ${OPENCV_DLL_FILE}")
     endif()
   endforeach()
-  if(EXISTS "${Installed_OpenCV_PATH}/opencv_videoio_ffmpeg${OpenCV_VER}_64.dll")
+  set(EXTRA_OPENCV_DLL_FILE "${Installed_OpenCV_PATH}/opencv_videoio_ffmpeg${OpenCV_VER}_64.dll")
+  message("Extra OpenCV DLL file: ${EXTRA_OPENCV_DLL_FILE}")
+  if(EXISTS "${EXTRA_OPENCV_DLL_FILE}")
     list(APPEND ALL_RUNTIMES
-         "${Installed_OpenCV_PATH}/opencv_videoio_ffmpeg${OpenCV_VER}_64.dll")
+         "${EXTRA_OPENCV_DLL_FILE}")
+  else()
+    message("Could not find extra OpenCV DLL: ${EXTRA_OPENCV_DLL_FILE}")
   endif()
   install(FILES ${ALL_RUNTIMES} DESTINATION bin COMPONENT Dependencies)
   install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
