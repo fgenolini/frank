@@ -2,7 +2,7 @@
 # Relies on
 #   Microsoft Windows Server 2019 (windows-2019)
 #   Visual Studio 2019 (standard C++ 17)
-#   OpenCV 4.3.0
+#   OpenCV 4.4.0
 #   Microsoft GSL 3.1.0
 #
 
@@ -38,7 +38,7 @@ jobs:
           }
         # Supported version for OpenCV
         opencv: [
-          4.3.0
+          4.4.0
         ]
 
     steps:
@@ -49,13 +49,13 @@ jobs:
       id: download_opencv
       shell: cmake -P {0}
       run: |
-        file(DOWNLOAD "https://github.com/opencv/opencv/releases/download/4.3.0/opencv-4.3.0-dldt-2020.2-vc16-avx2.zip" opencv-4.3.0.zip)
+        file(DOWNLOAD "https://github.com/opencv/opencv/releases/download/4.4.0/opencv-4.4.0-dldt-2020.4-vc16-avx2.zip" opencv-4.4.0.zip)
     
     - name: Extract pre-built OpenCV
       id: extract_opencv
       run: |
         cd ${{github.workspace}}
-        tar -xf opencv-4.3.0.zip
+        tar -xf opencv-4.4.0.zip
         echo "::add-path::${{github.workspace}}/opencv/build/bin"
       
     - name: Download Microsoft GSL source
