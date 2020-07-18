@@ -108,7 +108,7 @@ jobs:
         cd build
         ctest
 
-    - name: Create NSIS installer for frank video
+    - name: Create WIX MSI installer for frank video
       id: make_installer_frank_video
       run: |
         cd build
@@ -118,4 +118,4 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: frank-installer
-        path: build/frank-1.0.0-win64.exe
+        path: build/video-1.0.0-win64.msi
