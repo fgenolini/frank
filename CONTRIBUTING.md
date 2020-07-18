@@ -8,7 +8,10 @@ In the Projects there is a Kanban called "getting involved": add a card
 Create an issue, then go to Projects and add a card by selecting the card of interest and drag and drop it to the relevant column
 
 ## Coding standard
-All C++ source files are formatted using the clang-format LLVM style, disabling automated sorting of includes
+All C++ source files are formatted using the clang-format LLVM style,
+disabling automated sorting of includes.
+Maximum recommended line width is 80 columns in general,
+and 120 columns in exceptional circumstances.
 
 ## CMake
 The CMake tool is used to build the frank C++ projects.
@@ -34,3 +37,5 @@ If you use VS Code, edit your user settings to configure CMake:
 * Microsoft GSL, standard C++ Guidelines Support Library
 * Catch 2, unit testing for C++
 * trompeloeil, mocking for C++
+
+If building on Microsoft Windows, the NSIS installer is also required.
