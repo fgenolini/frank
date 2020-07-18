@@ -118,6 +118,8 @@ install(TARGETS ${APP_NAME}_test RUNTIME DESTINATION bin COMPONENT Tests)
 set(CPACK_COMPONENTS_ALL Applications Tests)
 
 if (WIN32)
+  set(CPACK_GENERATOR WIX)
+  set(CPACK_WIX_UPGRADE_GUID "475EB28F-7E72-497E-8F9D-DD607B91003E")
   string(REPLACE "\\" "/" Installed_OpenCV_PATH "${_OpenCV_LIB_PATH}")
   set(OpenCV_VER "${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}")
   foreach(OpenCV_DLL_File in LISTS
@@ -141,7 +143,6 @@ if (WIN32)
   set(CPACK_COMPONENTS_APPLICATIONS_INSTALL_TYPES User Full)
   set(CPACK_COMPONENTS_TESTS_INSTALL_TYPES Full)
   include(InstallRequiredSystemLibraries)
-  set(CPACK_NSIS_MODIFY_PATH "ON")
 endif()
 
 set(CPACK_PACKAGE_VENDOR "fgenolini")
@@ -155,5 +156,6 @@ set(CPACK_COMPONENT_APPLICATIONS_DESCRIPTION
     "OpenCV GUI viewer for up to 4 video input devices (webcams), with optional edge detection")
 set(CPACK_COMPONENT_TESTS_DESCRIPTION
     "Tests and checks for all the frank applications, for software quality assurance")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/License.txt")
 
 include(CPack)
