@@ -111,51 +111,62 @@ target_include_directories(${APP_NAME}_cv PUBLIC
 add_test(video_list_devices video_test "Scenario: frank video list devices")
 
 # CPack installer
+include(InstallRequiredSystemLibraries)
 include(GNUInstallDirs)
+include(CPackComponent)
 install(TARGETS ${APP_NAME} RUNTIME DESTINATION bin COMPONENT Applications)
 install(TARGETS ${APP_NAME}_test RUNTIME DESTINATION bin COMPONENT Tests)
 
-set(CPACK_COMPONENTS_ALL Applications Tests)
+set(CPACK_COMPONENTS_ALL Applications Tests Dependencies)
 
 if (WIN32)
+  set(CMAKE_INSTALL_UCRT_LIBRARIES TRUE)
   set(CPACK_GENERATOR WIX)
-  set_property(INSTALL "bin/${APP_NAME}.exe"
-               PROPERTY CPACK_START_MENU_SHORTCUTS "frank video")
   set(CPACK_WIX_UPGRADE_GUID "475EB28F-7E72-497E-8F9D-DD607B91003E")
   string(REPLACE "\\" "/" Installed_OpenCV_PATH "${_OpenCV_LIB_PATH}")
   set(OpenCV_VER "${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}")
+  set(ALL_RUNTIMES "")
   foreach(OpenCV_DLL_File in LISTS
           opencv_core opencv_highgui opencv_features2d opencv_imgcodecs
           opencv_imgproc opencv_objdetect opencv_photo opencv_stitching
           opencv_video opencv_videoio opencv_ml opencv_gapi opencv_flann
           opencv_dnn opencv_calib3d)
     if(EXISTS "${Installed_OpenCV_PATH}/${OpenCV_DLL_File}${OpenCV_VER}.dll")
-      install(FILES
-              ${Installed_OpenCV_PATH}/${OpenCV_DLL_File}${OpenCV_VER}.dll
-              TYPE BIN)
+      list(APPEND ALL_RUNTIMES
+           "${Installed_OpenCV_PATH}/${OpenCV_DLL_File}${OpenCV_VER}.dll")
     endif()
   endforeach()
   if(EXISTS "${Installed_OpenCV_PATH}/opencv_videoio_ffmpeg${OpenCV_VER}_64.dll")
-    install(FILES
-            ${Installed_OpenCV_PATH}/opencv_videoio_ffmpeg${OpenCV_VER}_64.dll
-            TYPE BIN)
+    list(APPEND ALL_RUNTIMES
+         "${Installed_OpenCV_PATH}/opencv_videoio_ffmpeg${OpenCV_VER}_64.dll")
   endif()
+  install(FILES ${ALL_RUNTIMES} DESTINATION bin COMPONENT Dependencies)
+  install(PROGRAMS ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+          DESTINATION bin COMPONENT Dependencies)
 
   set(CPACK_ALL_INSTALL_TYPES User Full)
   set(CPACK_COMPONENTS_APPLICATIONS_INSTALL_TYPES User Full)
+  set(CPACK_COMPONENTS_DEPENDENCIES_INSTALL_TYPES User Full)
   set(CPACK_COMPONENTS_TESTS_INSTALL_TYPES Full)
-  include(InstallRequiredSystemLibraries)
+  set(CPACK_WIX_PROGRAM_MENU_FOLDER "frank video")
+  set(CPACK_PACKAGE_EXECUTABLES ${APP_NAME} "frank ${APP_NAME}")
+  set_property(INSTALL "bin/${APP_NAME}.exe"
+               PROPERTY CPACK_START_MENU_SHORTCUTS "frank video")
 endif()
 
 set(CPACK_PACKAGE_VENDOR "fgenolini")
-set(CPACK_PACKAGE_NAME ${APP_LOW_NAME})
+set(CPACK_PACKAGE_NAME "frank-${APP_LOW_NAME}")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
     "frank ${APP_NAME} - viewer for 4 webcams with edge detection")
 set(CPACK_PACKAGE_VERSION ${APP_VERSION})
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "frank ${APP_NAME}")
-set(CPACK_COMPONENT_APPLICATIONS_DISPLAY_NAME "frank applications")
+set(CPACK_COMPONENT_APPLICATIONS_DISPLAY_NAME "GUI applications")
 set(CPACK_COMPONENT_APPLICATIONS_DESCRIPTION
     "OpenCV GUI viewer for up to 4 video input devices (webcams), with optional edge detection")
+set(CPACK_COMPONENT_DEPENDENCIES_DISPLAY_NAME "System dependencies")
+set(CPACK_COMPONENT_DEPENDENCIES_DESCRIPTION
+    "DLLs for OpenCV and Microsoft C++")
+set(CPACK_COMPONENT_TESTS_DISPLAY_NAME "Unit tests")
 set(CPACK_COMPONENT_TESTS_DESCRIPTION
     "Tests and checks for all the frank applications, for software quality assurance")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/License.txt")
