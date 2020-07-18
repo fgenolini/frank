@@ -3,10 +3,13 @@ cmake_minimum_required(VERSION 3.16)
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
 set(CPACK_PACKAGE_VERSION_MINOR "0")
 set(CPACK_PACKAGE_VERSION_PATCH "0")
+set(APP_VERSION
+    "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+set(APP_NAME "video")
+set(APP_LOW_NAME "video")
 
 # Use computer video (camera) to detect shapes
-project(video VERSION
-        ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH})
+project(${APP_NAME} VERSION ${APP_VERSION})
 
 # C++ standard required = C++ 17
 set(CMAKE_CXX_STANDARD 17)
@@ -17,24 +20,25 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
                ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 if (WIN32)
-  add_library(video_cv opencv_ui.cpp list_devices.cpp win32_list_devices.cpp
+  add_library(${APP_NAME}_cv opencv_ui.cpp list_devices.cpp win32_list_devices.cpp
               input_device.cpp opencv_window.cpp)
+  set(EXE_NAME ${APP_NAME}.exe)
 elseif(APPLE AND UNIX)
-  add_library(video_cv opencv_ui.cpp list_devices.cpp macos_list_devices.cpp
+  add_library(${APP_NAME}_cv opencv_ui.cpp list_devices.cpp macos_list_devices.cpp
               input_device.cpp opencv_window.cpp)
 elseif(UNIX AND (NOT APPLE) AND (NOT MINGW) AND (NOT MSYS) AND (NOT CYGWIN))
-  add_library(video_cv opencv_ui.cpp list_devices.cpp linux_list_devices.cpp
+  add_library(${APP_NAME}_cv opencv_ui.cpp list_devices.cpp linux_list_devices.cpp
               input_device.cpp opencv_window.cpp)
 else()
-  add_library(video_cv opencv_ui.cpp list_devices.cpp
+  add_library(${APP_NAME}_cv opencv_ui.cpp list_devices.cpp
               input_device.cpp opencv_window.cpp)
 endif()
 
 # Command line executable with a simple OpenCV GUI
-add_executable(video video_main.cpp run_application.cpp)
+add_executable(${APP_NAME} video_main.cpp run_application.cpp)
 
 # Command line executable with a simple OpenCV GUI
-add_executable(video_test video_test_main.cpp
+add_executable(${APP_NAME}_test video_test_main.cpp
                test/test_list_devices.cpp)
 
 # ------ Start dependencies ------               
@@ -65,7 +69,7 @@ file(DOWNLOAD
 find_file(HAVE_CATCH_HPP catch.hpp PATH_SUFFIXES catch2 catch)
 if(HAVE_CATCH_HPP)
   get_filename_component(CATCH_PATH ${HAVE_CATCH_HPP} DIRECTORY)
-  target_include_directories(video_test INTERFACE ${CATCH_PATH}
+  target_include_directories(${APP_NAME}_test INTERFACE ${CATCH_PATH}
                              "${PROJECT_BINARY_DIR}"
                              "${CMAKE_BINARY_DIR}")
 else()
@@ -83,8 +87,8 @@ else()
     LOG_DOWNLOAD ON)
 
   ExternalProject_Get_Property(git_catch source_dir)
-  add_dependencies(video_test git_catch)
-  target_include_directories(video_test PUBLIC
+  add_dependencies(${APP_NAME}_test git_catch)
+  target_include_directories(${APP_NAME}_test PUBLIC
                              ${source_dir}/single_include
                              ${source_dir}/single_include/catch2
                              "${PROJECT_BINARY_DIR}"
@@ -92,15 +96,15 @@ else()
 endif()
 # ------ End dependencies ------               
 
-target_link_libraries(video video_cv ${OpenCV_LIBS} Microsoft.GSL::GSL)
-target_link_libraries(video_test video_cv ${OpenCV_LIBS} Microsoft.GSL::GSL)
-target_link_libraries(video_cv ${OpenCV_LIBS} Microsoft.GSL::GSL)
+target_link_libraries(${APP_NAME} ${APP_NAME}_cv ${OpenCV_LIBS} Microsoft.GSL::GSL)
+target_link_libraries(${APP_NAME}_test ${APP_NAME}_cv ${OpenCV_LIBS} Microsoft.GSL::GSL)
+target_link_libraries(${APP_NAME}_cv ${OpenCV_LIBS} Microsoft.GSL::GSL)
 
 configure_file(videoConfig.h.in videoConfig.h)
-target_include_directories(video PUBLIC
+target_include_directories(${APP_NAME} PUBLIC
                            "${PROJECT_BINARY_DIR}"
                            "${CMAKE_BINARY_DIR}")
-target_include_directories(video_cv PUBLIC
+target_include_directories(${APP_NAME}_cv PUBLIC
                            "${PROJECT_BINARY_DIR}"
                            "${CMAKE_BINARY_DIR}")
 
@@ -108,8 +112,8 @@ add_test(video_list_devices video_test "Scenario: frank video list devices")
 
 # CPack installer
 include(GNUInstallDirs)
-install(TARGETS video RUNTIME DESTINATION bin COMPONENT Applications)
-install(TARGETS video_test RUNTIME DESTINATION bin COMPONENT Tests)
+install(TARGETS ${APP_NAME} RUNTIME DESTINATION bin COMPONENT Applications)
+install(TARGETS ${APP_NAME}_test RUNTIME DESTINATION bin COMPONENT Tests)
 
 set(CPACK_COMPONENTS_ALL Applications Tests)
 
@@ -137,15 +141,15 @@ if (WIN32)
   set(CPACK_COMPONENTS_APPLICATIONS_INSTALL_TYPES User Full)
   set(CPACK_COMPONENTS_TESTS_INSTALL_TYPES Full)
   include(InstallRequiredSystemLibraries)
+  set(CPACK_NSIS_MODIFY_PATH "ON")
 endif()
 
-set(CPACK_PACKAGE_NAME "FrankVideo")
-set(CPACK_PACKAGE_VENDOR "github fgenolini frank")
+set(CPACK_PACKAGE_VENDOR "fgenolini")
+set(CPACK_PACKAGE_NAME ${APP_LOW_NAME})
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
-    "frank video - viewer for 4 webcams with edge detection")
-set(CPACK_PACKAGE_VERSION
-    ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH})
-set(CPACK_PACKAGE_INSTALL_DIRECTORY "frank video")
+    "frank ${APP_NAME} - viewer for 4 webcams with edge detection")
+set(CPACK_PACKAGE_VERSION ${APP_VERSION})
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "frank ${APP_NAME}")
 set(CPACK_COMPONENT_APPLICATIONS_DISPLAY_NAME "frank applications")
 set(CPACK_COMPONENT_APPLICATIONS_DESCRIPTION
     "OpenCV GUI viewer for up to 4 video input devices (webcams), with optional edge detection")
