@@ -1,5 +1,11 @@
 # frank: C++ project for cooperative programming
-# Using OpenCV, Microsoft GSL
+# Using
+#   OpenCV: computer vision,
+#   cvui: GUI for OpenCV,
+#   Microsoft GSL: standard C++ guideline support library,
+#   Catch 2: C++ unit testing,
+#   trompeloeil: C++ mocking for testing,
+#   WIX: MSI installer generator for Microsoft Windows,
 #
 # TO DO:
 # Manually install OpenCV and Microsoft GSL before configuring this C++ project
@@ -17,7 +23,3 @@ enable_testing()
 
 # Computer vision using OpenCV
 add_subdirectory(video)
-
-set(CPACK_PROJECT_NAME ${PROJECT_NAME})
-set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
-include(CPack)
