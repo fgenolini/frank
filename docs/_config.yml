@@ -7,5 +7,4 @@ twitter_username: fgenolini
 
 # Build settings
 theme: jekyll-theme-cayman
-plugins:
-  - jekyll-feed
+
