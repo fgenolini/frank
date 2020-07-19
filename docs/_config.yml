@@ -3,3 +3,5 @@ description: tools for distant pairs and swarms of software engineers, each in i
 github_username: fgenolini
 twitter_username: fgenolini
 theme: jekyll-theme-cayman
+plugins:
+  - jekyll-feed
