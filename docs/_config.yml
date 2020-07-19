@@ -1,10 +1,5 @@
 title: frank coding experiments
-description: >- # this means to ignore newlines until "baseurl:" 
-  tools for distant pairs and swarms of software engineers,
-  each in isolation, working from home
+description: tools for distant pairs and swarms of software engineers, each in isolation, working from home
 github_username: fgenolini
 twitter_username: fgenolini
-
-# Build settings
 theme: jekyll-theme-cayman
-
