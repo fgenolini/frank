@@ -1,5 +1,12 @@
-theme: jekyll-theme-cayman
 title: frank coding experiments
-description: tools for distant pairs and swarms of software engineers, each in isolation, working from home
+description: >- # this means to ignore newlines until "baseurl:" 
+  tools for distant pairs and swarms of software engineers,
+  each in isolation, working from home
+baseurl: "" # the subpath of your site, e.g. /blog
 github_username: fgenolini
 twitter_username: fgenolini
+
+# Build settings
+theme: jekyll-theme-cayman
+plugins:
+  - jekyll-feed
