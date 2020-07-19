@@ -2,7 +2,6 @@ title: frank coding experiments
 description: >- # this means to ignore newlines until "baseurl:" 
   tools for distant pairs and swarms of software engineers,
   each in isolation, working from home
-baseurl: "" # the subpath of your site, e.g. /blog
 github_username: fgenolini
 twitter_username: fgenolini
 
