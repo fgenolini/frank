@@ -12,7 +12,7 @@ using namespace gsl;
 #define CVUI_IMPLEMENTATION
 
 #include "../opencv/exit_requested.h"
-#include "../input_device.h"
+#include "../device/input_device.h"
 #include "main_window.h"
 #include "opencv_ui.h"
 #include "../opencv/opencv_window.h"
