@@ -12,7 +12,7 @@ namespace frank::video {
 void main_window(EnhancedWindow &settings,
                  std::vector<input_device> &input_devices,
                  std::vector<bool> &has_webcams, bool *video_enabled,
-                 opencv_window &window) {
+                 bool *overlay_enabled, opencv_window &window) {
   auto first_time = window.first_time();
   auto high_threshold = window.high_threshold();
   auto low_threshold = window.low_threshold();
@@ -42,7 +42,9 @@ void main_window(EnhancedWindow &settings,
     cvui::printf(main_frame, 10, 10, "Opening webcam %d...", webcam_index);
   }
 
-  auto should_exit = cvui::button(main_frame, 110, 80, "Quit");
+  constexpr auto quit_x = 10;
+  constexpr auto quit_y = 10;
+  auto should_exit = cvui::button(main_frame, quit_x, quit_y, "Quit");
   if (should_exit) {
     window.set_exit_requested(true);
     return;
@@ -51,8 +53,21 @@ void main_window(EnhancedWindow &settings,
   settings.begin(main_frame);
   if (!settings.isMinimized()) {
     cvui::checkbox("Use Canny Edge", &use_canny);
-    cvui::trackbar(165, &low_threshold, 5, 150);
-    cvui::trackbar(165, &high_threshold, 80, 300);
+    cvui::beginRow();
+    cvui::beginColumn();
+    cvui::text(" ");
+    cvui::text("low:");
+    cvui::endColumn();
+    constexpr auto trackbar_width = 150;
+    cvui::trackbar(trackbar_width, &low_threshold, 5, 150);
+    cvui::beginColumn();
+    cvui::text(" ");
+    cvui::text("  high:");
+    cvui::endColumn();
+    cvui::trackbar(trackbar_width, &high_threshold, 80, 300);
+    cvui::endRow();
+    cvui::beginRow();
+    cvui::beginColumn();
     for (auto i = 0; i < has_webcams.size(); ++i) {
       std::string video_name{};
       if (input_devices.size() <= i) {
@@ -63,13 +78,27 @@ void main_window(EnhancedWindow &settings,
 
       cvui::checkbox(video_name, &video_enabled[i]);
     }
+
+    cvui::endColumn();
+    cvui::beginColumn();
+    for (auto i = 0; i < has_webcams.size(); ++i) {
+      std::string overlay_name{"Ovl " + std::to_string(i)};
+      cvui::checkbox(overlay_name, &overlay_enabled[i]);
+    }
+
+    cvui::endColumn();
+    cvui::endRow();
   }
 
   settings.end();
   cvui::imshow(window.name(), main_frame);
   window.set_use_canny(use_canny);
+  for (auto i = 0; i < has_webcams.size(); ++i) {
+    window.set_use_overlay(overlay_enabled[i]);
+  }
+
   window.set_low_threshold(low_threshold);
   window.set_high_threshold(high_threshold);
-};
+}
 
 } // namespace frank::video
