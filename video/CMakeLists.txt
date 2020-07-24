@@ -19,19 +19,23 @@ include(CheckIncludeFiles)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
                ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
+set(CommonSourcesList
+    opencv_ui.cpp list_devices.cpp input_device.cpp opencv_window.cpp
+    exit_requested.cpp take_picture.cpp)
+
 if (WIN32)
-  add_library(${APP_NAME}_cv opencv_ui.cpp list_devices.cpp win32_list_devices.cpp
-              input_device.cpp opencv_window.cpp exit_requested.cpp)
+  add_library(${APP_NAME}_cv win32_list_devices.cpp
+              ${CommonSourcesList})
   set(EXE_NAME ${APP_NAME}.exe)
 elseif(APPLE AND UNIX)
-  add_library(${APP_NAME}_cv opencv_ui.cpp list_devices.cpp macos_list_devices.cpp
-              input_device.cpp opencv_window.cpp exit_requested.cpp)
+  add_library(${APP_NAME}_cv macos_list_devices.cpp
+              ${CommonSourcesList})
 elseif(UNIX AND (NOT APPLE) AND (NOT MINGW) AND (NOT MSYS) AND (NOT CYGWIN))
-  add_library(${APP_NAME}_cv opencv_ui.cpp list_devices.cpp linux_list_devices.cpp
-              input_device.cpp opencv_window.cpp exit_requested.cpp)
+  add_library(${APP_NAME}_cv linux_list_devices.cpp
+              ${CommonSourcesList})
 else()
-  add_library(${APP_NAME}_cv opencv_ui.cpp list_devices.cpp
-              input_device.cpp opencv_window.cpp exit_requested.cpp)
+  add_library(${APP_NAME}_cv
+              ${CommonSourcesList})
 endif()
 
 # Command line executable with a simple OpenCV GUI

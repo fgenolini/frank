@@ -19,6 +19,7 @@ using namespace gsl;
 #include "input_device.h"
 #include "opencv_ui.h"
 #include "opencv_window.h"
+#include "take_picture.h"
 
 namespace frank::video {
 
@@ -29,35 +30,10 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
   constexpr auto WINDOW2_NAME = "Frank video 2";
   constexpr auto WINDOW3_NAME = "Frank video 3";
 
-  auto take_picture = [](opencv_window &window) {
-    cv::Mat pic{};
-    auto webcam = window.webcam();
-    if (!webcam) {
-      return pic;
-    }
-
-    auto webcam_index = window.webcam_index();
-    while (!webcam->isOpened()) {
-      auto has_opened = webcam->open(webcam_index, cv::CAP_ANY);
-      if (!has_opened) {
-        std::cout << "Could not open webcam " << webcam_index << '\n';
-      }
-
-      if (exit_requested()) {
-        window.set_exit_requested(true);
-        return pic;
-      }
-    }
-
-    *webcam >> pic;
-    return pic;
-  };
-
-  auto main_window = [take_picture](EnhancedWindow &settings,
-                                    std::vector<input_device> &input_devices,
-                                    std::vector<bool> &has_webcams,
-                                    bool *video_enabled,
-                                    opencv_window &window) {
+  auto main_window = [](EnhancedWindow &settings,
+                        std::vector<input_device> &input_devices,
+                        std::vector<bool> &has_webcams, bool *video_enabled,
+                        opencv_window &window) {
     auto first_time = window.first_time();
     auto webcam_index = window.webcam_index();
     auto use_canny = window.use_canny();
@@ -115,7 +91,7 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
     window.set_high_threshold(high_threshold);
   };
 
-  auto other_window = [take_picture](opencv_window &window) {
+  auto other_window = [](opencv_window &window) {
     auto first_time = window.first_time();
     auto use_canny = window.use_canny();
     auto low_threshold = window.low_threshold();
