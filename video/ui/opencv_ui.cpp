@@ -11,13 +11,13 @@ using namespace gsl;
 
 #define CVUI_IMPLEMENTATION
 
-#include "../opencv/exit_requested.h"
 #include "../device/input_device.h"
 #include "main_window.h"
 #include "opencv_ui.h"
+#include "../opencv/exit_requested.h"
 #include "../opencv/opencv_window.h"
-#include "other_window.h"
 #include "../opencv/take_picture.h"
+#include "other_window.h"
 
 namespace frank::video {
 
