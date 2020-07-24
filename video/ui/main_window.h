@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#define CVUI_DISABLE_COMPILATION_NOTICES
 #include "cvui.h"
 
 // EnhancedWindow.h must be included after cvui.h
