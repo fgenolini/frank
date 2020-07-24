@@ -13,6 +13,7 @@ void other_window(opencv_window &window) {
   auto first_time = window.first_time();
   auto high_threshold = window.high_threshold();
   auto low_threshold = window.low_threshold();
+  auto overlay_alpha = window.overlay_alpha();
   auto overlay_image = window.overlay_image();
   auto use_canny = window.use_canny();
   auto use_overlay = window.use_overlay();

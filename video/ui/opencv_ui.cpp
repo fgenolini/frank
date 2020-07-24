@@ -30,6 +30,7 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
 
   std::vector<cv::String> window_names = {WINDOW_NAME, WINDOW1_NAME,
                                           WINDOW2_NAME, WINDOW3_NAME};
+  double overlay_alpha[MAXIMUM_VIDEO_COUNT]{};
   bool overlay_enabled[MAXIMUM_VIDEO_COUNT]{};
   bool video_enabled[MAXIMUM_VIDEO_COUNT]{};
   std::vector<bool> has_webcams{};
@@ -62,15 +63,16 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
   constexpr auto first_time = true;
   constexpr auto high_threshold = 150;
   constexpr auto low_threshold = 50;
+  constexpr auto no_overlay_alpha = 0.0;
   constexpr auto use_canny = false;
   constexpr auto use_overlay = false;
   constexpr auto webcam_index = 0;
   cv::String overlay_image{};
-  opencv_window window_template(window_names[0], input_video_devices[0].get(),
-                                webcam_index, first_time, has_webcams[0],
-                                video_enabled[0], use_canny, use_overlay,
-                                overlay_image, low_threshold, high_threshold);
-  constexpr auto settings_height = 160;
+  opencv_window window_template(
+      window_names[0], input_video_devices[0].get(), webcam_index, first_time,
+      has_webcams[0], video_enabled[0], use_canny, use_overlay, overlay_image,
+      no_overlay_alpha, low_threshold, high_threshold);
+  constexpr auto settings_height = 280;
   constexpr auto settings_width = 400;
   constexpr auto settings_x = 50;
   constexpr auto settings_y = 50;
@@ -79,7 +81,7 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
   cvui::init(&window_names[0], window_names.size());
   while (true) {
     main_window(settings, connected_webcams, has_webcams, video_enabled,
-                overlay_enabled, window_template);
+                overlay_enabled, overlay_alpha, window_template);
     if (window_template.exit_requested()) {
       return true;
     }
@@ -94,7 +96,8 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
           window_template.first_time(), has_webcams[webcam],
           video_enabled[webcam], window_template.use_canny(),
           window_template.use_overlay(), window_template.overlay_image(),
-          window_template.low_threshold(), window_template.high_threshold());
+          overlay_alpha[webcam], window_template.low_threshold(),
+          window_template.high_threshold());
       other_window(window);
       if (window.exit_requested()) {
         return true;

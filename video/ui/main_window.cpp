@@ -12,7 +12,8 @@ namespace frank::video {
 void main_window(EnhancedWindow &settings,
                  std::vector<input_device> &input_devices,
                  std::vector<bool> &has_webcams, bool *video_enabled,
-                 bool *overlay_enabled, opencv_window &window) {
+                 bool *overlay_enabled, double *overlay_alpha,
+                 opencv_window &window) {
   auto first_time = window.first_time();
   auto high_threshold = window.high_threshold();
   auto low_threshold = window.low_threshold();
@@ -56,45 +57,59 @@ void main_window(EnhancedWindow &settings,
     cvui::beginRow();
     cvui::beginColumn();
     cvui::text(" ");
+    cvui::text(" ");
     cvui::text("low:");
     cvui::endColumn();
     constexpr auto trackbar_width = 150;
-    cvui::trackbar(trackbar_width, &low_threshold, 5, 150);
+    constexpr auto alpha_trackbar_width = 100;
+    cvui::trackbar<int>(trackbar_width, &low_threshold, 5, 150);
     cvui::beginColumn();
+    cvui::text(" ");
     cvui::text(" ");
     cvui::text("  high:");
     cvui::endColumn();
-    cvui::trackbar(trackbar_width, &high_threshold, 80, 300);
+    cvui::trackbar<int>(trackbar_width, &high_threshold, 80, 300);
     cvui::endRow();
-    cvui::beginRow();
-    cvui::beginColumn();
-    for (auto i = 0; i < has_webcams.size(); ++i) {
+    for (auto webcam = 0; webcam < has_webcams.size(); ++webcam) {
+      cvui::beginRow();
+      cvui::beginColumn();
       std::string video_name{};
-      if (input_devices.size() <= i) {
-        video_name = "Video " + std::to_string(i);
+      if (input_devices.size() <= webcam) {
+        video_name = "Video " + std::to_string(webcam);
       } else {
-        video_name = std::to_string(i) + " " + input_devices[i].name();
+        video_name =
+            std::to_string(webcam) + " " + input_devices[webcam].name();
       }
 
-      cvui::checkbox(video_name, &video_enabled[i]);
+      cvui::text(" ");
+      cvui::text(" ");
+      cvui::checkbox(video_name, &video_enabled[webcam]);
+      cvui::endColumn();
+      cvui::beginColumn();
+      cvui::text(" ");
+      cvui::text(" ");
+      cvui::endColumn();
+      cvui::beginColumn();
+      std::string overlay_name{"Ovl " + std::to_string(webcam)};
+      cvui::text(" ");
+      cvui::text(" ");
+      cvui::checkbox(overlay_name, &overlay_enabled[webcam]);
+      cvui::endColumn();
+      constexpr auto alpha_max = 1.0;
+      constexpr auto alpha_min = 0.0;
+      constexpr auto label_format = "";
+      cvui::trackbar<double>(alpha_trackbar_width, &overlay_alpha[webcam],
+                             alpha_min, alpha_max);
+      cvui::endRow();
     }
-
-    cvui::endColumn();
-    cvui::beginColumn();
-    for (auto i = 0; i < has_webcams.size(); ++i) {
-      std::string overlay_name{"Ovl " + std::to_string(i)};
-      cvui::checkbox(overlay_name, &overlay_enabled[i]);
-    }
-
-    cvui::endColumn();
-    cvui::endRow();
   }
 
   settings.end();
   cvui::imshow(window.name(), main_frame);
   window.set_use_canny(use_canny);
-  for (auto i = 0; i < has_webcams.size(); ++i) {
-    window.set_use_overlay(overlay_enabled[i]);
+  for (auto webcam = 0; webcam < has_webcams.size(); ++webcam) {
+    window.set_overlay_alpha(overlay_alpha[webcam]);
+    window.set_use_overlay(overlay_enabled[webcam]);
   }
 
   window.set_low_threshold(low_threshold);

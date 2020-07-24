@@ -16,6 +16,7 @@ namespace frank::video {
 void main_window(EnhancedWindow &settings,
                  std::vector<input_device> &input_devices,
                  std::vector<bool> &has_webcams, bool *video_enabled,
-                 bool *overlay_enabled, opencv_window &window);
+                 bool *overlay_enabled, double *overlay_alpha,
+                 opencv_window &window);
 
 } // namespace frank::video
