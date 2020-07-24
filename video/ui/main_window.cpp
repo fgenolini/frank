@@ -2,10 +2,10 @@
 
 #include <opencv2/opencv.hpp>
 
-#include "input_device.h"
+#include "../device/input_device.h"
 #include "main_window.h"
-#include "opencv_window.h"
-#include "take_picture.h"
+#include "../opencv/opencv_window.h"
+#include "../opencv/take_picture.h"
 
 namespace frank::video {
 

@@ -2,9 +2,9 @@
 
 #include "cvui.h"
 
-#include "opencv_window.h"
+#include "../opencv/opencv_window.h"
 #include "other_window.h"
-#include "take_picture.h"
+#include "../opencv/take_picture.h"
 
 namespace frank::video {
 

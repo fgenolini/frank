@@ -20,18 +20,19 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
                ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 set(CommonSourcesList
-    exit_requested.cpp input_device.cpp list_devices.cpp main_window.cpp
-    opencv_ui.cpp opencv_window.cpp other_window.cpp take_picture.cpp)
+    device/input_device.cpp device/list_devices.cpp
+    opencv/exit_requested.cpp opencv/opencv_window.cpp opencv/take_picture.cpp
+    ui/main_window.cpp ui/opencv_ui.cpp ui/other_window.cpp)
 
 if (WIN32)
-  add_library(${APP_NAME}_cv win32_list_devices.cpp
+  add_library(${APP_NAME}_cv device/win32_list_devices.cpp
               ${CommonSourcesList})
   set(EXE_NAME ${APP_NAME}.exe)
 elseif(APPLE AND UNIX)
-  add_library(${APP_NAME}_cv macos_list_devices.cpp
+  add_library(${APP_NAME}_cv device/macos_list_devices.cpp
               ${CommonSourcesList})
 elseif(UNIX AND (NOT APPLE) AND (NOT MINGW) AND (NOT MSYS) AND (NOT CYGWIN))
-  add_library(${APP_NAME}_cv linux_list_devices.cpp
+  add_library(${APP_NAME}_cv device/linux_list_devices.cpp
               ${CommonSourcesList})
 else()
   add_library(${APP_NAME}_cv
@@ -42,7 +43,7 @@ endif()
 add_executable(${APP_NAME} video_main.cpp run_application.cpp)
 
 # Command line executable with a simple OpenCV GUI
-add_executable(${APP_NAME}_test video_test_main.cpp
+add_executable(${APP_NAME}_test test/video_test_main.cpp
                test/test_list_devices.cpp)
 
 # ------ Start dependencies ------               
