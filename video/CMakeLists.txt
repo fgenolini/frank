@@ -21,17 +21,17 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
 
 if (WIN32)
   add_library(${APP_NAME}_cv opencv_ui.cpp list_devices.cpp win32_list_devices.cpp
-              input_device.cpp opencv_window.cpp)
+              input_device.cpp opencv_window.cpp exit_requested.cpp)
   set(EXE_NAME ${APP_NAME}.exe)
 elseif(APPLE AND UNIX)
   add_library(${APP_NAME}_cv opencv_ui.cpp list_devices.cpp macos_list_devices.cpp
-              input_device.cpp opencv_window.cpp)
+              input_device.cpp opencv_window.cpp exit_requested.cpp)
 elseif(UNIX AND (NOT APPLE) AND (NOT MINGW) AND (NOT MSYS) AND (NOT CYGWIN))
   add_library(${APP_NAME}_cv opencv_ui.cpp list_devices.cpp linux_list_devices.cpp
-              input_device.cpp opencv_window.cpp)
+              input_device.cpp opencv_window.cpp exit_requested.cpp)
 else()
   add_library(${APP_NAME}_cv opencv_ui.cpp list_devices.cpp
-              input_device.cpp opencv_window.cpp)
+              input_device.cpp opencv_window.cpp exit_requested.cpp)
 endif()
 
 # Command line executable with a simple OpenCV GUI

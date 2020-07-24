@@ -15,6 +15,7 @@ using namespace gsl;
 // EnhancedWindow.h must be included after cvui.h
 #include "EnhancedWindow.h"
 
+#include "exit_requested.h"
 #include "input_device.h"
 #include "opencv_ui.h"
 #include "opencv_window.h"
@@ -28,14 +29,7 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
   constexpr auto WINDOW2_NAME = "Frank video 2";
   constexpr auto WINDOW3_NAME = "Frank video 3";
 
-  auto exit_requested = []() {
-    constexpr auto ESCAPE_KEY = 27;
-    constexpr auto SHORT_DELAY = 20;
-
-    return cv::waitKey(SHORT_DELAY) == ESCAPE_KEY;
-  };
-
-  auto take_picture = [exit_requested](opencv_window &window) {
+  auto take_picture = [](opencv_window &window) {
     cv::Mat pic{};
     auto webcam = window.webcam();
     if (!webcam) {
