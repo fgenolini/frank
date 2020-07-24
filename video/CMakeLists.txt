@@ -20,8 +20,8 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
                ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 set(CommonSourcesList
-    opencv_ui.cpp list_devices.cpp input_device.cpp opencv_window.cpp
-    exit_requested.cpp take_picture.cpp)
+    opencv_ui.cpp list_devices.cpp input_device.cpp main_window.cpp
+    opencv_window.cpp exit_requested.cpp take_picture.cpp)
 
 if (WIN32)
   add_library(${APP_NAME}_cv win32_list_devices.cpp
