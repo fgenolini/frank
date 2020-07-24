@@ -58,12 +58,17 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
     }
   });
 
-  constexpr auto webcam_index = 0;
   constexpr auto first_time = true;
+  constexpr auto high_threshold = 150;
+  constexpr auto low_threshold = 50;
   constexpr auto use_canny = false;
+  constexpr auto use_overlay = false;
+  constexpr auto webcam_index = 0;
+  cv::String overlay_image = nullptr;
   opencv_window window_template(window_names[0], input_video_devices[0].get(),
                                 webcam_index, first_time, has_webcams[0],
-                                video_enabled[0], use_canny, 50, 150);
+                                video_enabled[0], use_canny, use_overlay,
+                                overlay_image, low_threshold, high_threshold);
   EnhancedWindow settings(200, 50, 250, 250, "Settings");
   cvui::init(&window_names[0], window_names.size());
   while (true) {
@@ -73,16 +78,17 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
       return true;
     }
 
-    for (auto i = 1; i < window_names.size(); ++i) {
-      if (!has_webcams[i]) {
+    for (auto webcam = 1; webcam < window_names.size(); ++webcam) {
+      if (!has_webcams[webcam]) {
         continue;
       }
 
-      opencv_window window(window_names[i], input_video_devices[i].get(), i,
-                           window_template.first_time(), has_webcams[i],
-                           video_enabled[i], window_template.use_canny(),
-                           window_template.low_threshold(),
-                           window_template.high_threshold());
+      opencv_window window(
+          window_names[webcam], input_video_devices[webcam].get(), webcam,
+          window_template.first_time(), has_webcams[webcam],
+          video_enabled[webcam], window_template.use_canny(),
+          window_template.use_overlay(), window_template.overlay_image(),
+          window_template.low_threshold(), window_template.high_threshold());
       other_window(window);
       if (window.exit_requested()) {
         return true;

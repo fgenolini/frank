@@ -14,11 +14,13 @@ void main_window(EnhancedWindow &settings,
                  std::vector<bool> &has_webcams, bool *video_enabled,
                  opencv_window &window) {
   auto first_time = window.first_time();
-  auto webcam_index = window.webcam_index();
-  auto use_canny = window.use_canny();
-  auto low_threshold = window.low_threshold();
   auto high_threshold = window.high_threshold();
+  auto low_threshold = window.low_threshold();
   auto main_frame = cv::Mat(200, 500, CV_8UC3);
+  auto overlay_image = window.overlay_image();
+  auto use_canny = window.use_canny();
+  auto use_overlay = window.use_overlay();
+  auto webcam_index = window.webcam_index();
   main_frame = cv::Scalar(49, 52, 49);
   cvui::context(window.name());
   if (!first_time && has_webcams[0] && video_enabled[0]) {
