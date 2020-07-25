@@ -76,7 +76,7 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
       has_webcams[0], video_enabled[0], USE_CANNY, USE_OVERLAY, overlay_image,
       NO_OVERLAY_ALPHA, LOW_THRESHOLD, HIGH_THRESHOLD);
   constexpr auto SETTINGS_HEIGHT = 280;
-  constexpr auto SETTINGS_WIDTH = 400;
+  constexpr auto SETTINGS_WIDTH = 600;
   constexpr auto SETTINGS_X = 50;
   constexpr auto SETTINGS_Y = 50;
   EnhancedWindow settings(SETTINGS_X, SETTINGS_Y, SETTINGS_WIDTH,
