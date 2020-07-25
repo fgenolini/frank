@@ -70,6 +70,12 @@ file(DOWNLOAD
      https://raw.githubusercontent.com/rollbear/trompeloeil/master/include/catch2/trompeloeil.hpp
      ${CMAKE_BINARY_DIR}/catch2/trompeloeil.hpp)
 
+# Portable file dialogs (github.com/samhocevar/portable-file-dialogs)
+# Include only, no binary, no libray
+file(DOWNLOAD
+     https://raw.githubusercontent.com/samhocevar/portable-file-dialogs/master/portable-file-dialogs.h
+     ${CMAKE_BINARY_DIR}/portable-file-dialogs.h)
+
 # Catch 2, unit testing for C++
 find_file(HAVE_CATCH_HPP catch.hpp PATH_SUFFIXES catch2 catch)
 if(HAVE_CATCH_HPP)
