@@ -94,6 +94,7 @@ void main_window(EnhancedWindow &settings,
                  std::vector<input_device> &input_devices,
                  std::vector<bool> &has_webcams, bool *video_enabled_arrray,
                  bool *overlay_enabled_array, double *overlay_alpha_array,
+                 std::vector<cv::String> &overlay_images,
                  opencv_window &window) {
   constexpr auto QUIT_X = 10;
   constexpr auto QUIT_Y = 10;

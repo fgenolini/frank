@@ -28,16 +28,18 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
   constexpr auto WINDOW2_NAME = "Frank video 2";
   constexpr auto WINDOW3_NAME = "Frank video 3";
 
+  std::vector<cv::String> overlay_images{};
   std::vector<cv::String> window_names = {WINDOW_NAME, WINDOW1_NAME,
                                           WINDOW2_NAME, WINDOW3_NAME};
   double overlay_alpha[MAXIMUM_VIDEO_COUNT]{};
   bool overlay_enabled[MAXIMUM_VIDEO_COUNT]{};
   bool video_enabled[MAXIMUM_VIDEO_COUNT]{};
   std::vector<bool> has_webcams{};
-  for (auto i = 0; i < window_names.size() && i < MAXIMUM_VIDEO_COUNT; ++i) {
-    auto has_webcam = connected_webcams.size() > i;
+  for (auto webcam = 0;
+       webcam < window_names.size() && webcam < MAXIMUM_VIDEO_COUNT; ++webcam) {
+    auto has_webcam = connected_webcams.size() > webcam;
     has_webcams.push_back(has_webcam);
-    video_enabled[i] = has_webcam;
+    video_enabled[webcam] = has_webcam;
   }
 
   if (!has_webcams[0]) {
@@ -47,9 +49,10 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
   }
 
   std::vector<std::unique_ptr<cv::VideoCapture>> input_video_devices{};
-  for (auto i = 0; i < has_webcams.size(); ++i) {
+  for (const auto &_ : has_webcams) {
     auto input_video_device = std::make_unique<cv::VideoCapture>();
     input_video_devices.push_back(std::move(input_video_device));
+    overlay_images.push_back("");
   }
 
   auto _ = finally([&input_video_devices] {
@@ -81,7 +84,8 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
   cvui::init(&window_names[0], window_names.size());
   while (true) {
     main_window(settings, connected_webcams, has_webcams, video_enabled,
-                overlay_enabled, overlay_alpha, window_template);
+                overlay_enabled, overlay_alpha, overlay_images,
+                window_template);
     if (window_template.exit_requested()) {
       return true;
     }
@@ -95,7 +99,7 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
           window_names[webcam], input_video_devices[webcam].get(), webcam,
           window_template.first_time(), has_webcams[webcam],
           video_enabled[webcam], window_template.use_canny(),
-          window_template.use_overlay(), window_template.overlay_image(),
+          window_template.use_overlay(), overlay_images[webcam],
           overlay_alpha[webcam], window_template.low_threshold(),
           window_template.high_threshold());
       other_window(window);
