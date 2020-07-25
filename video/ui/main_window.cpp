@@ -146,8 +146,8 @@ void main_window(EnhancedWindow &settings,
                  opencv_window &window) {
   constexpr auto QUIT_X = 10;
   constexpr auto QUIT_Y = 10;
-  constexpr auto WINDOW_HEIGHT = 400;
-  constexpr auto WINDOW_WIDTH = 700;
+  constexpr auto WINDOW_HEIGHT = 480;
+  constexpr auto WINDOW_WIDTH = 640;
   auto const first_time = window.first_time();
   auto const webcam_index = window.webcam_index();
   auto high_threshold = window.high_threshold();
