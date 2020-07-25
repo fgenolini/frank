@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdexcept>
 
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/opencv.hpp>
@@ -39,29 +40,57 @@ void reduce_resolution(cv::VideoCapture *webcam, int webcam_index) {
             << ", w:" << webcam_width << '\n';
 }
 
-cv::Mat take_picture(opencv_window &window) {
-  cv::Mat pic{};
+cv::Mat take_picture(opencv_window &window) noexcept(false) {
+  constexpr auto MAXIMUM_RETRY = 6;
+  cv::Mat picture{};
   auto webcam = window.webcam();
   if (!webcam) {
-    return pic;
+    return picture;
   }
 
-  auto webcam_index = window.webcam_index();
+  auto const webcam_index = window.webcam_index();
+  auto retry = 0;
+  auto webcam_height = window.height();
+  auto webcam_width = window.width();
   while (!webcam->isOpened()) {
+    if (retry >= MAXIMUM_RETRY) {
+      return picture;
+    }
+
     auto has_opened = webcam->open(webcam_index, cv::CAP_ANY);
-    if (!has_opened) {
+    if (has_opened) {
+      reduce_resolution(webcam, webcam_index);
+      webcam_height = webcam->get(cv::CAP_PROP_FRAME_HEIGHT);
+      webcam_width = webcam->get(cv::CAP_PROP_FRAME_WIDTH);
+      window.set_height(webcam_height);
+      window.set_width(webcam_width);
+      break;
+    } else {
       std::cout << "Could not open webcam " << webcam_index << '\n';
     }
 
-    reduce_resolution(webcam, webcam_index);
     if (exit_requested()) {
       window.set_exit_requested(true);
-      return pic;
+      return picture;
     }
+
+    ++retry;
   }
 
-  *webcam >> pic;
-  return pic;
+  *webcam >> picture;
+  if (picture.rows != (int)webcam_height) {
+    std::cerr << "Height #" << webcam_index << " rows:" << picture.rows
+              << " != h:" << webcam_height << '\n';
+    throw std::domain_error("webcam height is not the same as picture height");
+  }
+
+  if (picture.cols != (int)webcam_width) {
+    std::cerr << "Width #" << webcam_index << " cols:" << picture.cols
+              << " != w:" << webcam_width << '\n';
+    throw std::domain_error("webcam width is not the same as picture width");
+  }
+
+  return picture;
 }
 
 } // namespace frank::video

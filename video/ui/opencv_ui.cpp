@@ -1,6 +1,7 @@
 #include <array>
 #include <cstdlib>
 #include <memory>
+#include <utility>
 
 #include <gsl/gsl_util>
 
@@ -31,6 +32,7 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
   std::vector<cv::String> overlay_images{};
   std::vector<cv::String> window_names = {WINDOW_NAME, WINDOW1_NAME,
                                           WINDOW2_NAME, WINDOW3_NAME};
+  std::vector<std::pair<double, double>> height_width_pairs{};
   double overlay_alpha[MAXIMUM_VIDEO_COUNT]{};
   bool overlay_enabled[MAXIMUM_VIDEO_COUNT]{};
   bool video_enabled[MAXIMUM_VIDEO_COUNT]{};
@@ -53,6 +55,7 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
     auto input_video_device = std::make_unique<cv::VideoCapture>();
     input_video_devices.push_back(std::move(input_video_device));
     overlay_images.push_back("");
+    height_width_pairs.push_back(std::make_pair(0.0, 0.0));
   }
 
   auto _ = finally([&input_video_devices] {
@@ -73,8 +76,9 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
   cv::String overlay_image{};
   opencv_window window_template(
       window_names[0], input_video_devices[0].get(), WEBCAM_INDEX, FIRST_TIME,
-      has_webcams[0], video_enabled[0], USE_CANNY, USE_OVERLAY, overlay_image,
-      NO_OVERLAY_ALPHA, LOW_THRESHOLD, HIGH_THRESHOLD);
+      has_webcams[0], video_enabled[0], std::make_pair(0.0, 0.0), USE_CANNY,
+      USE_OVERLAY, overlay_image, NO_OVERLAY_ALPHA, LOW_THRESHOLD,
+      HIGH_THRESHOLD);
   constexpr auto SETTINGS_HEIGHT = 280;
   constexpr auto SETTINGS_WIDTH = 600;
   constexpr auto SETTINGS_X = 10;
@@ -95,10 +99,11 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
         continue;
       }
 
+      auto height_width_pair = height_width_pairs[webcam];
       opencv_window window(
           window_names[webcam], input_video_devices[webcam].get(), webcam,
           window_template.first_time(), has_webcams[webcam],
-          video_enabled[webcam], window_template.use_canny(),
+          video_enabled[webcam], height_width_pair, window_template.use_canny(),
           window_template.use_overlay(), overlay_images[webcam],
           overlay_alpha[webcam], window_template.low_threshold(),
           window_template.high_threshold());
@@ -106,6 +111,10 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
       if (window.exit_requested()) {
         return true;
       }
+
+      height_width_pair.first = window.height();
+      height_width_pair.second = window.width();
+      height_width_pairs[webcam] = height_width_pair;
     }
 
     if (exit_requested()) {

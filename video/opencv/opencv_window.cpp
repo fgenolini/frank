@@ -4,11 +4,13 @@ namespace frank::video {
 
 opencv_window::opencv_window(cv::String name, cv::VideoCapture *webcam,
                              int webcam_index, bool first_time, bool has_webcam,
-                             bool video_enabled, bool use_canny,
-                             bool use_overlay, cv::String overlay_image,
-                             double overlay_alpha, int low_threshold,
-                             int high_threshold)
-    : name_(name), webcam_(webcam), overlay_alpha_(overlay_alpha),
+                             bool video_enabled,
+                             std::pair<double, double> const &height_width,
+                             bool use_canny, bool use_overlay,
+                             cv::String overlay_image, double overlay_alpha,
+                             int low_threshold, int high_threshold)
+    : name_(name), webcam_(webcam), height_(height_width.first),
+      overlay_alpha_(overlay_alpha), width_(height_width.second),
       high_threshold_(high_threshold), low_threshold_(low_threshold),
       webcam_index_(webcam_index), exit_requested_(false),
       first_time_(first_time), has_webcam_(has_webcam), use_canny_(use_canny),
@@ -21,7 +23,11 @@ cv::String opencv_window::overlay_image() const { return overlay_image_; }
 
 cv::VideoCapture *opencv_window::webcam() const { return webcam_; }
 
+double opencv_window::height() const { return height_; }
+
 double opencv_window::overlay_alpha() const { return overlay_alpha_; }
+
+double opencv_window::width() const { return width_; }
 
 int opencv_window::high_threshold() const { return high_threshold_; }
 
@@ -49,6 +55,8 @@ void opencv_window::set_first_time(bool first_time) {
   first_time_ = first_time;
 }
 
+void opencv_window::set_height(double height) { height_ = height; }
+
 void opencv_window::set_high_threshold(int high_threshold) {
   high_threshold_ = high_threshold;
 }
@@ -70,5 +78,7 @@ void opencv_window::set_use_canny(bool use_canny) { use_canny_ = use_canny; }
 void opencv_window::set_use_overlay(bool use_overlay) {
   use_overlay_ = use_overlay;
 }
+
+void opencv_window::set_width(double width) { width_ = width; }
 
 } // namespace frank::video

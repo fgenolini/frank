@@ -6,6 +6,6 @@
 
 namespace frank::video {
 
-cv::Mat take_picture(opencv_window &window);
+cv::Mat take_picture(opencv_window &window) noexcept(false);
 
 } // namespace frank::video
