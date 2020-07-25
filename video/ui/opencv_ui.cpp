@@ -12,11 +12,11 @@ using namespace gsl;
 #define CVUI_IMPLEMENTATION
 
 #include "../device/input_device.h"
-#include "main_window.h"
-#include "opencv_ui.h"
 #include "../opencv/exit_requested.h"
 #include "../opencv/opencv_window.h"
 #include "../opencv/take_picture.h"
+#include "main_window.h"
+#include "opencv_ui.h"
 #include "other_window.h"
 
 namespace frank::video {
@@ -60,24 +60,24 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
     }
   });
 
-  constexpr auto first_time = true;
-  constexpr auto high_threshold = 150;
-  constexpr auto low_threshold = 50;
-  constexpr auto no_overlay_alpha = 0.0;
-  constexpr auto use_canny = false;
-  constexpr auto use_overlay = false;
-  constexpr auto webcam_index = 0;
+  constexpr auto FIRST_TIME = true;
+  constexpr auto HIGH_THRESHOLD = 150;
+  constexpr auto LOW_THRESHOLD = 50;
+  constexpr auto NO_OVERLAY_ALPHA = 0.0;
+  constexpr auto USE_CANNY = false;
+  constexpr auto USE_OVERLAY = false;
+  constexpr auto WEBCAM_INDEX = 0;
   cv::String overlay_image{};
   opencv_window window_template(
-      window_names[0], input_video_devices[0].get(), webcam_index, first_time,
-      has_webcams[0], video_enabled[0], use_canny, use_overlay, overlay_image,
-      no_overlay_alpha, low_threshold, high_threshold);
-  constexpr auto settings_height = 280;
-  constexpr auto settings_width = 400;
-  constexpr auto settings_x = 50;
-  constexpr auto settings_y = 50;
-  EnhancedWindow settings(settings_x, settings_y, settings_width,
-                          settings_height, "Settings");
+      window_names[0], input_video_devices[0].get(), WEBCAM_INDEX, FIRST_TIME,
+      has_webcams[0], video_enabled[0], USE_CANNY, USE_OVERLAY, overlay_image,
+      NO_OVERLAY_ALPHA, LOW_THRESHOLD, HIGH_THRESHOLD);
+  constexpr auto SETTINGS_HEIGHT = 280;
+  constexpr auto SETTINGS_WIDTH = 400;
+  constexpr auto SETTINGS_X = 50;
+  constexpr auto SETTINGS_Y = 50;
+  EnhancedWindow settings(SETTINGS_X, SETTINGS_Y, SETTINGS_WIDTH,
+                          SETTINGS_HEIGHT, "Settings");
   cvui::init(&window_names[0], window_names.size());
   while (true) {
     main_window(settings, connected_webcams, has_webcams, video_enabled,
