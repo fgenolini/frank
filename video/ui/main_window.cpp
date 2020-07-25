@@ -103,7 +103,7 @@ void draw_overlay(int webcam, bool *overlay_enabled_array,
       if (overlay_images[webcam].empty()) {
         overlay_name = "No overlay " + std::to_string(webcam);
       } else {
-        overlay_name = fs::path(overlay_images[webcam]).stem();
+        overlay_name = fs::path(overlay_images[webcam]).stem().string();
       }
 
       cvui::checkbox(overlay_name, &overlay_enabled_array[webcam]);
