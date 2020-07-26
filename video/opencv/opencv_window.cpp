@@ -9,12 +9,12 @@ opencv_window::opencv_window(cv::String name, cv::VideoCapture *webcam,
                              bool use_canny, bool use_overlay,
                              cv::String overlay_image, double overlay_alpha,
                              int low_threshold, int high_threshold)
-    : name_(name), webcam_(webcam), height_(height_width.first),
-      overlay_alpha_(overlay_alpha), width_(height_width.second),
-      high_threshold_(high_threshold), low_threshold_(low_threshold),
-      webcam_index_(webcam_index), exit_requested_(false),
-      first_time_(first_time), has_webcam_(has_webcam), use_canny_(use_canny),
-      use_overlay_(use_overlay), overlay_image_(overlay_image),
+    : name_(name), overlay_image_(overlay_image), webcam_(webcam),
+      height_(height_width.first), overlay_alpha_(overlay_alpha),
+      width_(height_width.second), high_threshold_(high_threshold),
+      low_threshold_(low_threshold), webcam_index_(webcam_index),
+      exit_requested_(false), first_time_(first_time), has_webcam_(has_webcam),
+      use_canny_(use_canny), use_overlay_(use_overlay),
       video_enabled_(video_enabled) {}
 
 cv::String opencv_window::name() const { return name_; }
