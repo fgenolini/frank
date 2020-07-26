@@ -122,7 +122,7 @@ target_compile_options(${APP_NAME}_cv PRIVATE
      $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
           -Wall>
      $<$<CXX_COMPILER_ID:MSVC>:
-          /WX /W4>)
+          /WX /W4 /w45038>)
 
 add_test(video_list_devices video_test "Scenario: frank video list devices")
 
