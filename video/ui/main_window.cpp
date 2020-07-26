@@ -43,7 +43,7 @@ void draw_webcam(int webcam, std::vector<input_device> &input_devices,
   cvui::beginColumn();
   {
     std::string video_name{};
-    if (input_devices.size() <= webcam) {
+    if ((int)input_devices.size() <= webcam) {
       video_name = "Video " + std::to_string(webcam);
     } else {
       video_name = std::to_string(webcam) + " " + input_devices[webcam].name();
@@ -126,7 +126,7 @@ void draw_settings(EnhancedWindow &settings, bool *use_canny,
   }
 
   draw_canny(use_canny, low_threshold, high_threshold);
-  for (auto webcam = 0; webcam < has_webcams.size(); ++webcam) {
+  for (auto webcam = 0; webcam < (int)has_webcams.size(); ++webcam) {
     cvui::beginRow();
     {
       draw_webcam(webcam, input_devices, video_enabled_arrray);
