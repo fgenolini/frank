@@ -38,8 +38,9 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
   bool video_enabled[MAXIMUM_VIDEO_COUNT]{};
   std::vector<bool> has_webcams{};
   for (auto webcam = 0;
-       webcam < window_names.size() && webcam < MAXIMUM_VIDEO_COUNT; ++webcam) {
-    auto has_webcam = connected_webcams.size() > webcam;
+       webcam < (int)window_names.size() && webcam < MAXIMUM_VIDEO_COUNT;
+       ++webcam) {
+    auto has_webcam = (int)connected_webcams.size() > webcam;
     has_webcams.push_back(has_webcam);
     video_enabled[webcam] = has_webcam;
   }
@@ -51,7 +52,7 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
   }
 
   std::vector<std::unique_ptr<cv::VideoCapture>> input_video_devices{};
-  for (auto _: has_webcams) {
+  for ([[maybe_unused]] auto _ : has_webcams) {
     auto input_video_device = std::make_unique<cv::VideoCapture>();
     input_video_devices.push_back(std::move(input_video_device));
     overlay_images.push_back("");
@@ -94,7 +95,7 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
       return true;
     }
 
-    for (auto webcam = 1; webcam < window_names.size(); ++webcam) {
+    for (auto webcam = 1; webcam < (int)window_names.size(); ++webcam) {
       if (!has_webcams[webcam]) {
         continue;
       }
