@@ -149,7 +149,7 @@ if (WIN32)
           opencv_core opencv_highgui opencv_features2d opencv_imgcodecs
           opencv_imgproc opencv_objdetect opencv_photo opencv_stitching
           opencv_video opencv_videoio opencv_ml opencv_gapi opencv_flann
-          opencv_dnn opencv_calib3d)
+          opencv_dnn opencv_calib3d opencv_world)
     set(OPENCV_DLL_FILE "${Installed_OpenCV_PATH}/${OpenCV_DLL_File}${OpenCV_VER}.dll")
     if(EXISTS "${OPENCV_DLL_FILE}")
       string(REPLACE "\\" "/" OPENCV_DLL_FILE_UNIX "${OPENCV_DLL_FILE}")
@@ -158,13 +158,18 @@ if (WIN32)
       message("Could not find OpenCV DLL: ${OPENCV_DLL_FILE}")
     endif()
   endforeach()
-  set(EXTRA_OPENCV_DLL_FILE "${Installed_OpenCV_PATH}/opencv_videoio_ffmpeg${OpenCV_VER}_64.dll")
-  if(EXISTS "${EXTRA_OPENCV_DLL_FILE}")
-    string(REPLACE "\\" "/" EXTRA_OPENCV_DLL_FILE_UNIX "${EXTRA_OPENCV_DLL_FILE}")
-    list(APPEND ALL_RUNTIMES "${EXTRA_OPENCV_DLL_FILE_UNIX}")
-  else()
-    message("Could not find extra OpenCV DLL: ${EXTRA_OPENCV_DLL_FILE}")
-  endif()
+
+  foreach(Extra_OpenCV_DLL_File
+          opencv_videoio_ffmpeg opencv_videoio_msmf)
+    set(EXTRA_OPENCV_DLL_FILE "${Installed_OpenCV_PATH}/${Extra_OpenCV_DLL_File}${OpenCV_VER}_64.dll")
+    if(EXISTS "${EXTRA_OPENCV_DLL_FILE}")
+      string(REPLACE "\\" "/" EXTRA_OPENCV_DLL_FILE_UNIX "${EXTRA_OPENCV_DLL_FILE}")
+      list(APPEND ALL_RUNTIMES "${EXTRA_OPENCV_DLL_FILE_UNIX}")
+    else()
+      message("Could not find extra OpenCV DLL: ${EXTRA_OPENCV_DLL_FILE}")
+    endif()
+  endforeach()
+
   foreach(OpenCV_DLL_Support
           tbb tbbbind tbbmalloc ngraph clDNNPlugin HeteroPlugin
           inference_engine inference_engine_ir_reader inference_engine_legacy
