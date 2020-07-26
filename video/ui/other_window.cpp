@@ -12,13 +12,13 @@ namespace frank::video {
 void other_window(opencv_window &window) {
   constexpr auto WINDOW_HEIGHT = 180;
   constexpr auto WINDOW_WIDTH = 320;
-  auto first_time = window.first_time();
-  auto high_threshold = window.high_threshold();
-  auto low_threshold = window.low_threshold();
-  auto overlay_alpha = window.overlay_alpha();
-  auto overlay_image = window.overlay_image();
-  auto use_canny = window.use_canny();
-  auto use_overlay = window.use_overlay();
+  auto const first_time = window.first_time();
+  auto const high_threshold = window.high_threshold();
+  auto const low_threshold = window.low_threshold();
+  auto const overlay_alpha = window.overlay_alpha();
+  auto const overlay_image = window.overlay_image();
+  auto const use_canny = window.use_canny();
+  auto const use_overlay = window.use_overlay();
   auto other_frame = cv::Mat(WINDOW_HEIGHT, WINDOW_WIDTH, CV_8UC3);
   other_frame = cv::Scalar(49, 52, 49);
   cvui::context(window.name());
