@@ -51,7 +51,7 @@ bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
   }
 
   std::vector<std::unique_ptr<cv::VideoCapture>> input_video_devices{};
-  for (const auto &_ : has_webcams) {
+  for (auto _: has_webcams) {
     auto input_video_device = std::make_unique<cv::VideoCapture>();
     input_video_devices.push_back(std::move(input_video_device));
     overlay_images.push_back("");
