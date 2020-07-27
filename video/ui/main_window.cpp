@@ -95,6 +95,7 @@ void draw_overlay(int webcam, bool *overlay_enabled_array,
       }
     }
     cvui::endColumn();
+    cvui::text(" ");
     cvui::beginColumn();
     {
       cvui::text(" ");
@@ -111,6 +112,13 @@ void draw_overlay(int webcam, bool *overlay_enabled_array,
     cvui::endColumn();
     cvui::trackbar<double>(TRACKBAR_WIDTH, &overlay_alpha_array[webcam],
                            ALPHA_MIN, ALPHA_MAX);
+    cvui::beginColumn();
+    {
+      cvui::text(" ");
+      cvui::text(" ");
+      cvui::text("alpha");
+    }
+    cvui::endColumn();
   }
   cvui::endRow();
 }
