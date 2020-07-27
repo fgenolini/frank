@@ -2,6 +2,7 @@
 
 namespace frank::video {
 
-[[noreturn]] extern void run_application(int argc, char const *argv[]);
+[[noreturn]] extern void run_application(int argc = 0,
+                                         char const *argv[] = nullptr);
 
 }
