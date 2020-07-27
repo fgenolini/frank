@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "input_device.h"
+#include "../device/input_device.h"
 
 namespace frank::video {
 

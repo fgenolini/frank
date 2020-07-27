@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
-set(CPACK_PACKAGE_VERSION_MINOR "0")
+set(CPACK_PACKAGE_VERSION_MINOR "1")
 set(CPACK_PACKAGE_VERSION_PATCH "0")
 set(APP_VERSION
     "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
@@ -19,26 +19,33 @@ include(CheckIncludeFiles)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
                ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
+set(CommonSourcesList
+    device/input_device.cpp device/list_devices.cpp
+    opencv/add_overlay.cpp opencv/exit_requested.cpp opencv/opencv_window.cpp
+    opencv/paint_picture.cpp opencv/take_picture.cpp
+    ui/main_settings_window.cpp ui/main_window.cpp ui/opencv_ui.cpp
+    ui/other_window.cpp)
+
 if (WIN32)
-  add_library(${APP_NAME}_cv opencv_ui.cpp list_devices.cpp win32_list_devices.cpp
-              input_device.cpp opencv_window.cpp)
+  add_library(${APP_NAME}_cv device/win32_list_devices.cpp
+              ${CommonSourcesList})
   set(EXE_NAME ${APP_NAME}.exe)
 elseif(APPLE AND UNIX)
-  add_library(${APP_NAME}_cv opencv_ui.cpp list_devices.cpp macos_list_devices.cpp
-              input_device.cpp opencv_window.cpp)
+  add_library(${APP_NAME}_cv device/macos_list_devices.cpp
+              ${CommonSourcesList})
 elseif(UNIX AND (NOT APPLE) AND (NOT MINGW) AND (NOT MSYS) AND (NOT CYGWIN))
-  add_library(${APP_NAME}_cv opencv_ui.cpp list_devices.cpp linux_list_devices.cpp
-              input_device.cpp opencv_window.cpp)
+  add_library(${APP_NAME}_cv device/linux_list_devices.cpp
+              ${CommonSourcesList})
 else()
-  add_library(${APP_NAME}_cv opencv_ui.cpp list_devices.cpp
-              input_device.cpp opencv_window.cpp)
+  add_library(${APP_NAME}_cv
+              ${CommonSourcesList})
 endif()
 
 # Command line executable with a simple OpenCV GUI
 add_executable(${APP_NAME} video_main.cpp run_application.cpp)
 
 # Command line executable with a simple OpenCV GUI
-add_executable(${APP_NAME}_test video_test_main.cpp
+add_executable(${APP_NAME}_test test/video_test_main.cpp
                test/test_list_devices.cpp)
 
 # ------ Start dependencies ------               
@@ -64,6 +71,12 @@ file(DOWNLOAD
 file(DOWNLOAD
      https://raw.githubusercontent.com/rollbear/trompeloeil/master/include/catch2/trompeloeil.hpp
      ${CMAKE_BINARY_DIR}/catch2/trompeloeil.hpp)
+
+# Portable file dialogs (github.com/samhocevar/portable-file-dialogs)
+# Include only, no binary, no libray
+file(DOWNLOAD
+     https://raw.githubusercontent.com/samhocevar/portable-file-dialogs/master/portable-file-dialogs.h
+     ${CMAKE_BINARY_DIR}/portable-file-dialogs.h)
 
 # Catch 2, unit testing for C++
 find_file(HAVE_CATCH_HPP catch.hpp PATH_SUFFIXES catch2 catch)
@@ -107,6 +120,11 @@ target_include_directories(${APP_NAME} PUBLIC
 target_include_directories(${APP_NAME}_cv PUBLIC
                            "${PROJECT_BINARY_DIR}"
                            "${CMAKE_BINARY_DIR}")
+target_compile_options(${APP_NAME}_cv PRIVATE
+     $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
+          -Wall>
+     $<$<CXX_COMPILER_ID:MSVC>:
+          /WX /W4 /w45038>)
 
 add_test(video_list_devices video_test "Scenario: frank video list devices")
 
@@ -138,7 +156,7 @@ if (WIN32)
           opencv_core opencv_highgui opencv_features2d opencv_imgcodecs
           opencv_imgproc opencv_objdetect opencv_photo opencv_stitching
           opencv_video opencv_videoio opencv_ml opencv_gapi opencv_flann
-          opencv_dnn opencv_calib3d)
+          opencv_dnn opencv_calib3d opencv_world)
     set(OPENCV_DLL_FILE "${Installed_OpenCV_PATH}/${OpenCV_DLL_File}${OpenCV_VER}.dll")
     if(EXISTS "${OPENCV_DLL_FILE}")
       string(REPLACE "\\" "/" OPENCV_DLL_FILE_UNIX "${OPENCV_DLL_FILE}")
@@ -147,13 +165,18 @@ if (WIN32)
       message("Could not find OpenCV DLL: ${OPENCV_DLL_FILE}")
     endif()
   endforeach()
-  set(EXTRA_OPENCV_DLL_FILE "${Installed_OpenCV_PATH}/opencv_videoio_ffmpeg${OpenCV_VER}_64.dll")
-  if(EXISTS "${EXTRA_OPENCV_DLL_FILE}")
-    string(REPLACE "\\" "/" EXTRA_OPENCV_DLL_FILE_UNIX "${EXTRA_OPENCV_DLL_FILE}")
-    list(APPEND ALL_RUNTIMES "${EXTRA_OPENCV_DLL_FILE_UNIX}")
-  else()
-    message("Could not find extra OpenCV DLL: ${EXTRA_OPENCV_DLL_FILE}")
-  endif()
+
+  foreach(Extra_OpenCV_DLL_File
+          opencv_videoio_ffmpeg opencv_videoio_msmf)
+    set(EXTRA_OPENCV_DLL_FILE "${Installed_OpenCV_PATH}/${Extra_OpenCV_DLL_File}${OpenCV_VER}_64.dll")
+    if(EXISTS "${EXTRA_OPENCV_DLL_FILE}")
+      string(REPLACE "\\" "/" EXTRA_OPENCV_DLL_FILE_UNIX "${EXTRA_OPENCV_DLL_FILE}")
+      list(APPEND ALL_RUNTIMES "${EXTRA_OPENCV_DLL_FILE_UNIX}")
+    else()
+      message("Could not find extra OpenCV DLL: ${EXTRA_OPENCV_DLL_FILE}")
+    endif()
+  endforeach()
+
   foreach(OpenCV_DLL_Support
           tbb tbbbind tbbmalloc ngraph clDNNPlugin HeteroPlugin
           inference_engine inference_engine_ir_reader inference_engine_legacy

@@ -35,7 +35,8 @@ If you use VS Code, edit your user settings to configure CMake:
 * CMake 3.16, or above
 * OpenCV 4.2.0, or above, computer vision for C++
 * Microsoft GSL, standard C++ Guidelines Support Library
+* Portable file dialogs, for C++
 * Catch 2, unit testing for C++
 * trompeloeil, mocking for C++
 
-If building on Microsoft Windows, the NSIS installer is also required.
+If building on Microsoft Windows, the WIX installer is also required.

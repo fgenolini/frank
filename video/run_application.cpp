@@ -2,8 +2,8 @@
 #include <exception>
 #include <iostream>
 
-#include "list_devices.h"
-#include "opencv_ui.h"
+#include "device/list_devices.h"
+#include "ui/opencv_ui.h"
 #include "run_application.h"
 
 namespace frank::video {

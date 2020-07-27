@@ -3,6 +3,7 @@
 #   OpenCV: computer vision,
 #   cvui: GUI for OpenCV,
 #   Microsoft GSL: standard C++ guideline support library,
+#   portable-file-dialogs: file selection GUI control,
 #   Catch 2: C++ unit testing,
 #   trompeloeil: C++ mocking for testing,
 #   WIX: MSI installer generator for Microsoft Windows,
@@ -12,11 +13,13 @@
 #
 # For an example of how to build on Linux
 # (Ubuntu 20.04, with OpenCV 4.2.0, and the latest Microsoft GSL from github master),
-# see the github CI action on this repository
+# or Windows 10 with Visual Studio 2019,
+# see the github CI actions on this repository.
+# For an example on how to build on Apple Mac OSX, look at the travis YML file.
 
 cmake_minimum_required(VERSION 3.16)
 
-project(frank VERSION 1.0.0)
+project(frank VERSION 1.1.0)
 
 include(CTest)
 enable_testing()

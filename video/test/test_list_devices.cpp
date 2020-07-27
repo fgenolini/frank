@@ -6,8 +6,8 @@
 #include <catch2/catch.hpp>
 #include <catch2/trompeloeil.hpp>
 
-#include "../device_register.h"
-#include "../list_devices.h"
+#include "../device/device_register.h"
+#include "../device/list_devices.h"
 
 namespace test::frank {
 
