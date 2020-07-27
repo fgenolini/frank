@@ -13,9 +13,36 @@ namespace fs = std::filesystem;
 
 namespace frank::video {
 
-void draw_canny(bool *use_canny, int *low_threshold, int *high_threshold) {
+class main_settings_window {
+public:
+  main_settings_window(bool *video_enabled_array, bool *use_canny,
+                       int *low_threshold, int *high_threshold,
+                       bool *overlay_enabled_array, double *overlay_alpha_array)
+      : overlay_alpha_array_(overlay_alpha_array),
+        high_threshold_(high_threshold), low_threshold_(low_threshold),
+        overlay_enabled_array_(overlay_enabled_array), use_canny_(use_canny),
+        video_enabled_array_(video_enabled_array) {}
+
+  void draw(EnhancedWindow &settings, std::vector<input_device> &input_devices,
+            std::vector<bool> &has_webcams,
+            std::vector<cv::String> &overlay_images);
+
+private:
+  void draw_canny();
+  void draw_webcam(int webcam, std::vector<input_device> &input_devices);
+  void draw_overlay(int webcam, std::vector<cv::String> &overlay_images);
+
+  double *overlay_alpha_array_;
+  int *high_threshold_;
+  int *low_threshold_;
+  bool *overlay_enabled_array_;
+  bool *use_canny_;
+  bool *video_enabled_array_;
+};
+
+void main_settings_window::draw_canny() {
   constexpr auto TRACKBAR_WIDTH = 150;
-  cvui::checkbox("Use Canny Edge", use_canny);
+  cvui::checkbox("Use Canny Edge", use_canny_);
   cvui::beginRow();
   {
     cvui::beginColumn();
@@ -25,7 +52,7 @@ void draw_canny(bool *use_canny, int *low_threshold, int *high_threshold) {
       cvui::text("low:");
     }
     cvui::endColumn();
-    cvui::trackbar<int>(TRACKBAR_WIDTH, low_threshold, 5, 150);
+    cvui::trackbar<int>(TRACKBAR_WIDTH, low_threshold_, 5, 150);
     cvui::beginColumn();
     {
       cvui::text(" ");
@@ -33,13 +60,13 @@ void draw_canny(bool *use_canny, int *low_threshold, int *high_threshold) {
       cvui::text("  high:");
     }
     cvui::endColumn();
-    cvui::trackbar<int>(TRACKBAR_WIDTH, high_threshold, 80, 300);
+    cvui::trackbar<int>(TRACKBAR_WIDTH, high_threshold_, 80, 300);
   }
   cvui::endRow();
 }
 
-void draw_webcam(int webcam, std::vector<input_device> &input_devices,
-                 bool *video_enabled_array) {
+void main_settings_window::draw_webcam(
+    int webcam, std::vector<input_device> &input_devices) {
   cvui::beginColumn();
   {
     std::string video_name{};
@@ -51,14 +78,13 @@ void draw_webcam(int webcam, std::vector<input_device> &input_devices,
 
     cvui::text(" ");
     cvui::text(" ");
-    cvui::checkbox(video_name, &video_enabled_array[webcam]);
+    cvui::checkbox(video_name, &video_enabled_array_[webcam]);
   }
   cvui::endColumn();
 }
 
-void draw_overlay(int webcam, bool *overlay_enabled_array,
-                  double *overlay_alpha_array,
-                  std::vector<cv::String> &overlay_images) {
+void main_settings_window::draw_overlay(
+    int webcam, std::vector<cv::String> &overlay_images) {
   constexpr auto ALPHA_MAX = 1.0;
   constexpr auto ALPHA_MIN = 0.0;
   constexpr auto BUTTON_HEIGHT = 30;
@@ -107,10 +133,10 @@ void draw_overlay(int webcam, bool *overlay_enabled_array,
         overlay_name = fs::path(overlay_images[webcam]).stem().string();
       }
 
-      cvui::checkbox(overlay_name, &overlay_enabled_array[webcam]);
+      cvui::checkbox(overlay_name, &overlay_enabled_array_[webcam]);
     }
     cvui::endColumn();
-    cvui::trackbar<double>(TRACKBAR_WIDTH, &overlay_alpha_array[webcam],
+    cvui::trackbar<double>(TRACKBAR_WIDTH, &overlay_alpha_array_[webcam],
                            ALPHA_MIN, ALPHA_MAX);
     cvui::beginColumn();
     {
@@ -123,24 +149,21 @@ void draw_overlay(int webcam, bool *overlay_enabled_array,
   cvui::endRow();
 }
 
-void draw_settings(EnhancedWindow &settings, bool *use_canny,
-                   int *low_threshold, int *high_threshold,
-                   std::vector<input_device> &input_devices,
-                   std::vector<bool> &has_webcams, bool *video_enabled_array,
-                   bool *overlay_enabled_array, double *overlay_alpha_array,
-                   std::vector<cv::String> &overlay_images) {
+void main_settings_window::draw(EnhancedWindow &settings,
+                                std::vector<input_device> &input_devices,
+                                std::vector<bool> &has_webcams,
+                                std::vector<cv::String> &overlay_images) {
   if (settings.isMinimized()) {
     return;
   }
 
-  draw_canny(use_canny, low_threshold, high_threshold);
+  draw_canny();
   for (auto webcam = 0; webcam < (int)has_webcams.size(); ++webcam) {
     cvui::beginRow();
     {
-      draw_webcam(webcam, input_devices, video_enabled_array);
+      draw_webcam(webcam, input_devices);
       cvui::text(" ");
-      draw_overlay(webcam, overlay_enabled_array, overlay_alpha_array,
-                   overlay_images);
+      draw_overlay(webcam, overlay_images);
     }
     cvui::endRow();
   }
@@ -190,9 +213,11 @@ void main_window(EnhancedWindow &settings,
   }
 
   settings.begin(main_frame);
-  draw_settings(settings, &use_canny, &low_threshold, &high_threshold,
-                input_devices, has_webcams, video_enabled_array,
-                overlay_enabled_array, overlay_alpha_array, overlay_images);
+  main_settings_window settings_window{
+      video_enabled_array,   &use_canny,
+      &low_threshold,        &high_threshold,
+      overlay_enabled_array, overlay_alpha_array};
+  settings_window.draw(settings, input_devices, has_webcams, overlay_images);
   settings.end();
   cvui::imshow(window.name(), main_frame);
   window.set_use_canny(use_canny);
