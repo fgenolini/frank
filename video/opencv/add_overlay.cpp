@@ -23,11 +23,11 @@ cv::Mat resize_centered(cv::Mat const &input, cv::Size const &new_size,
   if (new_height <= (double)new_size.height) {
     top = (int)(((double)new_size.height - new_height) / 2.0);
     down = top;
-    cv::resize(input, output, cv::Size(new_size.width, new_height));
+    cv::resize(input, output, cv::Size(new_size.width, (int)new_height));
   } else {
     left = (int)(((double)new_size.width - new_width) / 2.0);
     right = left;
-    cv::resize(input, output, cv::Size(new_width, new_size.height));
+    cv::resize(input, output, cv::Size((int)new_width, new_size.height));
   }
 
   cv::copyMakeBorder(output, output, top, down, left, right,

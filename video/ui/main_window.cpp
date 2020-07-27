@@ -31,8 +31,8 @@ void main_window(EnhancedWindow &settings,
   frame = background_colour;
   cvui::context(window.name());
   auto picture = paint_picture(
-      first_time, has_webcams[0], webcam_index, video_enabled_array[0], window,
-      use_canny, low_threshold, high_threshold, overlay_enabled_array[0],
+      first_time, has_webcams[0], video_enabled_array[0], window, use_canny,
+      low_threshold, high_threshold, overlay_enabled_array[0],
       overlay_alpha_array[0], overlay_images[0], overlay_buffer);
   if (picture.empty()) {
     return;

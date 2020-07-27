@@ -29,8 +29,8 @@ void other_window(opencv_window &window) {
   frame = background_colour;
   cvui::context(window.name());
   auto picture =
-      paint_picture(first_time, has_webcam, webcam_index, video_enabled, window,
-                    use_canny, low_threshold, high_threshold, overlay_enabled,
+      paint_picture(first_time, has_webcam, video_enabled, window, use_canny,
+                    low_threshold, high_threshold, overlay_enabled,
                     overlay_alpha, overlay_image, overlay_buffer);
   if (picture.empty()) {
     return;
