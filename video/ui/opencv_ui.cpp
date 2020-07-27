@@ -1,5 +1,6 @@
 #include <array>
 #include <cstdlib>
+#include <iostream>
 #include <memory>
 #include <utility>
 
@@ -37,6 +38,7 @@ public:
   bool loop(std::vector<input_device> &connected_webcams);
 
 private:
+  cv::Mat overlay_buffers[MAXIMUM_VIDEO_COUNT]{};
   EnhancedWindow settings{SETTINGS_X, SETTINGS_Y, SETTINGS_WIDTH,
                           SETTINGS_HEIGHT, SETTINGS_TITLE};
   opencv_window *window_template;
@@ -67,10 +69,10 @@ video_gui::video_gui(int webcam_count) {
   }
 
   for ([[maybe_unused]] auto _ : has_webcams) {
+    height_width_pairs.push_back(std::make_pair(0.0, 0.0));
     auto input_video_device = std::make_unique<cv::VideoCapture>();
     input_video_devices.push_back(std::move(input_video_device));
     overlay_images.push_back("");
-    height_width_pairs.push_back(std::make_pair(0.0, 0.0));
   }
 
   constexpr auto FIRST_TIME = true;
@@ -83,9 +85,9 @@ video_gui::video_gui(int webcam_count) {
   cv::String overlay_image{};
   window_template = new opencv_window(
       window_names[0], input_video_devices[0].get(), WEBCAM_INDEX, FIRST_TIME,
-      has_webcams[0], video_enabled[0], std::make_pair(0.0, 0.0), USE_CANNY,
-      USE_OVERLAY, overlay_image, NO_OVERLAY_ALPHA, LOW_THRESHOLD,
-      HIGH_THRESHOLD);
+      has_webcams[0], video_enabled[0], std::make_pair(0.0, 0.0),
+      &overlay_buffers[0], USE_CANNY, USE_OVERLAY, overlay_image,
+      NO_OVERLAY_ALPHA, LOW_THRESHOLD, HIGH_THRESHOLD);
   cvui::init(&window_names[0], window_names.size());
 }
 
@@ -117,8 +119,8 @@ bool video_gui::loop(std::vector<input_device> &connected_webcams) {
       opencv_window window(
           window_names[webcam], input_video_devices[webcam].get(), webcam,
           window_template->first_time(), has_webcams[webcam],
-          video_enabled[webcam], height_width_pair,
-          window_template->use_canny(), window_template->use_overlay(),
+          video_enabled[webcam], height_width_pair, &overlay_buffers[webcam],
+          window_template->use_canny(), overlay_enabled[webcam],
           overlay_images[webcam], overlay_alpha[webcam],
           window_template->low_threshold(), window_template->high_threshold());
       other_window(window);

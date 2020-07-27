@@ -11,10 +11,12 @@ public:
   opencv_window(cv::String name, cv::VideoCapture *webcam, int webcam_index,
                 bool first_time, bool has_webcam, bool video_enabled,
                 std::pair<double, double> const &height_width,
-                bool use_canny = false, bool use_overlay = false,
-                cv::String overlay_image = nullptr, double overlay_alpha = 0.0,
-                int low_threshold = 50, int high_threshold = 150);
+                cv::Mat *overlay_buffer, bool use_canny = false,
+                bool use_overlay = false, cv::String overlay_image = nullptr,
+                double overlay_alpha = 0.0, int low_threshold = 50,
+                int high_threshold = 150);
 
+  cv::Mat *overlay_buffer() const;
   cv::String name() const;
   cv::String overlay_image() const;
   cv::VideoCapture *webcam() const;
@@ -36,12 +38,14 @@ public:
   void set_high_threshold(int high_threshold);
   void set_low_threshold(int low_threshold);
   void set_overlay_alpha(double overlay_alpha);
-  void set_overlay_image(cv::String overlay_image);
+  void set_overlay_buffer(cv::Mat *overlay_buffer);
+  void set_overlay_image(cv::String const &overlay_image);
   void set_use_canny(bool use_canny);
   void set_use_overlay(bool use_overlay);
   void set_width(double width);
 
 private:
+  cv::Mat *overlay_buffer_;
   cv::String name_;
   cv::String overlay_image_;
   cv::VideoCapture *webcam_;

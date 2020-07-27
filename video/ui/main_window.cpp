@@ -1,42 +1,14 @@
-#include <filesystem>
-
 #include <opencv2/opencv.hpp>
 
 #include "../device/input_device.h"
+#include "../opencv/add_overlay.h"
 #include "../opencv/opencv_window.h"
+#include "../opencv/paint_picture.h"
 #include "../opencv/take_picture.h"
 #include "main_settings_window.h"
 #include "main_window.h"
 
-namespace fs = std::filesystem;
-
 namespace frank::video {
-
-bool paint_picture(bool first_time, bool has_main_webcam, int webcam_index,
-                   bool main_video_enabled, opencv_window &window,
-                   bool use_canny, int low_threshold, int high_threshold,
-                   cv::Mat &main_frame) {
-  if (!first_time && has_main_webcam && main_video_enabled) {
-    auto picture = take_picture(window);
-    if (window.exit_requested()) {
-      return true;
-    }
-
-    if (use_canny) {
-      cv::cvtColor(picture, main_frame, cv::COLOR_BGR2GRAY);
-      cv::Canny(main_frame, main_frame, low_threshold, high_threshold, 3);
-      cv::cvtColor(main_frame, main_frame, cv::COLOR_GRAY2BGR);
-    } else {
-      main_frame = picture;
-    }
-  }
-
-  if (first_time && has_main_webcam) {
-    cvui::printf(main_frame, 10, 10, "Opening webcam %d...", webcam_index);
-  }
-
-  return false;
-}
 
 void main_window(EnhancedWindow &settings,
                  std::vector<input_device> &input_devices,
@@ -52,31 +24,39 @@ void main_window(EnhancedWindow &settings,
   auto const webcam_index = window.webcam_index();
   auto high_threshold = window.high_threshold();
   auto low_threshold = window.low_threshold();
-  auto main_frame = cv::Mat(WINDOW_HEIGHT, WINDOW_WIDTH, CV_8UC3);
+  auto frame = cv::Mat(WINDOW_HEIGHT, WINDOW_WIDTH, CV_8UC3);
+  auto overlay_buffer = window.overlay_buffer();
   auto use_canny = window.use_canny();
-  main_frame = cv::Scalar(49, 52, 49);
+  cv::Scalar background_colour{49, 52, 49};
+  frame = background_colour;
   cvui::context(window.name());
-  auto exit_requested = paint_picture(
+  auto picture = paint_picture(
       first_time, has_webcams[0], webcam_index, video_enabled_array[0], window,
-      use_canny, low_threshold, high_threshold, main_frame);
-  if (exit_requested) {
+      use_canny, low_threshold, high_threshold, overlay_enabled_array[0],
+      overlay_alpha_array[0], overlay_images[0], overlay_buffer);
+  if (picture.empty()) {
     return;
   }
 
-  auto should_exit = cvui::button(main_frame, QUIT_X, QUIT_Y, "Quit");
+  frame = picture;
+  if (first_time && has_webcams[0]) {
+    cvui::printf(frame, 10, 10, "Opening webcam %d...", webcam_index);
+  }
+
+  auto should_exit = cvui::button(frame, QUIT_X, QUIT_Y, "Quit");
   if (should_exit) {
     window.set_exit_requested(true);
     return;
   }
 
-  settings.begin(main_frame);
+  settings.begin(frame);
   main_settings_window settings_window{
       video_enabled_array,   &use_canny,
       &low_threshold,        &high_threshold,
       overlay_enabled_array, overlay_alpha_array};
   settings_window.draw(settings, input_devices, has_webcams, overlay_images);
   settings.end();
-  cvui::imshow(window.name(), main_frame);
+  cvui::imshow(window.name(), frame);
   window.set_use_canny(use_canny);
   window.set_low_threshold(low_threshold);
   window.set_high_threshold(high_threshold);
