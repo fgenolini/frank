@@ -12,6 +12,32 @@ namespace fs = std::filesystem;
 
 namespace frank::video {
 
+bool paint_picture(bool first_time, bool has_main_webcam, int webcam_index,
+                   bool main_video_enabled, opencv_window &window,
+                   bool use_canny, int low_threshold, int high_threshold,
+                   cv::Mat &main_frame) {
+  if (!first_time && has_main_webcam && main_video_enabled) {
+    auto picture = take_picture(window);
+    if (window.exit_requested()) {
+      return true;
+    }
+
+    if (use_canny) {
+      cv::cvtColor(picture, main_frame, cv::COLOR_BGR2GRAY);
+      cv::Canny(main_frame, main_frame, low_threshold, high_threshold, 3);
+      cv::cvtColor(main_frame, main_frame, cv::COLOR_GRAY2BGR);
+    } else {
+      main_frame = picture;
+    }
+  }
+
+  if (first_time && has_main_webcam) {
+    cvui::printf(main_frame, 10, 10, "Opening webcam %d...", webcam_index);
+  }
+
+  return false;
+}
+
 void main_window(EnhancedWindow &settings,
                  std::vector<input_device> &input_devices,
                  std::vector<bool> &has_webcams, bool *video_enabled_array,
@@ -30,23 +56,11 @@ void main_window(EnhancedWindow &settings,
   auto use_canny = window.use_canny();
   main_frame = cv::Scalar(49, 52, 49);
   cvui::context(window.name());
-  if (!first_time && has_webcams[0] && video_enabled_array[0]) {
-    auto picture = take_picture(window);
-    if (window.exit_requested()) {
-      return;
-    }
-
-    if (use_canny) {
-      cv::cvtColor(picture, main_frame, cv::COLOR_BGR2GRAY);
-      cv::Canny(main_frame, main_frame, low_threshold, high_threshold, 3);
-      cv::cvtColor(main_frame, main_frame, cv::COLOR_GRAY2BGR);
-    } else {
-      main_frame = picture;
-    }
-  }
-
-  if (first_time && has_webcams[0]) {
-    cvui::printf(main_frame, 10, 10, "Opening webcam %d...", webcam_index);
+  auto exit_requested = paint_picture(
+      first_time, has_webcams[0], webcam_index, video_enabled_array[0], window,
+      use_canny, low_threshold, high_threshold, main_frame);
+  if (exit_requested) {
+    return;
   }
 
   auto should_exit = cvui::button(main_frame, QUIT_X, QUIT_Y, "Quit");
