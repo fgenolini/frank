@@ -39,7 +39,7 @@ void draw_canny(bool *use_canny, int *low_threshold, int *high_threshold) {
 }
 
 void draw_webcam(int webcam, std::vector<input_device> &input_devices,
-                 bool *video_enabled_arrray) {
+                 bool *video_enabled_array) {
   cvui::beginColumn();
   {
     std::string video_name{};
@@ -51,7 +51,7 @@ void draw_webcam(int webcam, std::vector<input_device> &input_devices,
 
     cvui::text(" ");
     cvui::text(" ");
-    cvui::checkbox(video_name, &video_enabled_arrray[webcam]);
+    cvui::checkbox(video_name, &video_enabled_array[webcam]);
   }
   cvui::endColumn();
 }
@@ -126,7 +126,7 @@ void draw_overlay(int webcam, bool *overlay_enabled_array,
 void draw_settings(EnhancedWindow &settings, bool *use_canny,
                    int *low_threshold, int *high_threshold,
                    std::vector<input_device> &input_devices,
-                   std::vector<bool> &has_webcams, bool *video_enabled_arrray,
+                   std::vector<bool> &has_webcams, bool *video_enabled_array,
                    bool *overlay_enabled_array, double *overlay_alpha_array,
                    std::vector<cv::String> &overlay_images) {
   if (settings.isMinimized()) {
@@ -137,7 +137,7 @@ void draw_settings(EnhancedWindow &settings, bool *use_canny,
   for (auto webcam = 0; webcam < (int)has_webcams.size(); ++webcam) {
     cvui::beginRow();
     {
-      draw_webcam(webcam, input_devices, video_enabled_arrray);
+      draw_webcam(webcam, input_devices, video_enabled_array);
       cvui::text(" ");
       draw_overlay(webcam, overlay_enabled_array, overlay_alpha_array,
                    overlay_images);
@@ -148,7 +148,7 @@ void draw_settings(EnhancedWindow &settings, bool *use_canny,
 
 void main_window(EnhancedWindow &settings,
                  std::vector<input_device> &input_devices,
-                 std::vector<bool> &has_webcams, bool *video_enabled_arrray,
+                 std::vector<bool> &has_webcams, bool *video_enabled_array,
                  bool *overlay_enabled_array, double *overlay_alpha_array,
                  std::vector<cv::String> &overlay_images,
                  opencv_window &window) {
@@ -164,7 +164,7 @@ void main_window(EnhancedWindow &settings,
   auto use_canny = window.use_canny();
   main_frame = cv::Scalar(49, 52, 49);
   cvui::context(window.name());
-  if (!first_time && has_webcams[0] && video_enabled_arrray[0]) {
+  if (!first_time && has_webcams[0] && video_enabled_array[0]) {
     auto picture = take_picture(window);
     if (window.exit_requested()) {
       return;
@@ -191,7 +191,7 @@ void main_window(EnhancedWindow &settings,
 
   settings.begin(main_frame);
   draw_settings(settings, &use_canny, &low_threshold, &high_threshold,
-                input_devices, has_webcams, video_enabled_arrray,
+                input_devices, has_webcams, video_enabled_array,
                 overlay_enabled_array, overlay_alpha_array, overlay_images);
   settings.end();
   cvui::imshow(window.name(), main_frame);
