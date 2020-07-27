@@ -22,7 +22,8 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
 set(CommonSourcesList
     device/input_device.cpp device/list_devices.cpp
     opencv/exit_requested.cpp opencv/opencv_window.cpp opencv/take_picture.cpp
-    ui/main_window.cpp ui/opencv_ui.cpp ui/other_window.cpp)
+    ui/main_settings_window.cpp ui/main_window.cpp ui/opencv_ui.cpp
+    ui/other_window.cpp)
 
 if (WIN32)
   add_library(${APP_NAME}_cv device/win32_list_devices.cpp
