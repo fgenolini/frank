@@ -31,11 +31,12 @@ constexpr auto WINDOW3_NAME = "Frank video 3";
 
 class video_gui {
 public:
-  video_gui(std::vector<input_device> &connected_webcams);
+  video_gui(int webcam_count);
   ~video_gui();
 
   bool loop(std::vector<input_device> &connected_webcams);
 
+private:
   EnhancedWindow settings{SETTINGS_X, SETTINGS_Y, SETTINGS_WIDTH,
                           SETTINGS_HEIGHT, SETTINGS_TITLE};
   opencv_window *window_template;
@@ -50,21 +51,11 @@ public:
   bool video_enabled[MAXIMUM_VIDEO_COUNT]{};
 };
 
-video_gui::~video_gui() {
-  std::cout << "Releasing webcams" << '\n';
-  for (auto &video_capture : input_video_devices) {
-    auto capturing_device = video_capture.get();
-    capturing_device->release();
-  }
-
-  delete window_template;
-}
-
-video_gui::video_gui(std::vector<input_device> &connected_webcams) {
+video_gui::video_gui(int webcam_count) {
   for (auto webcam = 0;
        webcam < (int)window_names.size() && webcam < MAXIMUM_VIDEO_COUNT;
        ++webcam) {
-    auto has_webcam = (int)connected_webcams.size() > webcam;
+    auto has_webcam = webcam < webcam_count;
     has_webcams.push_back(has_webcam);
     video_enabled[webcam] = has_webcam;
   }
@@ -96,6 +87,16 @@ video_gui::video_gui(std::vector<input_device> &connected_webcams) {
       USE_OVERLAY, overlay_image, NO_OVERLAY_ALPHA, LOW_THRESHOLD,
       HIGH_THRESHOLD);
   cvui::init(&window_names[0], window_names.size());
+}
+
+video_gui::~video_gui() {
+  std::cout << "Releasing webcams" << '\n';
+  for (auto &video_capture : input_video_devices) {
+    auto capturing_device = video_capture.get();
+    capturing_device->release();
+  }
+
+  delete window_template;
 }
 
 bool video_gui::loop(std::vector<input_device> &connected_webcams) {
@@ -141,7 +142,7 @@ bool video_gui::loop(std::vector<input_device> &connected_webcams) {
 }
 
 bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {
-  video_gui gui{connected_webcams};
+  video_gui gui{(int)connected_webcams.size()};
   return gui.loop(connected_webcams);
 }
 
