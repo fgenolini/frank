@@ -42,7 +42,11 @@ else()
 endif()
 
 # Command line executable with a simple OpenCV GUI
-add_executable(${APP_NAME} video_main.cpp run_application.cpp)
+if (WIN32)
+  add_executable(${APP_NAME} WIN32 video_main.cpp run_application.cpp)
+else()
+  add_executable(${APP_NAME} video_main.cpp run_application.cpp)
+endif()
 
 # Command line executable with a simple OpenCV GUI
 add_executable(${APP_NAME}_test test/video_test_main.cpp
