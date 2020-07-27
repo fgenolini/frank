@@ -21,6 +21,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
 
 set(CommonSourcesList
     device/input_device.cpp device/list_devices.cpp
+    json/persisted_settings.cpp
     opencv/add_overlay.cpp opencv/exit_requested.cpp opencv/opencv_window.cpp
     opencv/paint_picture.cpp opencv/take_picture.cpp
     ui/main_settings_window.cpp ui/main_window.cpp ui/opencv_ui.cpp
@@ -68,7 +69,8 @@ file(DOWNLOAD
 # Include only, no binary, no library
 find_package(Microsoft.GSL REQUIRED)
 
-# Trompeloeil C++ mocking, as a header-only library
+# Trompeloeil C++ mocking
+# Include only, no binary, no libray
 file(DOWNLOAD
      https://raw.githubusercontent.com/rollbear/trompeloeil/master/include/trompeloeil.hpp
      ${CMAKE_BINARY_DIR}/trompeloeil.hpp)
@@ -82,7 +84,14 @@ file(DOWNLOAD
      https://raw.githubusercontent.com/samhocevar/portable-file-dialogs/master/portable-file-dialogs.h
      ${CMAKE_BINARY_DIR}/portable-file-dialogs.h)
 
+# JSON (github.com/nlohmann/json)
+# Include only, no binary, no libray
+file(DOWNLOAD
+     https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp
+     ${CMAKE_BINARY_DIR}/nlohmann/json.hpp)
+
 # Catch 2, unit testing for C++
+# Include only, no binary, no libray
 find_file(HAVE_CATCH_HPP catch.hpp PATH_SUFFIXES catch2 catch)
 if(HAVE_CATCH_HPP)
   get_filename_component(CATCH_PATH ${HAVE_CATCH_HPP} DIRECTORY)

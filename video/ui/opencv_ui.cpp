@@ -1,6 +1,7 @@
 #include <array>
 #include <cstdlib>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <utility>
 
@@ -10,6 +11,7 @@
 #define CVUI_IMPLEMENTATION
 
 #include "../device/input_device.h"
+#include "../json/persisted_settings.h"
 #include "../opencv/exit_requested.h"
 #include "../opencv/opencv_window.h"
 #include "../opencv/take_picture.h"
@@ -19,7 +21,9 @@
 
 namespace frank::video {
 
+constexpr auto ALPHA = "alpha_";
 constexpr auto MAXIMUM_VIDEO_COUNT = 4;
+constexpr auto OVERLAY = "overlay_";
 constexpr auto SETTINGS_HEIGHT = 280;
 constexpr auto SETTINGS_TITLE = "Settings";
 constexpr auto SETTINGS_WIDTH = 600;
@@ -38,13 +42,20 @@ public:
   bool loop(std::vector<input_device> &connected_webcams);
 
 private:
+  void load_settings();
+  void save_settings();
+  bool settings_changed() const;
+
   cv::Mat overlay_buffers[MAXIMUM_VIDEO_COUNT]{};
   EnhancedWindow settings{SETTINGS_X, SETTINGS_Y, SETTINGS_WIDTH,
                           SETTINGS_HEIGHT, SETTINGS_TITLE};
   opencv_window *window_template;
+  persisted_settings serialiser_{};
   std::vector<cv::String> overlay_images{};
+  std::vector<cv::String> overlay_images_last_{};
   std::vector<cv::String> window_names{WINDOW_NAME, WINDOW1_NAME, WINDOW2_NAME,
                                        WINDOW3_NAME};
+  std::vector<double> overlay_alpha_last_{};
   std::vector<std::pair<double, double>> height_width_pairs{};
   std::vector<std::unique_ptr<cv::VideoCapture>> input_video_devices{};
   std::vector<bool> has_webcams{};
@@ -102,10 +113,12 @@ video_gui::~video_gui() {
 }
 
 bool video_gui::loop(std::vector<input_device> &connected_webcams) {
+  load_settings();
   while (true) {
     main_window(settings, connected_webcams, has_webcams, video_enabled,
                 overlay_enabled, overlay_alpha, overlay_images,
                 *window_template);
+    save_settings();
     if (window_template->exit_requested()) {
       return true;
     }
@@ -141,6 +154,69 @@ bool video_gui::loop(std::vector<input_device> &connected_webcams) {
   }
 
   return false;
+}
+
+void video_gui::load_settings() {
+  overlay_alpha_last_.clear();
+  overlay_images_last_.clear();
+  auto all_properties = serialiser_.read_properties();
+  if (all_properties.empty()) {
+    return;
+  }
+
+  for (auto i = 0; i < MAXIMUM_VIDEO_COUNT; ++i) {
+    std::string alpha_key = ALPHA + std::to_string(i);
+    if (all_properties.count(alpha_key) > 0) {
+      overlay_alpha[i] = std::stod(all_properties[alpha_key]);
+    }
+
+    std::string overlay_key = OVERLAY + std::to_string(i);
+    if (all_properties.count(overlay_key) > 0) {
+      overlay_images[i] = all_properties[overlay_key];
+    }
+
+    overlay_alpha_last_.push_back(overlay_alpha[i]);
+    overlay_images_last_.push_back(overlay_images[i]);
+  }
+}
+
+bool video_gui::settings_changed() const {
+  if (overlay_images_last_.size() != MAXIMUM_VIDEO_COUNT ||
+      overlay_alpha_last_.size() != MAXIMUM_VIDEO_COUNT) {
+    return true;
+  }
+
+  for (auto i = 0; i < MAXIMUM_VIDEO_COUNT; ++i) {
+    if (overlay_alpha[i] != overlay_alpha_last_[i]) {
+      return true;
+    }
+
+    if (overlay_images[i].compare(overlay_images_last_[i]) != 0) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+void video_gui::save_settings() {
+  if (!settings_changed()) {
+    return;
+  }
+
+  overlay_alpha_last_.clear();
+  overlay_images_last_.clear();
+  std::map<std::string, std::string> all_properties{};
+  for (auto i = 0; i < MAXIMUM_VIDEO_COUNT; ++i) {
+    std::string alpha_key = ALPHA + std::to_string(i);
+    all_properties[alpha_key] = std::to_string(overlay_alpha[i]);
+    std::string overlay_key = OVERLAY + std::to_string(i);
+    all_properties[overlay_key] = overlay_images[i];
+    overlay_alpha_last_.push_back(overlay_alpha[i]);
+    overlay_images_last_.push_back(overlay_images[i]);
+  }
+
+  serialiser_.write_properties(all_properties);
 }
 
 bool opencv_with_webcams(std::vector<input_device> &connected_webcams) {

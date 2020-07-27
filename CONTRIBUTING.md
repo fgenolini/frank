@@ -36,6 +36,7 @@ If you use VS Code, edit your user settings to configure CMake:
 * OpenCV 4.2.0, or above, computer vision for C++
 * Microsoft GSL, standard C++ Guidelines Support Library
 * Portable file dialogs, for C++
+* nlohmann/json, JSON for C++
 * Catch 2, unit testing for C++
 * trompeloeil, mocking for C++
 
