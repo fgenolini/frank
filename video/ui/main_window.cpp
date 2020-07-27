@@ -34,11 +34,10 @@ void main_window(EnhancedWindow &settings,
       first_time, has_webcams[0], video_enabled_array[0], window, use_canny,
       low_threshold, high_threshold, overlay_enabled_array[0],
       overlay_alpha_array[0], overlay_images[0], overlay_buffer);
-  if (picture.empty()) {
-    return;
+  if (!picture.empty()) {
+    frame = picture;
   }
 
-  frame = picture;
   if (first_time && has_webcams[0]) {
     cvui::printf(frame, 10, 10, "Opening webcam %d...", webcam_index);
   }

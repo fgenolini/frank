@@ -32,11 +32,10 @@ void other_window(opencv_window &window) {
       paint_picture(first_time, has_webcam, video_enabled, window, use_canny,
                     low_threshold, high_threshold, overlay_enabled,
                     overlay_alpha, overlay_image, overlay_buffer);
-  if (picture.empty()) {
-    return;
+  if (!picture.empty()) {
+    frame = picture;
   }
 
-  frame = picture;
   if (first_time && window.has_webcam()) {
     cvui::printf(frame, 10, 10, "Opening webcam %d...", window.webcam_index());
   }
