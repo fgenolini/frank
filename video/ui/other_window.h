@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../opencv/opencv_window.h"
+#include "opencv/opencv_window.h"
 
 namespace frank::video {
 

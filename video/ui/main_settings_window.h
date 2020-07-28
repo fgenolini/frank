@@ -1,16 +1,21 @@
 #pragma once
 
+#include "config.h"
+
+#if defined(WIN32)
+#pragma warning(push, 0)
+#pragma warning(disable : 4365)
+#endif
+
 #include <vector>
 
-#include <opencv2/opencv.hpp>
+#if defined(WIN32)
+#pragma warning(pop)
+#endif
 
-#define CVUI_DISABLE_COMPILATION_NOTICES
-#include "cvui.h"
+#include "protected_cvui.h"
 
-// EnhancedWindow.h must be included after cvui.h
-#include "EnhancedWindow.h"
-
-#include "../device/input_device.h"
+#include "device/input_device.h"
 
 namespace frank::video {
 
@@ -18,11 +23,8 @@ class main_settings_window {
 public:
   main_settings_window(bool *video_enabled_array, bool *use_canny,
                        int *low_threshold, int *high_threshold,
-                       bool *overlay_enabled_array, double *overlay_alpha_array)
-      : overlay_alpha_array_(overlay_alpha_array),
-        high_threshold_(high_threshold), low_threshold_(low_threshold),
-        overlay_enabled_array_(overlay_enabled_array), use_canny_(use_canny),
-        video_enabled_array_(video_enabled_array) {}
+                       bool *overlay_enabled_array,
+                       double *overlay_alpha_array);
 
   void draw(EnhancedWindow &settings, std::vector<input_device> &input_devices,
             std::vector<bool> &has_webcams,

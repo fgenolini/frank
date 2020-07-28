@@ -7,15 +7,45 @@ In the Projects there is a Kanban called "getting involved": add a card
 ### Adding a Kanban card
 Create an issue, then go to Projects and add a card by selecting the card of interest and drag and drop it to the relevant column
 
-## Coding standard
+## C++ 17
+The modern standard C++ 17 programming language is used in this project.
+The code is designed to be simple and portable across:
+* Microsoft Windows
+* Ubuntu Linux (other distributions will probably work too)
+* Apple Mac OSX 10.15 (other recent versions should be OK as well)
+
+A number of compilers are supported, as long as they implement std C++ 17:
+* Microsoft Visual C++ 16 (Visual Studio 2019)
+* gcc
+* clang
+
+## Coding standards
 All C++ source files are formatted using the clang-format LLVM style,
 disabling automated sorting of includes.
 Maximum recommended line width is 80 columns in general,
 and 120 columns in exceptional circumstances.
 
+Follow Robert C. Martin (Uncle Bob) principle of:
+good code does not require many comments (if any at all).
+
 ## CMake
 The CMake tool is used to build the frank C++ projects.
-Look into the Github build actions and the travis builds for examples of how to build on Linux and Microsoft Windows.
+
+CMake facilitates the automation of the creation of build systems
+on all supported platforms.
+
+Use cmake-gui for a user friendly GUI,
+or use the cmake command line tool for continuous integration scripts
+(Travis, github actions).
+
+Microsoft Windows with Visual Studio 2019:
+* creates a Visual Studio solution with native C++ projects
+
+Linux and Apple Mac OSX:
+* creates Makefiles
+
+Look into the Github build actions and the travis builds
+for examples of how to build on Linux and Microsoft Windows.
 
 You will first need to get OpenCV and GSL.
 
@@ -36,6 +66,7 @@ If you use VS Code, edit your user settings to configure CMake:
 * OpenCV 4.2.0, or above, computer vision for C++
 * Microsoft GSL, standard C++ Guidelines Support Library
 * Portable file dialogs, for C++
+* nlohmann/json, JSON for C++
 * Catch 2, unit testing for C++
 * trompeloeil, mocking for C++
 

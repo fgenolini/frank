@@ -1,15 +1,22 @@
 #pragma once
 
-#include <memory>
+#include "config.h"
 
-#define CVUI_DISABLE_COMPILATION_NOTICES
-#include "cvui.h"
+#if defined(WIN32)
+#pragma warning(push, 0)
+#pragma warning(disable : 4365)
+#endif
 
-// EnhancedWindow.h must be included after cvui.h
-#include "EnhancedWindow.h"
+#include <vector>
 
-#include "../device/input_device.h"
-#include "../opencv/opencv_window.h"
+#if defined(WIN32)
+#pragma warning(pop)
+#endif
+
+#include "protected_cvui.h"
+
+#include "device/input_device.h"
+#include "opencv/opencv_window.h"
 
 namespace frank::video {
 

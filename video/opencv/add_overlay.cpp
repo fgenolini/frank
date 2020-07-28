@@ -1,7 +1,15 @@
+#include "config.h"
+
+#if defined(WIN32)
+#pragma warning(push, 0)
+#endif
+
 #include <filesystem>
 #include <iostream>
 
-#include <opencv2/opencv.hpp>
+#if defined(WIN32)
+#pragma warning(pop)
+#endif
 
 #include "add_overlay.h"
 
@@ -78,7 +86,7 @@ cv::Mat add_overlay(double overlay_alpha, cv::String const &overlay_image,
     return output;
   }
 
-  auto beta = 1.0;
+  auto beta = 1.0 - overlay_alpha;
   cv::Mat overlaid_image;
   cv::addWeighted(overlay_only, overlay_alpha, frame, beta, 0.0,
                   overlaid_image);

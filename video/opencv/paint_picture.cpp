@@ -1,4 +1,4 @@
-#include <opencv2/opencv.hpp>
+#include "config.h"
 
 #include "add_overlay.h"
 #include "opencv_window.h"

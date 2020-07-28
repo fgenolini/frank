@@ -4,6 +4,7 @@
 #   cvui: GUI for OpenCV,
 #   Microsoft GSL: standard C++ guideline support library,
 #   portable-file-dialogs: file selection GUI control,
+#   nlohmann/json: JSON serialisation for C++,
 #   Catch 2: C++ unit testing,
 #   trompeloeil: C++ mocking for testing,
 #   WIX: MSI installer generator for Microsoft Windows,

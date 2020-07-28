@@ -1,6 +1,17 @@
 #pragma once
 
+#include "config.h"
+
+#if defined(WIN32)
+#pragma warning(push, 0)
+#pragma warning(disable : 4365)
+#endif
+
 #include <string>
+
+#if defined(WIN32)
+#pragma warning(pop)
+#endif
 
 namespace frank::video {
 

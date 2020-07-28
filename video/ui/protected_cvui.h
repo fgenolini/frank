@@ -9,14 +9,12 @@
 
 #include <opencv2/opencv.hpp>
 
+#define CVUI_DISABLE_COMPILATION_NOTICES
+#include "cvui.h"
+
+// EnhancedWindow.h must be included after cvui.h to provide EnhancedWindow
+#include "EnhancedWindow.h"
+
 #if defined(WIN32)
 #pragma warning(pop)
 #endif
-
-#include "opencv_window.h"
-
-namespace frank::video {
-
-cv::Mat take_picture(opencv_window &window) noexcept(false);
-
-} // namespace frank::video

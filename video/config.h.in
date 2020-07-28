@@ -9,3 +9,7 @@
 #cmakedefine MINGW
 #cmakedefine MSYS
 #cmakedefine CYGWIN
+
+#if defined(WIN32)
+#pragma warning(disable : 4710 4711 5045)
+#endif
