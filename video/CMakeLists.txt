@@ -150,13 +150,14 @@ if (WIN32)
                              "${CMAKE_BINARY_DIR}")
 endif()
 target_include_directories(${LIB_NAME} PUBLIC
+                           "${CMAKE_CURRENT_SOURCE_DIR}"
                            "${PROJECT_BINARY_DIR}"
                            "${CMAKE_BINARY_DIR}")
 target_compile_options(${LIB_NAME} PRIVATE
      $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
           -Werror -Wall -Wextra -Wpedantic>
      $<$<CXX_COMPILER_ID:MSVC>:
-          /WX /W4 /w45038>)
+          /WX /Wall /w45038>)
 
 add_test(video_list_devices video_test "Scenario: ${ROOT_PROJECT_LOW_NAME} ${APP_LOW_NAME} list devices")
 
