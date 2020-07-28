@@ -78,7 +78,7 @@ cv::Mat add_overlay(double overlay_alpha, cv::String const &overlay_image,
     return output;
   }
 
-  auto beta = 1.0;
+  auto beta = 1.0 - overlay_alpha;
   cv::Mat overlaid_image;
   cv::addWeighted(overlay_only, overlay_alpha, frame, beta, 0.0,
                   overlaid_image);
