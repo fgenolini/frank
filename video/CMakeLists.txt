@@ -5,11 +5,22 @@ set(CPACK_PACKAGE_VERSION_MINOR "1")
 set(CPACK_PACKAGE_VERSION_PATCH "0")
 set(APP_VERSION
     "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
-set(APP_NAME "video")
-set(APP_LOW_NAME "video")
+set(ROOT_PROJECT_NAME "Frank")
+string(TOLOWER ${ROOT_PROJECT_NAME} ROOT_PROJECT_LOW_NAME)
+set(APP_NAME "Video")
+string(TOLOWER ${APP_NAME} APP_LOW_NAME)
+
+# Microsoft Windows executable application that has no attached DOS command line window
+set(APP_NAME_WINMAIN "${APP_LOW_NAME}w")
+
+# Catch2 test runner application
+set(TEST_APP_NAME "${APP_LOW_NAME}_test")
+
+# Library that contains most of the source code for frank video
+set(LIB_NAME "${APP_LOW_NAME}_cv")
 
 # Use computer video (camera) to detect shapes
-project(${APP_NAME} VERSION ${APP_VERSION})
+project(${APP_LOW_NAME} VERSION ${APP_VERSION})
 
 # C++ standard required = C++ 17
 set(CMAKE_CXX_STANDARD 17)
@@ -28,36 +39,36 @@ set(CommonSourcesList
     ui/other_window.cpp)
 
 if (WIN32)
-  add_library(${APP_NAME}_cv device/win32_list_devices.cpp
+  add_library(${LIB_NAME} device/win32_list_devices.cpp
               ${CommonSourcesList})
-  set(EXE_NAME ${APP_NAME}.exe)
 elseif(APPLE AND UNIX)
-  add_library(${APP_NAME}_cv device/macos_list_devices.cpp
+  add_library(${LIB_NAME} device/macos_list_devices.cpp
               ${CommonSourcesList})
 elseif(UNIX AND (NOT APPLE) AND (NOT MINGW) AND (NOT MSYS) AND (NOT CYGWIN))
-  add_library(${APP_NAME}_cv device/linux_list_devices.cpp
+  add_library(${LIB_NAME} device/linux_list_devices.cpp
               ${CommonSourcesList})
 else()
-  add_library(${APP_NAME}_cv
+  add_library(${LIB_NAME}
               ${CommonSourcesList})
 endif()
 
 # Command line executable with a simple OpenCV GUI
+add_executable(${APP_LOW_NAME} video_main.cpp run_application.cpp)
 if (WIN32)
-  add_executable(${APP_NAME} WIN32 video_main.cpp run_application.cpp)
-else()
-  add_executable(${APP_NAME} video_main.cpp run_application.cpp)
+  # WinMain instead of main
+  add_executable(${APP_NAME_WINMAIN} WIN32 video_winmain.cpp run_application.cpp)
 endif()
 
 # Command line executable with a simple OpenCV GUI
-add_executable(${APP_NAME}_test test/video_test_main.cpp
+add_executable(${APP_LOW_NAME}_test test/video_test_main.cpp
                test/test_list_devices.cpp)
 
 # ------ Start dependencies ------               
 # OpenCV, Open Computer Vision (github.com/opencv/opencv)
 find_package(OpenCV REQUIRED)
 
-# OpenCV User Interface, as a header-only library (github.com/Dovyski/cvui)
+# OpenCV User Interface (github.com/Dovyski/cvui)
+# Headers only, no binary, no library
 file(DOWNLOAD
      https://raw.githubusercontent.com/Dovyski/cvui/master/cvui.h
      ${CMAKE_BINARY_DIR}/cvui.h)
@@ -66,11 +77,11 @@ file(DOWNLOAD
      ${CMAKE_BINARY_DIR}/EnhancedWindow.h)
 
 # Microsoft GSL, C++ Guidelines Support Library (github.com/microsoft/gsl)
-# Include only, no binary, no library
+# Header only, no binary, no library
 find_package(Microsoft.GSL REQUIRED)
 
 # Trompeloeil C++ mocking
-# Include only, no binary, no libray
+# Header only, no binary, no libray
 file(DOWNLOAD
      https://raw.githubusercontent.com/rollbear/trompeloeil/master/include/trompeloeil.hpp
      ${CMAKE_BINARY_DIR}/trompeloeil.hpp)
@@ -79,23 +90,23 @@ file(DOWNLOAD
      ${CMAKE_BINARY_DIR}/catch2/trompeloeil.hpp)
 
 # Portable file dialogs (github.com/samhocevar/portable-file-dialogs)
-# Include only, no binary, no libray
+# Header only, no binary, no libray
 file(DOWNLOAD
      https://raw.githubusercontent.com/samhocevar/portable-file-dialogs/master/portable-file-dialogs.h
      ${CMAKE_BINARY_DIR}/portable-file-dialogs.h)
 
 # JSON (github.com/nlohmann/json)
-# Include only, no binary, no libray
+# Header only, no binary, no libray
 file(DOWNLOAD
      https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp
      ${CMAKE_BINARY_DIR}/nlohmann/json.hpp)
 
 # Catch 2, unit testing for C++
-# Include only, no binary, no libray
+# Headers only, no binary, no libray
 find_file(HAVE_CATCH_HPP catch.hpp PATH_SUFFIXES catch2 catch)
 if(HAVE_CATCH_HPP)
   get_filename_component(CATCH_PATH ${HAVE_CATCH_HPP} DIRECTORY)
-  target_include_directories(${APP_NAME}_test INTERFACE ${CATCH_PATH}
+  target_include_directories(${TEST_APP_NAME} INTERFACE ${CATCH_PATH}
                              "${PROJECT_BINARY_DIR}"
                              "${CMAKE_BINARY_DIR}")
 else()
@@ -113,8 +124,8 @@ else()
     LOG_DOWNLOAD ON)
 
   ExternalProject_Get_Property(git_catch source_dir)
-  add_dependencies(${APP_NAME}_test git_catch)
-  target_include_directories(${APP_NAME}_test PUBLIC
+  add_dependencies(${TEST_APP_NAME} git_catch)
+  target_include_directories(${TEST_APP_NAME} PUBLIC
                              ${source_dir}/single_include
                              ${source_dir}/single_include/catch2
                              "${PROJECT_BINARY_DIR}"
@@ -122,31 +133,42 @@ else()
 endif()
 # ------ End dependencies ------               
 
-target_link_libraries(${APP_NAME} ${APP_NAME}_cv ${OpenCV_LIBS} Microsoft.GSL::GSL)
-target_link_libraries(${APP_NAME}_test ${APP_NAME}_cv ${OpenCV_LIBS} Microsoft.GSL::GSL)
-target_link_libraries(${APP_NAME}_cv ${OpenCV_LIBS} Microsoft.GSL::GSL)
+target_link_libraries(${APP_LOW_NAME} ${LIB_NAME} ${OpenCV_LIBS} Microsoft.GSL::GSL)
+if (WIN32)
+  target_link_libraries(${APP_NAME_WINMAIN} ${LIB_NAME} ${OpenCV_LIBS} Microsoft.GSL::GSL)
+endif()
+target_link_libraries(${TEST_APP_NAME} ${LIB_NAME} ${OpenCV_LIBS} Microsoft.GSL::GSL)
+target_link_libraries(${LIB_NAME} ${OpenCV_LIBS} Microsoft.GSL::GSL)
 
 configure_file(videoConfig.h.in videoConfig.h)
-target_include_directories(${APP_NAME} PUBLIC
+target_include_directories(${APP_LOW_NAME} PUBLIC
                            "${PROJECT_BINARY_DIR}"
                            "${CMAKE_BINARY_DIR}")
-target_include_directories(${APP_NAME}_cv PUBLIC
+if (WIN32)
+  target_include_directories(${APP_NAME_WINMAIN} PUBLIC
+                             "${PROJECT_BINARY_DIR}"
+                             "${CMAKE_BINARY_DIR}")
+endif()
+target_include_directories(${LIB_NAME} PUBLIC
                            "${PROJECT_BINARY_DIR}"
                            "${CMAKE_BINARY_DIR}")
-target_compile_options(${APP_NAME}_cv PRIVATE
+target_compile_options(${LIB_NAME} PRIVATE
      $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
-          -Wall>
+          -Werror -Wall -Wextra -Wpedantic>
      $<$<CXX_COMPILER_ID:MSVC>:
           /WX /W4 /w45038>)
 
-add_test(video_list_devices video_test "Scenario: frank video list devices")
+add_test(video_list_devices video_test "Scenario: ${ROOT_PROJECT_LOW_NAME} ${APP_LOW_NAME} list devices")
 
 # CPack installer
 include(InstallRequiredSystemLibraries)
 include(GNUInstallDirs)
 include(CPackComponent)
-install(TARGETS ${APP_NAME} RUNTIME DESTINATION bin COMPONENT Applications)
-install(TARGETS ${APP_NAME}_test RUNTIME DESTINATION bin COMPONENT Tests)
+if (WIN32)
+  install(TARGETS ${APP_NAME_WINMAIN} RUNTIME DESTINATION bin COMPONENT Applications)
+endif()
+install(TARGETS ${APP_LOW_NAME} RUNTIME DESTINATION bin COMPONENT Applications)
+install(TARGETS ${TEST_APP_NAME} RUNTIME DESTINATION bin COMPONENT Tests)
 
 set(CPACK_COMPONENTS_ALL Applications Tests Dependencies)
 
@@ -209,18 +231,18 @@ if (WIN32)
   set(CPACK_COMPONENTS_APPLICATIONS_INSTALL_TYPES User Full)
   set(CPACK_COMPONENTS_DEPENDENCIES_INSTALL_TYPES User Full)
   set(CPACK_COMPONENTS_TESTS_INSTALL_TYPES Full)
-  set(CPACK_WIX_PROGRAM_MENU_FOLDER "frank video")
-  set(CPACK_PACKAGE_EXECUTABLES ${APP_NAME} "frank ${APP_NAME}")
-  set_property(INSTALL "bin/${APP_NAME}.exe"
-               PROPERTY CPACK_START_MENU_SHORTCUTS "frank video")
+  set(CPACK_WIX_PROGRAM_MENU_FOLDER "${ROOT_PROJECT_NAME} ${APP_NAME}")
+  set(CPACK_PACKAGE_EXECUTABLES ${APP_NAME_WINMAIN} "${ROOT_PROJECT_NAME} ${APP_NAME}")
+  set_property(INSTALL "bin/${APP_NAME_WINMAIN}.exe"
+               PROPERTY CPACK_START_MENU_SHORTCUTS "${ROOT_PROJECT_NAME} ${APP_NAME}")
 endif()
 
 set(CPACK_PACKAGE_VENDOR "fgenolini")
-set(CPACK_PACKAGE_NAME "frank-${APP_LOW_NAME}")
+set(CPACK_PACKAGE_NAME "${ROOT_PROJECT_LOW_NAME}-${APP_LOW_NAME}")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
-    "frank ${APP_NAME} - viewer for 4 webcams with edge detection")
+    "${ROOT_PROJECT_NAME} ${APP_NAME} - viewer for 4 webcams with edge detection")
 set(CPACK_PACKAGE_VERSION ${APP_VERSION})
-set(CPACK_PACKAGE_INSTALL_DIRECTORY "frank ${APP_NAME}")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "${ROOT_PROJECT_LOW_NAME}_${APP_LOW_NAME}")
 set(CPACK_COMPONENT_APPLICATIONS_DISPLAY_NAME "GUI applications")
 set(CPACK_COMPONENT_APPLICATIONS_DESCRIPTION
     "OpenCV GUI viewer for up to 4 video input devices (webcams), with optional edge detection")
@@ -229,7 +251,7 @@ set(CPACK_COMPONENT_DEPENDENCIES_DESCRIPTION
     "DLLs for OpenCV and Microsoft C++")
 set(CPACK_COMPONENT_TESTS_DISPLAY_NAME "Unit tests")
 set(CPACK_COMPONENT_TESTS_DESCRIPTION
-    "Tests and checks for all the frank applications, for software quality assurance")
+    "Tests and checks for all the ${ROOT_PROJECT_NAME} ${APP_NAME} applications, for software quality assurance")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/License.txt")
 
 include(CPack)
