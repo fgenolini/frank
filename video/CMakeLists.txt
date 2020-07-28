@@ -36,7 +36,7 @@ set(CommonSourcesList
     opencv/add_overlay.cpp opencv/exit_requested.cpp opencv/opencv_window.cpp
     opencv/paint_picture.cpp opencv/take_picture.cpp
     ui/main_settings_window.cpp ui/main_window.cpp ui/opencv_ui.cpp
-    ui/other_window.cpp)
+    ui/other_window.cpp ui/video_gui.cpp)
 
 if (WIN32)
   add_library(${LIB_NAME} device/win32_list_devices.cpp
@@ -55,7 +55,7 @@ endif()
 # Command line executable with a simple OpenCV GUI
 add_executable(${APP_LOW_NAME} video_main.cpp run_application.cpp)
 if (WIN32)
-  # WinMain instead of main
+  # WinMain instead of main, so that no DOS window is shown for Windows users
   add_executable(${APP_NAME_WINMAIN} WIN32 video_winmain.cpp run_application.cpp)
 endif()
 
@@ -196,8 +196,6 @@ if (WIN32)
     if(EXISTS "${OPENCV_DLL_FILE}")
       string(REPLACE "\\" "/" OPENCV_DLL_FILE_UNIX "${OPENCV_DLL_FILE}")
       list(APPEND ALL_RUNTIMES "${OPENCV_DLL_FILE_UNIX}")
-    else()
-      message("Could not find OpenCV DLL: ${OPENCV_DLL_FILE}")
     endif()
   endforeach()
 
@@ -207,8 +205,6 @@ if (WIN32)
     if(EXISTS "${EXTRA_OPENCV_DLL_FILE}")
       string(REPLACE "\\" "/" EXTRA_OPENCV_DLL_FILE_UNIX "${EXTRA_OPENCV_DLL_FILE}")
       list(APPEND ALL_RUNTIMES "${EXTRA_OPENCV_DLL_FILE_UNIX}")
-    else()
-      message("Could not find extra OpenCV DLL: ${EXTRA_OPENCV_DLL_FILE}")
     endif()
   endforeach()
 

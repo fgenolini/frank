@@ -1,7 +1,4 @@
-#include <opencv2/opencv.hpp>
-
-#define CVUI_DISABLE_COMPILATION_NOTICES
-#include "cvui.h"
+#include "protected_cvui.h"
 
 #include "../opencv/opencv_window.h"
 #include "../opencv/paint_picture.h"

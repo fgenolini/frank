@@ -1,10 +1,8 @@
-#include <opencv2/opencv.hpp>
+#define CVUI_IMPLEMENTATION
+#include "protected_cvui.h"
 
-#include "../device/input_device.h"
-#include "../opencv/add_overlay.h"
 #include "../opencv/opencv_window.h"
 #include "../opencv/paint_picture.h"
-#include "../opencv/take_picture.h"
 #include "main_settings_window.h"
 #include "main_window.h"
 
@@ -16,6 +14,7 @@ void main_window(EnhancedWindow &settings,
                  bool *overlay_enabled_array, double *overlay_alpha_array,
                  std::vector<cv::String> &overlay_images,
                  opencv_window &window) {
+  constexpr auto QUIT = "Quit";
   constexpr auto QUIT_X = 10;
   constexpr auto QUIT_Y = 10;
   constexpr auto WINDOW_HEIGHT = 480;
@@ -42,7 +41,7 @@ void main_window(EnhancedWindow &settings,
     cvui::printf(frame, 10, 10, "Opening webcam %d...", webcam_index);
   }
 
-  auto should_exit = cvui::button(frame, QUIT_X, QUIT_Y, "Quit");
+  auto should_exit = cvui::button(frame, QUIT_X, QUIT_Y, QUIT);
   if (should_exit) {
     window.set_exit_requested(true);
     return;
