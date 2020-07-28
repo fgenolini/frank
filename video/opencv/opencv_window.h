@@ -1,10 +1,26 @@
 #pragma once
 
+#include "config.h"
+
+#if defined(WIN32)
+#pragma warning(push, 0)
+#pragma warning(disable : 4365)
+#endif
+
 #include <utility>
 
 #include <opencv2/opencv.hpp>
 
+#if defined(WIN32)
+#pragma warning(pop)
+#endif
+
 namespace frank::video {
+
+#if defined(WIN32)
+#pragma warning(push)
+#pragma warning(disable : 4820)
+#endif
 
 class opencv_window {
 public:
@@ -62,5 +78,9 @@ private:
   bool use_overlay_;
   bool video_enabled_;
 };
+
+#if defined(WIN32)
+#pragma warning(pop)
+#endif
 
 } // namespace frank::video

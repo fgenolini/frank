@@ -1,17 +1,37 @@
+#include "config.h"
+
+#if defined(WIN32)
+#pragma warning(push, 0)
+#pragma warning(disable : 4355 5204)
+#endif
+
 #include <filesystem>
 
-#include <opencv2/opencv.hpp>
+#include "portable-file-dialogs.h"
 
-#include "../device/input_device.h"
-#include "../opencv/opencv_window.h"
-#include "../opencv/take_picture.h"
+#if defined(WIN32)
+#pragma warning(pop)
+#endif
+
+#include "device/input_device.h"
+#include "opencv/opencv_window.h"
+#include "opencv/take_picture.h"
 #include "main_settings_window.h"
 #include "main_window.h"
-#include "portable-file-dialogs.h"
 
 namespace fs = std::filesystem;
 
 namespace frank::video {
+
+main_settings_window::main_settings_window(bool *video_enabled_array,
+                                           bool *use_canny, int *low_threshold,
+                                           int *high_threshold,
+                                           bool *overlay_enabled_array,
+                                           double *overlay_alpha_array)
+    : overlay_alpha_array_(overlay_alpha_array),
+      high_threshold_(high_threshold), low_threshold_(low_threshold),
+      overlay_enabled_array_(overlay_enabled_array), use_canny_(use_canny),
+      video_enabled_array_(video_enabled_array) {}
 
 void main_settings_window::draw_canny() {
   constexpr auto TRACKBAR_WIDTH = 150;
@@ -37,6 +57,11 @@ void main_settings_window::draw_canny() {
   }
   cvui::endRow();
 }
+
+#if defined(WIN32)
+#pragma warning(push)
+#pragma warning(disable : 4365)
+#endif
 
 void main_settings_window::draw_webcam(
     int webcam, std::vector<input_device> &input_devices) {
@@ -121,6 +146,10 @@ void main_settings_window::draw_overlay(
   }
   cvui::endRow();
 }
+
+#if defined(WIN32)
+#pragma warning(pop)
+#endif
 
 void main_settings_window::draw(EnhancedWindow &settings,
                                 std::vector<input_device> &input_devices,

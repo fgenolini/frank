@@ -1,6 +1,9 @@
 #include "config.h"
 
 #if defined(WIN32)
+#pragma warning(push, 0)
+#pragma warning(disable : 4365)
+
 #include <comutil.h>
 #include <dshow.h>
 #include <windows.h>
@@ -10,6 +13,7 @@
 #include <vector>
 
 #include <gsl/gsl_util>
+#pragma warning(pop)
 
 using namespace gsl;
 
@@ -82,7 +86,7 @@ std::vector<std::string> device_information(IEnumMoniker *devices) {
     VariantClear(&property);
     auto get_audio_id = property_bag->Read(L"WaveInID", &property, 0);
     if (SUCCEEDED(get_audio_id)) {
-      printf("  WaveIn ID: %d\n", property.lVal);
+      printf("  WaveIn ID: %ld\n", property.lVal);
     }
 
     VariantClear(&property);

@@ -1,11 +1,22 @@
 #pragma once
 
+#include "config.h"
+
+#if defined(WIN32)
+#pragma warning(push, 0)
+#pragma warning(disable : 4365)
+#endif
+
 #include <vector>
+
+#if defined(WIN32)
+#pragma warning(pop)
+#endif
 
 #include "protected_cvui.h"
 
-#include "../device/input_device.h"
-#include "../opencv/opencv_window.h"
+#include "device/input_device.h"
+#include "opencv/opencv_window.h"
 
 namespace frank::video {
 

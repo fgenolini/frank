@@ -1,4 +1,14 @@
+#include "config.h"
+
+#if defined(WIN32)
+#pragma warning(push, 0)
+#endif
+
 #include <string>
+
+#if defined(WIN32)
+#pragma warning(pop)
+#endif
 
 #include "opencv_window.h"
 

@@ -1,7 +1,7 @@
 #include "protected_cvui.h"
 
-#include "../opencv/opencv_window.h"
-#include "../opencv/paint_picture.h"
+#include "opencv/opencv_window.h"
+#include "opencv/paint_picture.h"
 #include "other_window.h"
 
 namespace frank::video {

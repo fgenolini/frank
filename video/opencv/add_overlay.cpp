@@ -1,7 +1,15 @@
+#include "config.h"
+
+#if defined(WIN32)
+#pragma warning(push, 0)
+#endif
+
 #include <filesystem>
 #include <iostream>
 
-#include <opencv2/opencv.hpp>
+#if defined(WIN32)
+#pragma warning(pop)
+#endif
 
 #include "add_overlay.h"
 

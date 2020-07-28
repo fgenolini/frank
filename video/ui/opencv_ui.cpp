@@ -1,7 +1,18 @@
+#include "config.h"
+
+#if defined(WIN32)
+#pragma warning(push, 0)
+#pragma warning(disable : 4365)
+#endif
+
 #include <cstdlib>
 #include <vector>
 
-#include "../device/input_device.h"
+#if defined(WIN32)
+#pragma warning(pop)
+#endif
+
+#include "device/input_device.h"
 #include "opencv_ui.h"
 #include "video_gui.h"
 

@@ -1,8 +1,18 @@
+#include "config.h"
+
+#if defined(WIN32)
+#pragma warning(push, 0)
+#pragma warning(disable : 4365)
+#endif
+
 #include <iostream>
 #include <stdexcept>
 
 #include <opencv2/imgcodecs.hpp>
-#include <opencv2/opencv.hpp>
+
+#if defined(WIN32)
+#pragma warning(pop)
+#endif
 
 #include "exit_requested.h"
 #include "opencv_window.h"

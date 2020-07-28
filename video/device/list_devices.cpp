@@ -1,7 +1,17 @@
+#include "config.h"
+
+#if defined(WIN32)
+#pragma warning(push, 0)
+#endif
+
 #include <iostream>
 #include <string>
 #include <utility>
 #include <vector>
+
+#if defined(WIN32)
+#pragma warning(pop)
+#endif
 
 #include "config.h"
 #include "device_register.h"

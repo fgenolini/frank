@@ -1,7 +1,18 @@
+#include "config.h"
+
+#if defined(WIN32)
+#pragma warning(push, 0)
+#pragma warning(disable : 4365)
+#endif
+
 #include <cstdlib>
 #include <iostream>
 
-#include "../opencv/exit_requested.h"
+#if defined(WIN32)
+#pragma warning(pop)
+#endif
+
+#include "opencv/exit_requested.h"
 #include "main_window.h"
 #include "other_window.h"
 #include "video_gui.h"
@@ -38,20 +49,11 @@ video_gui::video_gui(int webcam_count) {
   constexpr auto USE_OVERLAY = false;
   constexpr auto WEBCAM_INDEX = 0;
   cv::String overlay_image{};
-  window_template = new opencv_window{window_names[0],
-                                      input_video_devices[0].get(),
-                                      WEBCAM_INDEX,
-                                      FIRST_TIME,
-                                      has_webcams[0],
-                                      video_enabled[0],
-                                      std::make_pair(0.0, 0.0),
-                                      &overlay_buffers[0],
-                                      USE_CANNY,
-                                      USE_OVERLAY,
-                                      overlay_image,
-                                      NO_OVERLAY_ALPHA,
-                                      LOW_THRESHOLD,
-                                      HIGH_THRESHOLD};
+  window_template = new opencv_window(
+      window_names[0], input_video_devices[0].get(), WEBCAM_INDEX, FIRST_TIME,
+      has_webcams[0], video_enabled[0], std::make_pair(0.0, 0.0),
+      &overlay_buffers[0], USE_CANNY, USE_OVERLAY, overlay_image,
+      NO_OVERLAY_ALPHA, LOW_THRESHOLD, HIGH_THRESHOLD);
   cvui::init(&window_names[0], window_names.size());
 }
 
@@ -64,6 +66,11 @@ video_gui::~video_gui() {
 
   delete window_template;
 }
+
+#if defined(WIN32)
+#pragma warning(push)
+#pragma warning(disable : 4365)
+#endif
 
 bool video_gui::loop(std::vector<input_device> &connected_webcams) {
   load_settings();
@@ -82,20 +89,13 @@ bool video_gui::loop(std::vector<input_device> &connected_webcams) {
       }
 
       auto height_width_pair = height_width_pairs[webcam];
-      opencv_window window{window_names[webcam],
-                           input_video_devices[webcam].get(),
-                           webcam,
-                           window_template->first_time(),
-                           has_webcams[webcam],
-                           video_enabled[webcam],
-                           height_width_pair,
-                           &overlay_buffers[webcam],
-                           window_template->use_canny(),
-                           overlay_enabled[webcam],
-                           overlay_images[webcam],
-                           overlay_alpha[webcam],
-                           window_template->low_threshold(),
-                           window_template->high_threshold()};
+      opencv_window window(
+          window_names[webcam], input_video_devices[webcam].get(), webcam,
+          window_template->first_time(), has_webcams[webcam],
+          video_enabled[webcam], height_width_pair, &overlay_buffers[webcam],
+          window_template->use_canny(), overlay_enabled[webcam],
+          overlay_images[webcam], overlay_alpha[webcam],
+          window_template->low_threshold(), window_template->high_threshold());
       other_window(window);
       if (window.exit_requested()) {
         return true;
@@ -119,7 +119,7 @@ bool video_gui::loop(std::vector<input_device> &connected_webcams) {
 void video_gui::load_settings() {
   overlay_alpha_last_.clear();
   overlay_images_last_.clear();
-  auto all_properties = serialiser_.read_properties();
+  auto all_properties = serialiser_.read();
   if (all_properties.empty()) {
     return;
   }
@@ -176,7 +176,11 @@ void video_gui::save_settings() {
     overlay_images_last_.push_back(overlay_images[i]);
   }
 
-  serialiser_.write_properties(all_properties);
+  serialiser_.write(all_properties);
 }
+
+#if defined(WIN32)
+#pragma warning(pop)
+#endif
 
 } // namespace frank::video
