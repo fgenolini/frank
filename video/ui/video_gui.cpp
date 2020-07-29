@@ -29,7 +29,7 @@ video_gui::video_gui(int webcam_count)
     : settings(SETTINGS_X, SETTINGS_Y, SETTINGS_WIDTH, SETTINGS_HEIGHT,
                SETTINGS_TITLE) {
   overlay_alpha = new double[MAXIMUM_VIDEO_COUNT]{};
-  overlay_buffers = new cv::Mat[MAXIMUM_VIDEO_COUNT];
+  overlay_buffers = new cv::Mat[MAXIMUM_VIDEO_COUNT]{};
   overlay_enabled = new bool[MAXIMUM_VIDEO_COUNT]{};
   video_enabled = new bool[MAXIMUM_VIDEO_COUNT]{};
   window_names.push_back(WINDOW_NAME);
