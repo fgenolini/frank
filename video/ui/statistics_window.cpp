@@ -10,7 +10,6 @@ WARNINGS_ON
 
 namespace frank::video {
 
-constexpr auto DEFAULT_THRESHOLD = 20;
 constexpr auto HISTOGRAM_SIZE = 128;
 constexpr auto MAXIMUM_THRESHOLD = 400;
 
