@@ -1,7 +1,11 @@
 #pragma once
 
+#include "config.h"
+
+WARNINGS_OFF
 #include <string>
 #include <map>
+WARNINGS_ON
 
 namespace frank::video {
 

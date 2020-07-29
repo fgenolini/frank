@@ -1,7 +1,11 @@
 #pragma once
 
+#include "config.h"
+
+WARNINGS_OFF
 #include <string>
 #include <vector>
+WARNINGS_ON
 
 #include "device_register.h"
 #include "input_device.h"

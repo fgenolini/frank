@@ -1,9 +1,6 @@
 #include "config.h"
 
-#if defined(WIN32)
-#pragma warning(push, 0)
-#endif
-
+WARNINGS_OFF
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -11,10 +8,7 @@
 #include <iostream>
 
 #include <nlohmann/json.hpp>
-
-#if defined(WIN32)
-#pragma warning(pop)
-#endif
+WARNINGS_ON
 
 #include "persisted_settings.h"
 
@@ -32,13 +26,9 @@ persisted_settings::persisted_settings() {
   constexpr auto HOME = "HOME";
 #endif
 
-#if defined(WIN32)
-#pragma warning(push, 2)
-#endif
+WARNINGS_OFF
   char const *home = std::getenv(HOME);
-#if defined(WIN32)
-#pragma warning(pop)
-#endif
+WARNINGS_ON
   if (!home) {
     home = CURRENT_DIRECTORY;
   }

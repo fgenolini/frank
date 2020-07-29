@@ -1,17 +1,10 @@
 #include "config.h"
 
-#if defined(WIN32)
-#pragma warning(push, 0)
-#pragma warning(disable : 4355 5204)
-#endif
-
+WARNINGS_OFF
 #include <filesystem>
 
 #include "portable-file-dialogs.h"
-
-#if defined(WIN32)
-#pragma warning(pop)
-#endif
+WARNINGS_ON
 
 #include "device/input_device.h"
 #include "opencv/opencv_window.h"
@@ -58,11 +51,8 @@ void main_settings_window::draw_canny() {
   cvui::endRow();
 }
 
-#if defined(WIN32)
-#pragma warning(push)
-#pragma warning(disable : 4365)
-#endif
-
+WARNING_PUSH
+DISABLE_WARNING_MSC(4365)
 void main_settings_window::draw_webcam(
     int webcam, std::vector<input_device> &input_devices) {
   cvui::beginColumn();
@@ -146,10 +136,7 @@ void main_settings_window::draw_overlay(
   }
   cvui::endRow();
 }
-
-#if defined(WIN32)
-#pragma warning(pop)
-#endif
+WARNINGS_ON
 
 void main_settings_window::draw(EnhancedWindow &settings,
                                 std::vector<input_device> &input_devices,

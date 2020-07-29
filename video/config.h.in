@@ -1,3 +1,4 @@
+#pragma once
 
 #cmakedefine UNIX
 
@@ -10,6 +11,37 @@
 #cmakedefine MSYS
 #cmakedefine CYGWIN
 
-#if defined(WIN32)
+#if defined(WIN32) && defined(_MSC_VER)
 #pragma warning(disable : 4710 4711 5045)
+#define WARNING_PUSH \
+  __pragma(warning(push, 0))
+#define DISABLE_WARNING_GCC(X)
+#define DISABLE_WARNING_MSC(X) \
+  __pragma(warning(disable:X))
+#define WARNINGS_OFF \
+  WARNING_PUSH \
+  __pragma(warning(disable:4355 4365 5204))
+#define WARNINGS_ON \
+  __pragma(warning(pop))
+#elif defined(__GNUC__) || defined(__clang__)
+#define WARNING_PUSH \
+  _Pragma("GCC diagnostic push")
+#define DO_PRAGMA(X) \
+  _Pragma(#X)
+#define DISABLE_WARNING_GCC(X) \
+  DO_PRAGMA(GCC diagnostic ignored #X)
+#define DISABLE_WARNING_MSC(X)
+#define WARNINGS_OFF \
+  WARNING_PUSH \
+  DISABLE_WARNING_GCC(-Wall) \
+  DISABLE_WARNING_GCC(-Wextra) \
+  DISABLE_WARNING_GCC(-Wpedantic)
+#define WARNINGS_ON \
+  _Pragma("GCC diagnostic pop")
+#else
+#define DISABLE_WARNING_GCC(X)
+#define DISABLE_WARNING_MSC(X)
+#define WARNING_PUSH
+#define WARNINGS_OFF
+#define WARNINGS_ON
 #endif

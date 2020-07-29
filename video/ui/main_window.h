@@ -2,16 +2,9 @@
 
 #include "config.h"
 
-#if defined(WIN32)
-#pragma warning(push, 0)
-#pragma warning(disable : 4365)
-#endif
-
+WARNINGS_OFF
 #include <vector>
-
-#if defined(WIN32)
-#pragma warning(pop)
-#endif
+WARNINGS_ON
 
 #include "protected_cvui.h"
 
@@ -20,7 +13,7 @@
 
 namespace frank::video {
 
-void main_window(EnhancedWindow &settings,
+void main_window(EnhancedWindow &settings, EnhancedWindow &statistics,
                  std::vector<input_device> &input_devices,
                  std::vector<bool> &has_webcams, bool *video_enabled,
                  bool *overlay_enabled, double *overlay_alpha,
