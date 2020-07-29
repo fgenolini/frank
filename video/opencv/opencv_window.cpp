@@ -8,6 +8,8 @@ WARNINGS_ON
 
 namespace frank::video {
 
+constexpr auto DEFAULT_HISTOGRAM_THRESHOLD = 20;
+
 opencv_window::opencv_window(cv::String name, cv::VideoCapture *webcam,
                              int webcam_index, bool first_time, bool has_webcam,
                              bool video_enabled,
@@ -20,6 +22,7 @@ opencv_window::opencv_window(cv::String name, cv::VideoCapture *webcam,
       overlay_image_(overlay_image), webcam_(webcam),
       height_(height_width.first), overlay_alpha_(overlay_alpha),
       width_(height_width.second), high_threshold_(high_threshold),
+      histogram_threshold_(DEFAULT_HISTOGRAM_THRESHOLD),
       low_threshold_(low_threshold), webcam_index_(webcam_index),
       exit_requested_(false), first_time_(first_time), has_webcam_(has_webcam),
       histograms_(histograms), use_canny_(use_canny), use_overlay_(use_overlay),
@@ -55,6 +58,8 @@ double opencv_window::width() const { return width_; }
 
 int opencv_window::high_threshold() const { return high_threshold_; }
 
+int opencv_window::histogram_threshold() const { return histogram_threshold_; }
+
 int opencv_window::low_threshold() const { return low_threshold_; }
 
 int opencv_window::webcam_index() const { return webcam_index_; }
@@ -71,6 +76,10 @@ void opencv_window::set_height(double height) { height_ = height; }
 
 void opencv_window::set_high_threshold(int high_threshold) {
   high_threshold_ = high_threshold;
+}
+
+void opencv_window::set_histogram_threshold(int histogram_threshold) {
+  histogram_threshold_ = histogram_threshold;
 }
 
 void opencv_window::set_histograms(bool histograms) {

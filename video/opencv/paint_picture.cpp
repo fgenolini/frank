@@ -11,39 +11,41 @@ cv::Mat paint_picture(bool first_time, bool has_webcam, bool video_enabled,
                       opencv_window &window, bool use_canny, int low_threshold,
                       int high_threshold, bool overlay_enabled,
                       double overlay_alpha, cv::String const &overlay_image,
-                      cv::Mat *overlay_buffer) {
-  cv::Mat output;
+                      cv::Mat *overlay_buffer, cv::Mat *raw_picture) {
+  cv::Mat output{};
   if (first_time || !has_webcam || !video_enabled) {
     return output;
   }
 
   auto picture = take_picture(window);
-  if (window.exit_requested()) {
+  if (window.exit_requested() || picture.empty()) {
     return output;
   }
 
-  cv::Mat with_canny;
+  if (raw_picture) {
+    *raw_picture = picture;
+  }
+
+  output = picture;
   if (use_canny) {
     cv::Mat canny;
     cv::cvtColor(picture, canny, cv::COLOR_BGR2GRAY);
     cv::Canny(canny, canny, low_threshold, high_threshold, 3);
     cv::cvtColor(canny, canny, cv::COLOR_GRAY2BGR);
-    with_canny = canny;
-  } else {
-    with_canny = picture;
+    output = canny;
   }
 
   if (!overlay_enabled) {
-    return with_canny;
+    return output;
   }
 
   auto with_overlay =
-      add_overlay(overlay_alpha, overlay_image, overlay_buffer, with_canny);
-  if (!with_overlay.empty()) {
-    return with_overlay;
+      add_overlay(overlay_alpha, overlay_image, overlay_buffer, output);
+  if (with_overlay.empty()) {
+    return output;
   }
 
-  return with_canny;
+  return with_overlay;
 }
 
 } // namespace frank::video

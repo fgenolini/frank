@@ -37,12 +37,14 @@ public:
   double overlay_alpha() const;
   double width() const;
   int high_threshold() const;
+  int histogram_threshold() const;
   int low_threshold() const;
   int webcam_index() const;
   void set_exit_requested(bool exit_requested);
   void set_first_time(bool first_time);
   void set_height(double height);
   void set_high_threshold(int high_threshold);
+  void set_histogram_threshold(int histogram_threshold);
   void set_histograms(bool histograms);
   void set_low_threshold(int low_threshold);
   void set_overlay_alpha(double overlay_alpha);
@@ -61,6 +63,7 @@ private:
   double overlay_alpha_;
   double width_;
   int high_threshold_;
+  int histogram_threshold_;
   int low_threshold_;
   int webcam_index_;
   bool exit_requested_;

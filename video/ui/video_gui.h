@@ -39,6 +39,7 @@ private:
   std::vector<cv::String> overlay_images_last_{};
   std::vector<cv::String> window_names{};
   std::vector<double> overlay_alpha_last_{};
+  std::vector<EnhancedWindow> statistics_{};
   std::vector<std::pair<double, double>> height_width_pairs{};
   std::vector<std::unique_ptr<cv::VideoCapture>> input_video_devices{};
 };

@@ -13,7 +13,7 @@ WARNINGS_ON
 
 namespace frank::video {
 
-void main_window(EnhancedWindow &settings,
+void main_window(EnhancedWindow &settings, EnhancedWindow &statistics,
                  std::vector<input_device> &input_devices,
                  std::vector<bool> &has_webcams, bool *video_enabled,
                  bool *overlay_enabled, double *overlay_alpha,

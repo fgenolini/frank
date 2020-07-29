@@ -20,6 +20,15 @@ constexpr auto SETTINGS_TITLE = "Settings";
 constexpr auto SETTINGS_WIDTH = 600;
 constexpr auto SETTINGS_X = 10;
 constexpr auto SETTINGS_Y = 50;
+constexpr auto STATISTICS0_HEIGHT = 400;
+constexpr auto STATISTICS0_WIDTH = 500;
+constexpr auto STATISTICS0_X = 110;
+constexpr auto STATISTICS0_Y = 10;
+constexpr auto STATISTICS_HEIGHT = 150;
+constexpr auto STATISTICS_TITLE = "Statistics";
+constexpr auto STATISTICS_WIDTH = 200;
+constexpr auto STATISTICS_X = 50;
+constexpr auto STATISTICS_Y = 10;
 constexpr auto WINDOW_NAME = "Frank video";
 constexpr auto WINDOW1_NAME = "Frank video 1";
 constexpr auto WINDOW2_NAME = "Frank video 2";
@@ -42,6 +51,15 @@ video_gui::video_gui(int webcam_count)
     auto has_webcam = webcam < webcam_count;
     has_webcams.push_back(has_webcam);
     video_enabled[webcam] = has_webcam;
+    if (webcam == 0) {
+      statistics_.push_back(
+          EnhancedWindow(STATISTICS0_X, STATISTICS0_Y, STATISTICS0_WIDTH,
+                         STATISTICS0_HEIGHT, STATISTICS_TITLE));
+    } else {
+      statistics_.push_back(EnhancedWindow(STATISTICS_X, STATISTICS_Y,
+                                           STATISTICS_WIDTH, STATISTICS_HEIGHT,
+                                           STATISTICS_TITLE));
+    }
   }
 
   if (!has_webcams[0]) {
@@ -91,12 +109,15 @@ video_gui::~video_gui() {
 WARNING_PUSH
 DISABLE_WARNING_MSC(4365)
 bool video_gui::loop(std::vector<input_device> &connected_webcams) {
+  auto histogram_threshold = 20;
   load_settings();
   while (true) {
-    main_window(settings, connected_webcams, has_webcams, video_enabled,
-                overlay_enabled, overlay_alpha, overlay_images,
+    window_template->set_histogram_threshold(histogram_threshold);
+    main_window(settings, statistics_[0], connected_webcams, has_webcams,
+                video_enabled, overlay_enabled, overlay_alpha, overlay_images,
                 *window_template);
     histograms[0] = window_template->histograms();
+    histogram_threshold = window_template->histogram_threshold();
     save_settings();
     if (window_template->exit_requested()) {
       return true;
@@ -116,7 +137,8 @@ bool video_gui::loop(std::vector<input_device> &connected_webcams) {
           overlay_images[webcam], overlay_alpha[webcam],
           window_template->low_threshold(), window_template->high_threshold(),
           histograms[webcam]);
-      other_window(window);
+      window.set_histogram_threshold(histogram_threshold);
+      other_window(statistics_[webcam], window);
       if (window.exit_requested()) {
         return true;
       }
@@ -125,6 +147,7 @@ bool video_gui::loop(std::vector<input_device> &connected_webcams) {
       height_width_pair.second = window.width();
       height_width_pairs[webcam] = height_width_pair;
       histograms[webcam] = window.histograms();
+      histogram_threshold = window.histogram_threshold();
     }
 
     if (exit_requested()) {
