@@ -33,9 +33,9 @@
 #define DISABLE_WARNING_MSC(X)
 #define WARNINGS_OFF \
   WARNING_PUSH \
-  DISABLE_WARNING(-Wall) \
-  DISABLE_WARNING(-Wextra) \
-  DISABLE_WARNING(-Wpedantic)
+  DISABLE_WARNING_GCC(-Wall) \
+  DISABLE_WARNING_GCC(-Wextra) \
+  DISABLE_WARNING_GCC(-Wpedantic)
 #define WARNINGS_ON \
   _Pragma("GCC diagnostic pop")
 #else
