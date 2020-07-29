@@ -1,16 +1,9 @@
 #include "config.h"
 
-#if defined(WIN32)
-#pragma warning(push, 0)
-#pragma warning(disable : 4365)
-#endif
-
+WARNINGS_OFF
 #include <cstdlib>
 #include <iostream>
-
-#if defined(WIN32)
-#pragma warning(pop)
-#endif
+WARNINGS_ON
 
 #include "opencv/exit_requested.h"
 #include "main_window.h"
@@ -19,7 +12,30 @@
 
 namespace frank::video {
 
-video_gui::video_gui(int webcam_count) {
+constexpr auto ALPHA = "alpha_";
+constexpr auto MAXIMUM_VIDEO_COUNT = 4;
+constexpr auto OVERLAY = "overlay_";
+constexpr auto SETTINGS_HEIGHT = 280;
+constexpr auto SETTINGS_TITLE = "Settings";
+constexpr auto SETTINGS_WIDTH = 600;
+constexpr auto SETTINGS_X = 10;
+constexpr auto SETTINGS_Y = 50;
+constexpr auto WINDOW_NAME = "Frank video";
+constexpr auto WINDOW1_NAME = "Frank video 1";
+constexpr auto WINDOW2_NAME = "Frank video 2";
+constexpr auto WINDOW3_NAME = "Frank video 3";
+
+video_gui::video_gui(int webcam_count)
+    : settings(SETTINGS_X, SETTINGS_Y, SETTINGS_WIDTH, SETTINGS_HEIGHT,
+               SETTINGS_TITLE) {
+  overlay_buffers = new cv::Mat[MAXIMUM_VIDEO_COUNT];
+  overlay_alpha = new double[MAXIMUM_VIDEO_COUNT];
+  overlay_enabled = new bool[MAXIMUM_VIDEO_COUNT];
+  video_enabled = new bool[MAXIMUM_VIDEO_COUNT];
+  window_names.push_back(WINDOW_NAME);
+  window_names.push_back(WINDOW1_NAME);
+  window_names.push_back(WINDOW2_NAME);
+  window_names.push_back(WINDOW3_NAME);
   for (auto webcam = 0;
        webcam < (int)window_names.size() && webcam < MAXIMUM_VIDEO_COUNT;
        ++webcam) {
@@ -65,6 +81,10 @@ video_gui::~video_gui() {
   }
 
   delete window_template;
+  delete video_enabled;
+  delete overlay_enabled;
+  delete overlay_alpha;
+  delete overlay_buffers;
 }
 
 #if defined(WIN32)
