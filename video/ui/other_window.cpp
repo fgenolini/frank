@@ -21,7 +21,6 @@ void other_window(EnhancedWindow &statistics, opencv_window &window) {
   auto const overlay_enabled = window.use_overlay();
   auto const overlay_image = window.overlay_image();
   auto const use_canny = window.use_canny();
-  auto const use_overlay = window.use_overlay();
   auto const video_enabled = window.video_enabled();
   auto const webcam_index = window.webcam_index();
   auto histogram_threshold = window.histogram_threshold();
