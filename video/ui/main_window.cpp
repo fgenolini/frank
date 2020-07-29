@@ -17,14 +17,15 @@ void main_window(EnhancedWindow &settings,
                  bool *overlay_enabled_array, double *overlay_alpha_array,
                  std::vector<cv::String> &overlay_images,
                  opencv_window &window) {
+  constexpr auto FIRST_ROW_X = 10;
+  constexpr auto FIRST_ROW_Y = 10;
   constexpr auto QUIT = "Quit";
-  constexpr auto QUIT_X = 10;
-  constexpr auto QUIT_Y = 10;
   constexpr auto WINDOW_HEIGHT = 480;
   constexpr auto WINDOW_WIDTH = 640;
   auto const first_time = window.first_time();
   auto const webcam_index = window.webcam_index();
   auto high_threshold = window.high_threshold();
+  auto histograms = window.histograms();
   auto low_threshold = window.low_threshold();
   auto frame = cv::Mat(WINDOW_HEIGHT, WINDOW_WIDTH, CV_8UC3);
   auto overlay_buffer = window.overlay_buffer();
@@ -40,15 +41,28 @@ void main_window(EnhancedWindow &settings,
     frame = picture;
   }
 
-  if (first_time && has_webcams[0]) {
-    cvui::printf(frame, 10, 10, "Opening webcam %d...", webcam_index);
-  }
+  cvui::beginRow(frame, FIRST_ROW_X, FIRST_ROW_Y);
+  {
+    auto should_exit = cvui::button(QUIT);
+    if (should_exit) {
+      window.set_exit_requested(true);
+      return;
+    }
 
-  auto should_exit = cvui::button(frame, QUIT_X, QUIT_Y, QUIT);
-  if (should_exit) {
-    window.set_exit_requested(true);
-    return;
+    if (has_webcams[0]) {
+      cvui::text(" ");
+      if (first_time) {
+        cvui::printf("Opening webcam %d...", webcam_index);
+      } else {
+        cvui::checkbox("Stats", &histograms);
+        if (histograms) {
+          cvui::text(" ");
+          cvui::printf("RGB histograms for window %d...", webcam_index);
+        }
+      }
+    }
   }
+  cvui::endRow();
 
   settings.begin(frame);
   main_settings_window settings_window{
@@ -58,9 +72,10 @@ void main_window(EnhancedWindow &settings,
   settings_window.draw(settings, input_devices, has_webcams, overlay_images);
   settings.end();
   cvui::imshow(window.name(), frame);
-  window.set_use_canny(use_canny);
-  window.set_low_threshold(low_threshold);
   window.set_high_threshold(high_threshold);
+  window.set_histograms(histograms);
+  window.set_low_threshold(low_threshold);
+  window.set_use_canny(use_canny);
 }
 
 } // namespace frank::video

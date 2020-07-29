@@ -7,6 +7,8 @@
 namespace frank::video {
 
 void other_window(opencv_window &window) {
+  constexpr auto FIRST_ROW_X = 10;
+  constexpr auto FIRST_ROW_Y = 10;
   constexpr auto WINDOW_HEIGHT = 180;
   constexpr auto WINDOW_WIDTH = 320;
   auto const first_time = window.first_time();
@@ -21,6 +23,7 @@ void other_window(opencv_window &window) {
   auto const use_overlay = window.use_overlay();
   auto const video_enabled = window.video_enabled();
   auto const webcam_index = window.webcam_index();
+  auto histograms = window.histograms();
   auto frame = cv::Mat(WINDOW_HEIGHT, WINDOW_WIDTH, CV_8UC3);
   cv::Scalar background_colour{49, 52, 49};
   frame = background_colour;
@@ -33,11 +36,23 @@ void other_window(opencv_window &window) {
     frame = picture;
   }
 
-  if (first_time && window.has_webcam()) {
-    cvui::printf(frame, 10, 10, "Opening webcam %d...", window.webcam_index());
+  cvui::beginRow(frame, FIRST_ROW_X, FIRST_ROW_Y);
+  {
+    if (window.has_webcam()) {
+      if (first_time) {
+        cvui::printf("Opening webcam %d...", webcam_index);
+      } else {
+        cvui::checkbox("Stats", &histograms);
+        if (histograms) {
+          cvui::text(" ");
+          cvui::printf("RGB histograms for window %d...", webcam_index);
+        }
+      }
+    }
   }
-
+  cvui::endRow();
   cvui::imshow(window.name(), frame);
+  window.set_histograms(histograms);
 }
 
 } // namespace frank::video
