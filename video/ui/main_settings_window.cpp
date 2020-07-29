@@ -51,11 +51,8 @@ void main_settings_window::draw_canny() {
   cvui::endRow();
 }
 
-#if defined(WIN32)
-#pragma warning(push)
-#pragma warning(disable : 4365)
-#endif
-
+WARNING_PUSH
+DISABLE_WARNING_MSC(4365)
 void main_settings_window::draw_webcam(
     int webcam, std::vector<input_device> &input_devices) {
   cvui::beginColumn();
@@ -139,10 +136,7 @@ void main_settings_window::draw_overlay(
   }
   cvui::endRow();
 }
-
-#if defined(WIN32)
-#pragma warning(pop)
-#endif
+WARNINGS_ON
 
 void main_settings_window::draw(EnhancedWindow &settings,
                                 std::vector<input_device> &input_devices,

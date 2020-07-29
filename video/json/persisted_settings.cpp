@@ -26,13 +26,9 @@ persisted_settings::persisted_settings() {
   constexpr auto HOME = "HOME";
 #endif
 
-#if defined(WIN32)
-#pragma warning(push, 2)
-#endif
+WARNINGS_OFF
   char const *home = std::getenv(HOME);
-#if defined(WIN32)
-#pragma warning(pop)
-#endif
+WARNINGS_ON
   if (!home) {
     home = CURRENT_DIRECTORY;
   }
