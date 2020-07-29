@@ -2,11 +2,7 @@
 
 #include "config.h"
 
-#if defined(WIN32)
-#pragma warning(push, 0)
-#pragma warning(disable : 4365)
-#endif
-
+WARNINGS_OFF
 #include <opencv2/opencv.hpp>
 
 #define CVUI_DISABLE_COMPILATION_NOTICES
@@ -14,7 +10,4 @@
 
 // EnhancedWindow.h must be included after cvui.h to provide EnhancedWindow
 #include "EnhancedWindow.h"
-
-#if defined(WIN32)
-#pragma warning(pop)
-#endif
+WARNINGS_ON

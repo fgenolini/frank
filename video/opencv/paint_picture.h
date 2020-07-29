@@ -2,16 +2,9 @@
 
 #include "config.h"
 
-#if defined(WIN32)
-#pragma warning(push, 0)
-#pragma warning(disable : 4365)
-#endif
-
+WARNINGS_OFF
 #include <opencv2/opencv.hpp>
-
-#if defined(WIN32)
-#pragma warning(pop)
-#endif
+WARNINGS_ON
 
 #include "opencv/opencv_window.h"
 

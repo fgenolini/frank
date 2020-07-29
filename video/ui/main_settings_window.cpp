@@ -1,17 +1,10 @@
 #include "config.h"
 
-#if defined(WIN32)
-#pragma warning(push, 0)
-#pragma warning(disable : 4355 5204)
-#endif
-
+WARNINGS_OFF
 #include <filesystem>
 
 #include "portable-file-dialogs.h"
-
-#if defined(WIN32)
-#pragma warning(pop)
-#endif
+WARNINGS_ON
 
 #include "device/input_device.h"
 #include "opencv/opencv_window.h"

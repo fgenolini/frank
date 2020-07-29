@@ -1,15 +1,9 @@
 #include "config.h"
 
-#if defined(WIN32)
-#pragma warning(push, 0)
-#endif
-
+WARNINGS_OFF
 #include <filesystem>
 #include <iostream>
-
-#if defined(WIN32)
-#pragma warning(pop)
-#endif
+WARNINGS_ON
 
 #include "add_overlay.h"
 

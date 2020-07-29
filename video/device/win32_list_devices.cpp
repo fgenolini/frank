@@ -1,9 +1,7 @@
 #include "config.h"
 
 #if defined(WIN32)
-#pragma warning(push, 0)
-#pragma warning(disable : 4365)
-
+WARNINGS_OFF
 #include <comutil.h>
 #include <dshow.h>
 #include <windows.h>
@@ -13,7 +11,7 @@
 #include <vector>
 
 #include <gsl/gsl_util>
-#pragma warning(pop)
+WARNINGS_ON
 
 using namespace gsl;
 
