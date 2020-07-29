@@ -26,20 +26,21 @@ private:
   void save_settings();
   bool settings_changed() const;
 
+  bool *overlay_enabled;
+  bool *video_enabled;
   cv::Mat *overlay_buffers;
+  double *overlay_alpha;
   EnhancedWindow settings;
   opencv_window *window_template;
   persisted_settings serialiser_{};
+  std::vector<bool> has_webcams{};
+  std::vector<bool> histograms{};
   std::vector<cv::String> overlay_images{};
   std::vector<cv::String> overlay_images_last_{};
   std::vector<cv::String> window_names{};
   std::vector<double> overlay_alpha_last_{};
   std::vector<std::pair<double, double>> height_width_pairs{};
   std::vector<std::unique_ptr<cv::VideoCapture>> input_video_devices{};
-  std::vector<bool> has_webcams{};
-  double *overlay_alpha;
-  bool *overlay_enabled;
-  bool *video_enabled;
 };
 
 } // namespace frank::video

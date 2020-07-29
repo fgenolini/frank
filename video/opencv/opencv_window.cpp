@@ -15,15 +15,29 @@ opencv_window::opencv_window(cv::String name, cv::VideoCapture *webcam,
                              cv::Mat *overlay_buffer, bool use_canny,
                              bool use_overlay, cv::String overlay_image,
                              double overlay_alpha, int low_threshold,
-                             int high_threshold)
+                             int high_threshold, bool histograms)
     : overlay_buffer_(overlay_buffer), name_(name),
       overlay_image_(overlay_image), webcam_(webcam),
       height_(height_width.first), overlay_alpha_(overlay_alpha),
       width_(height_width.second), high_threshold_(high_threshold),
       low_threshold_(low_threshold), webcam_index_(webcam_index),
       exit_requested_(false), first_time_(first_time), has_webcam_(has_webcam),
-      use_canny_(use_canny), use_overlay_(use_overlay),
+      histograms_(histograms), use_canny_(use_canny), use_overlay_(use_overlay),
       video_enabled_(video_enabled) {}
+
+bool opencv_window::exit_requested() const { return exit_requested_; }
+
+bool opencv_window::first_time() const { return first_time_; }
+
+bool opencv_window::has_webcam() const { return has_webcam_; }
+
+bool opencv_window::histograms() const { return histograms_; }
+
+bool opencv_window::use_canny() const { return use_canny_; }
+
+bool opencv_window::use_overlay() const { return use_overlay_; }
+
+bool opencv_window::video_enabled() const { return video_enabled_; }
 
 cv::Mat *opencv_window::overlay_buffer() const { return overlay_buffer_; }
 
@@ -45,18 +59,6 @@ int opencv_window::low_threshold() const { return low_threshold_; }
 
 int opencv_window::webcam_index() const { return webcam_index_; }
 
-bool opencv_window::exit_requested() const { return exit_requested_; }
-
-bool opencv_window::first_time() const { return first_time_; }
-
-bool opencv_window::has_webcam() const { return has_webcam_; }
-
-bool opencv_window::use_canny() const { return use_canny_; }
-
-bool opencv_window::use_overlay() const { return use_overlay_; }
-
-bool opencv_window::video_enabled() const { return video_enabled_; }
-
 void opencv_window::set_exit_requested(bool exit_requested) {
   exit_requested_ = exit_requested;
 }
@@ -69,6 +71,10 @@ void opencv_window::set_height(double height) { height_ = height; }
 
 void opencv_window::set_high_threshold(int high_threshold) {
   high_threshold_ = high_threshold;
+}
+
+void opencv_window::set_histograms(bool histograms) {
+  histograms_ = histograms;
 }
 
 void opencv_window::set_low_threshold(int low_threshold) {
