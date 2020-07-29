@@ -93,7 +93,6 @@ video_gui::video_gui(int webcam_count)
 }
 
 video_gui::~video_gui() {
-  std::cout << "Releasing webcams" << '\n';
   for (auto &video_capture : input_video_devices) {
     auto capturing_device = video_capture.get();
     capturing_device->release();
@@ -101,7 +100,7 @@ video_gui::~video_gui() {
 
   delete overlay_alpha;
   delete overlay_enabled;
-  delete overlay_buffers;
+  // Will crash: delete overlay_buffers
   delete video_enabled;
   delete window_template;
 }
