@@ -5,10 +5,9 @@ WARNINGS_OFF
 WARNINGS_ON
 
 #include "opencv_window.h"
+#include "opencv/paint_histogram.h"
 
 namespace frank::video {
-
-constexpr auto DEFAULT_HISTOGRAM_THRESHOLD = 20;
 
 opencv_window::opencv_window(cv::String name, cv::VideoCapture *webcam,
                              int webcam_index, bool first_time, bool has_webcam,

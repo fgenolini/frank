@@ -7,6 +7,7 @@ WARNINGS_ON
 
 #include "main_window.h"
 #include "opencv/exit_requested.h"
+#include "opencv/paint_histogram.h"
 #include "other_window.h"
 #include "statistics_window.h"
 #include "video_gui.h"
@@ -25,7 +26,6 @@ constexpr auto STATISTICS0_WIDTH = 500;
 constexpr auto STATISTICS0_X = 110;
 constexpr auto STATISTICS0_Y = 10;
 constexpr auto STATISTICS_HEIGHT = 150;
-constexpr auto STATISTICS_TITLE = "Statistics";
 constexpr auto STATISTICS_WIDTH = 200;
 constexpr auto STATISTICS_X = 50;
 constexpr auto STATISTICS_Y = 10;
@@ -46,7 +46,7 @@ video_gui::video_gui(int webcam_count)
        ++webcam) {
     auto has_webcam = webcam < webcam_count;
     has_webcams.push_back(has_webcam);
-    histogram_threshold[webcam] = DEFAULT_THRESHOLD;
+    histogram_threshold[webcam] = DEFAULT_HISTOGRAM_THRESHOLD;
     overlay_buffers[webcam].addref();
     video_enabled[webcam] = has_webcam;
     if (webcam == 0) {

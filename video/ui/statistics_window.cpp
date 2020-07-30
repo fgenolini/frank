@@ -18,7 +18,7 @@ void statistics_window(EnhancedWindow &statistics, cv::Mat &frame,
   statistics.begin(frame);
   cvui::beginColumn();
   {
-    auto threshold = DEFAULT_THRESHOLD;
+    auto threshold = DEFAULT_HISTOGRAM_THRESHOLD;
     if (tone_down_threshold && *tone_down_threshold > 0 &&
         *tone_down_threshold <= MAXIMUM_THRESHOLD) {
       threshold = *tone_down_threshold;
