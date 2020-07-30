@@ -5,15 +5,16 @@ WARNINGS_OFF
 #include <iostream>
 WARNINGS_ON
 
-#include "opencv/exit_requested.h"
 #include "main_window.h"
+#include "opencv/exit_requested.h"
+#include "opencv/paint_histogram.h"
 #include "other_window.h"
+#include "statistics_window.h"
 #include "video_gui.h"
 
 namespace frank::video {
 
 constexpr auto ALPHA = "alpha_";
-constexpr auto MAXIMUM_VIDEO_COUNT = 4;
 constexpr auto OVERLAY = "overlay_";
 constexpr auto SETTINGS_HEIGHT = 280;
 constexpr auto SETTINGS_TITLE = "Settings";
@@ -25,7 +26,6 @@ constexpr auto STATISTICS0_WIDTH = 500;
 constexpr auto STATISTICS0_X = 110;
 constexpr auto STATISTICS0_Y = 10;
 constexpr auto STATISTICS_HEIGHT = 150;
-constexpr auto STATISTICS_TITLE = "Statistics";
 constexpr auto STATISTICS_WIDTH = 200;
 constexpr auto STATISTICS_X = 50;
 constexpr auto STATISTICS_Y = 10;
@@ -37,10 +37,6 @@ constexpr auto WINDOW3_NAME = "Frank video 3";
 video_gui::video_gui(int webcam_count)
     : settings(SETTINGS_X, SETTINGS_Y, SETTINGS_WIDTH, SETTINGS_HEIGHT,
                SETTINGS_TITLE) {
-  overlay_alpha = new double[MAXIMUM_VIDEO_COUNT]{};
-  overlay_buffers = new cv::Mat[MAXIMUM_VIDEO_COUNT]{};
-  overlay_enabled = new bool[MAXIMUM_VIDEO_COUNT]{};
-  video_enabled = new bool[MAXIMUM_VIDEO_COUNT]{};
   window_names.push_back(WINDOW_NAME);
   window_names.push_back(WINDOW1_NAME);
   window_names.push_back(WINDOW2_NAME);
@@ -50,6 +46,8 @@ video_gui::video_gui(int webcam_count)
        ++webcam) {
     auto has_webcam = webcam < webcam_count;
     has_webcams.push_back(has_webcam);
+    histogram_threshold[webcam] = DEFAULT_HISTOGRAM_THRESHOLD;
+    overlay_buffers[webcam].addref();
     video_enabled[webcam] = has_webcam;
     if (webcam == 0) {
       statistics_.push_back(
@@ -93,30 +91,24 @@ video_gui::video_gui(int webcam_count)
 }
 
 video_gui::~video_gui() {
+  delete window_template;
   for (auto &video_capture : input_video_devices) {
     auto capturing_device = video_capture.get();
     capturing_device->release();
   }
-
-  delete overlay_alpha;
-  delete overlay_enabled;
-  // Will crash: delete overlay_buffers
-  delete video_enabled;
-  delete window_template;
 }
 
 WARNING_PUSH
 DISABLE_WARNING_MSC(4365)
 bool video_gui::loop(std::vector<input_device> &connected_webcams) {
-  auto histogram_threshold = 20;
   load_settings();
   while (true) {
-    window_template->set_histogram_threshold(histogram_threshold);
+    window_template->set_histogram_threshold(histogram_threshold[0]);
     main_window(settings, statistics_[0], connected_webcams, has_webcams,
                 video_enabled, overlay_enabled, overlay_alpha, overlay_images,
                 *window_template);
     histograms[0] = window_template->histograms();
-    histogram_threshold = window_template->histogram_threshold();
+    histogram_threshold[0] = window_template->histogram_threshold();
     save_settings();
     if (window_template->exit_requested()) {
       return true;
@@ -136,7 +128,7 @@ bool video_gui::loop(std::vector<input_device> &connected_webcams) {
           overlay_images[webcam], overlay_alpha[webcam],
           window_template->low_threshold(), window_template->high_threshold(),
           histograms[webcam]);
-      window.set_histogram_threshold(histogram_threshold);
+      window.set_histogram_threshold(histogram_threshold[webcam]);
       other_window(statistics_[webcam], window);
       if (window.exit_requested()) {
         return true;
@@ -146,7 +138,7 @@ bool video_gui::loop(std::vector<input_device> &connected_webcams) {
       height_width_pair.second = window.width();
       height_width_pairs[webcam] = height_width_pair;
       histograms[webcam] = window.histograms();
-      histogram_threshold = window.histogram_threshold();
+      histogram_threshold[webcam] = window.histogram_threshold();
     }
 
     if (exit_requested()) {

@@ -44,7 +44,7 @@ void other_window(EnhancedWindow &statistics, opencv_window &window) {
       if (first_time) {
         cvui::printf("Opening webcam %d...", webcam_index);
       } else {
-        cvui::checkbox("Stats", &histograms);
+        cvui::checkbox(STATISTICS_TITLE, &histograms);
         if (histograms) {
           statistics_window(statistics, frame, raw_picture,
                             &histogram_threshold);

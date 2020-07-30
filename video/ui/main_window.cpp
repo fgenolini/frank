@@ -57,7 +57,7 @@ void main_window(EnhancedWindow &settings, EnhancedWindow &statistics,
       if (first_time) {
         cvui::printf("Opening webcam %d...", webcam_index);
       } else {
-        cvui::checkbox("Stats", &histograms);
+        cvui::checkbox(STATISTICS_TITLE, &histograms);
       }
     }
   }
