@@ -2,15 +2,14 @@
 
 WARNINGS_OFF
 #include <filesystem>
-
-#include "portable-file-dialogs.h"
 WARNINGS_ON
 
 #include "device/input_device.h"
-#include "opencv/opencv_window.h"
-#include "opencv/take_picture.h"
+#include "file/file_dialogs.h"
 #include "main_settings_window.h"
 #include "main_window.h"
+#include "opencv/opencv_window.h"
+#include "opencv/take_picture.h"
 
 namespace fs = std::filesystem;
 
@@ -92,12 +91,12 @@ void main_settings_window::draw_overlay(
       auto select_file =
           cvui::button(BUTTON_WIDTH, BUTTON_HEIGHT, "Overlay...");
       if (select_file) {
-        auto f = pfd::open_file(
+        file_dialogs dialogs{};
+        auto file_names = dialogs.open_file(
             "Choose image file to use as overlay", DEFAULT_PATH,
-            {"JPEG Files (.jpg .jpeg)", "*.jpg *.jpeg", "All Files", "*"},
-            pfd::opt::force_path);
+            {"JPEG Files (.jpg .jpeg)", "*.jpg *.jpeg", "All Files", "*"});
         std::cout << "Selected files:";
-        for (auto const &name : f.result()) {
+        for (auto const &name : file_names) {
           if (name.empty())
             continue;
           std::cout << " " + name;

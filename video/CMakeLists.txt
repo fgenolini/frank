@@ -32,6 +32,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
 
 set(CommonSourcesList
     device/input_device.cpp device/list_devices.cpp
+    file/file_dialogs.cpp
     json/persisted_settings.cpp
     opencv/add_overlay.cpp opencv/exit_requested.cpp opencv/opencv_window.cpp
     opencv/paint_histogram.cpp opencv/paint_picture.cpp opencv/take_picture.cpp
