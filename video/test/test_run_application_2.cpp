@@ -35,7 +35,8 @@ list_input_devices(device_register const *name_devices) {
   return test::frank::mocked_list_input_devices(name_devices);
 }
 
-void opencv_ui(std::vector<input_device> &connected_webcams) {
+void opencv_ui(std::vector<input_device> &connected_webcams,
+               user_interface_factory, void *) {
   test::frank::mocked_opencv_ui(connected_webcams);
 }
 

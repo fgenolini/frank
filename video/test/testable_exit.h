@@ -9,6 +9,6 @@
 namespace frank::video {
 
 NO_RETURN
-extern void exit(int result);
+extern void exit(int result, void *mock_data = nullptr);
 
 } // namespace frank::video

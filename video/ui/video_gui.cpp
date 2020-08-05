@@ -14,7 +14,7 @@ WARNINGS_ON
 
 namespace frank::video {
 
-std::unique_ptr<user_interface> make_user_interface(int webcam_count) {
+std::unique_ptr<user_interface> make_user_interface(int webcam_count, void *) {
   return std::make_unique<video_gui>(webcam_count);
 }
 

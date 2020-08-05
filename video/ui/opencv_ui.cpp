@@ -10,19 +10,27 @@ WARNINGS_ON
 
 namespace frank::video {
 
-auto opencv_with_webcams(std::vector<input_device> &connected_webcams) {
-  auto gui = make_user_interface((int)connected_webcams.size());
+auto opencv_with_webcams(std::vector<input_device> &connected_webcams,
+                         user_interface_factory factory, void *mock_data) {
+  auto gui = factory((int)connected_webcams.size(), mock_data);
   return gui->loop(connected_webcams);
 }
 
 NO_RETURN
-void opencv_ui(std::vector<input_device> &connected_webcams) {
+void opencv_ui(std::vector<input_device> &connected_webcams,
+               user_interface_factory factory_from_test, void *mock_data) {
+  auto ui_factory = make_user_interface;
+  if (factory_from_test) {
+    ui_factory = factory_from_test;
+  }
+
   auto result = EXIT_SUCCESS;
-  if (opencv_with_webcams(connected_webcams) != (int)connected_webcams.size()) {
+  if (opencv_with_webcams(connected_webcams, ui_factory, mock_data) !=
+      (int)connected_webcams.size()) {
     result = EXIT_FAILURE;
   }
 
-  exit(result);
+  exit(result, mock_data);
 }
 
 } // namespace frank::video

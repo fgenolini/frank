@@ -19,6 +19,10 @@ public:
   virtual int loop(std::vector<input_device> &inputs) = 0;
 };
 
-std::unique_ptr<user_interface> make_user_interface(int webcam_count);
+std::unique_ptr<user_interface> make_user_interface(int webcam_count,
+                                                    void *test_mock = nullptr);
+
+typedef std::unique_ptr<user_interface> (*user_interface_factory)(
+    int webcam_count, void *test_mock);
 
 } // namespace frank::video

@@ -13,9 +13,11 @@ WARNINGS_ON
 namespace frank::video {
 
 #if !defined(_DO_NOTHING_EXIT_)
-NO_RETURN void exit(int result) { ::exit(result); }
+NO_RETURN void exit(int result, void *) { ::exit(result); }
 #else
-void exit(int result) { test::frank::do_nothing_exit(result); }
+void exit(int result, void *mock_data) {
+  test::frank::do_nothing_exit(result, mock_data);
+}
 #endif
 
 } // namespace frank::video
