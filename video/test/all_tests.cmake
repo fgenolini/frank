@@ -1,3 +1,4 @@
+# Configure the CTest unit test runner.
 # Unit tests for frank video
 
 add_executable(${TEST_APP_NAME} test/${TEST_APP_NAME}_main.cpp
@@ -32,3 +33,7 @@ set(TESTS ${TEST_APP_NAME} ${TEST_APP_NAME}_main_2
 if (WIN32)
   list(APPEND TESTS ${TEST_APP_NAME}_winmain_4)
 endif()
+
+foreach(Test_Target ${TESTS})
+  add_test(${Test_Target} ${Test_Target})
+endforeach()
