@@ -17,6 +17,8 @@ namespace frank::video {
 
 constexpr auto MAXIMUM_VIDEO_COUNT = 4;
 
+WARNING_PUSH
+DISABLE_WARNING_MSC(4820)
 class video_gui : public virtual user_interface {
 public:
   video_gui(int webcam_count);
@@ -47,5 +49,6 @@ private:
   bool overlay_enabled[MAXIMUM_VIDEO_COUNT]{};
   bool video_enabled[MAXIMUM_VIDEO_COUNT]{};
 };
+WARNINGS_ON
 
 } // namespace frank::video
