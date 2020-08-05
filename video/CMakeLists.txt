@@ -36,6 +36,7 @@ set(CommonSourcesList
     json/persisted_settings.cpp
     opencv/add_overlay.cpp opencv/exit_requested.cpp opencv/opencv_window.cpp
     opencv/paint_histogram.cpp opencv/paint_picture.cpp opencv/take_picture.cpp
+    test/testable_exit.cpp
     ui/main_settings_window.cpp ui/main_window.cpp ui/opencv_ui.cpp
     ui/other_window.cpp ui/statistics_window.cpp ui/video_gui.cpp)
 
@@ -60,29 +61,7 @@ if (WIN32)
   add_executable(${APP_NAME_WINMAIN} WIN32 video_winmain.cpp run_application.cpp)
 endif()
 
-# Tests
-add_executable(${TEST_APP_NAME} test/${TEST_APP_NAME}_main.cpp
-               test/test_list_devices.cpp)
-add_executable(${TEST_APP_NAME}_main_2 test/${TEST_APP_NAME}_main.cpp
-               test/test_main_2.cpp video_main.cpp)
-add_executable(${TEST_APP_NAME}_run_application_2 test/${TEST_APP_NAME}_main.cpp
-               test/test_run_application_2.cpp run_application.cpp)
-if (WIN32)
-  add_executable(${TEST_APP_NAME}_winmain_4 test/${TEST_APP_NAME}_main.cpp
-                 test/test_winmain_4.cpp video_winmain.cpp)
-endif()
-
-target_compile_definitions(${TEST_APP_NAME}_main_2 PUBLIC _TEST_MAIN_2_)
-target_compile_definitions(${TEST_APP_NAME}_run_application_2 PUBLIC _TEST_RUN_APPLICATION_2_)
-if (WIN32)
-  target_compile_definitions(${TEST_APP_NAME}_winmain_4 PUBLIC _TEST_WINMAIN_4_)
-endif()
-
-set(TESTS ${TEST_APP_NAME} ${TEST_APP_NAME}_main_2
-    ${TEST_APP_NAME}_run_application_2)
-if (WIN32)
-  list(APPEND TESTS ${TEST_APP_NAME}_winmain_4)
-endif()
+include(test/all_tests.cmake)
 
 # ------ Start dependencies ------               
 # OpenCV, Open Computer Vision (github.com/opencv/opencv)
@@ -129,7 +108,8 @@ if(HAVE_CATCH_HPP)
   get_filename_component(CATCH_PATH ${HAVE_CATCH_HPP} DIRECTORY)
   foreach(Test_Target ${TESTS})
     target_include_directories(${Test_Target} INTERFACE ${CATCH_PATH}
-                              "${CMAKE_CURRENT_SOURCE_DIR}"
+                               ${OpenCV_INCLUDE_DIRS}
+                               "${CMAKE_CURRENT_SOURCE_DIR}"
                                "${PROJECT_BINARY_DIR}"
                                "${CMAKE_BINARY_DIR}")
   endforeach()
@@ -153,6 +133,7 @@ else()
     target_include_directories(${Test_Target} PUBLIC
                                ${source_dir}/single_include
                                ${source_dir}/single_include/catch2
+                               ${OpenCV_INCLUDE_DIRS}
                                "${CMAKE_CURRENT_SOURCE_DIR}"
                                "${PROJECT_BINARY_DIR}"
                                "${CMAKE_BINARY_DIR}")

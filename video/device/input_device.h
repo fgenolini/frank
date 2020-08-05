@@ -13,6 +13,8 @@ public:
   input_device();
   input_device(std::string name);
 
+  bool operator==(input_device const &other) const;
+
   std::string identifier() const;
   std::string name() const;
   void set_identifier(std::string new_identifier);

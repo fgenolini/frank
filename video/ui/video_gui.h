@@ -10,18 +10,19 @@ WARNINGS_ON
 
 #include "device/input_device.h"
 #include "opencv/opencv_window.h"
+#include "user_interface.h"
 #include "json/persisted_settings.h"
 
 namespace frank::video {
 
 constexpr auto MAXIMUM_VIDEO_COUNT = 4;
 
-class video_gui {
+class video_gui : public virtual user_interface {
 public:
   video_gui(int webcam_count);
   ~video_gui();
 
-  bool loop(std::vector<input_device> &connected_webcams);
+  int loop(std::vector<input_device> &connected_webcams) override;
 
 private:
   void load_settings();

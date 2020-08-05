@@ -16,6 +16,10 @@ input_device::input_device() : identifier_(NO_IDENTIFIER), name_(NO_VIDEO) {}
 input_device::input_device(std::string name)
     : identifier_(NO_IDENTIFIER), name_(name) {}
 
+bool input_device::operator==(input_device const &other) const {
+  return name_.compare(other.name()) == 0;
+}
+
 std::string input_device::identifier() const { return identifier_; }
 
 std::string input_device::name() const { return name_; }

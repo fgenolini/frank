@@ -14,6 +14,10 @@ WARNINGS_ON
 
 namespace frank::video {
 
+std::unique_ptr<user_interface> make_user_interface(int webcam_count) {
+  return std::make_unique<video_gui>(webcam_count);
+}
+
 constexpr auto ALPHA = "alpha_";
 constexpr auto OVERLAY = "overlay_";
 constexpr auto SETTINGS_HEIGHT = 280;
@@ -100,7 +104,7 @@ video_gui::~video_gui() {
 
 WARNING_PUSH
 DISABLE_WARNING_MSC(4365)
-bool video_gui::loop(std::vector<input_device> &connected_webcams) {
+int video_gui::loop(std::vector<input_device> &connected_webcams) {
   load_settings();
   while (true) {
     window_template->set_histogram_threshold(histogram_threshold[0]);
@@ -111,7 +115,7 @@ bool video_gui::loop(std::vector<input_device> &connected_webcams) {
     histogram_threshold[0] = window_template->histogram_threshold();
     save_settings();
     if (window_template->exit_requested()) {
-      return true;
+      return connected_webcams.size();
     }
 
     for (auto webcam = 1; webcam < (int)window_names.size(); ++webcam) {
@@ -131,7 +135,7 @@ bool video_gui::loop(std::vector<input_device> &connected_webcams) {
       window.set_histogram_threshold(histogram_threshold[webcam]);
       other_window(statistics_[webcam], window);
       if (window.exit_requested()) {
-        return true;
+        return connected_webcams.size();
       }
 
       height_width_pair.first = window.height();
@@ -142,13 +146,13 @@ bool video_gui::loop(std::vector<input_device> &connected_webcams) {
     }
 
     if (exit_requested()) {
-      return true;
+      return connected_webcams.size();
     }
 
     window_template->set_first_time(false);
   }
 
-  return false;
+  return connected_webcams.size();
 }
 
 void video_gui::load_settings() {
