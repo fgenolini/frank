@@ -19,7 +19,7 @@ public:
 
 } // namespace test::frank
 
-SCENARIO("frank video list devices", "[list_video_devices]") {
+SCENARIO("frank video list devices", "[list_input_devices]") {
   GIVEN("list_input_devices called on a computer capable of video input") {
     WHEN("no video input device is connected to the computer") {
       std::vector<std::string> no_device{};

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
-set(CPACK_PACKAGE_VERSION_MINOR "1")
+set(CPACK_PACKAGE_VERSION_MINOR "2")
 set(CPACK_PACKAGE_VERSION_PATCH "0")
 set(APP_VERSION
     "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
@@ -60,9 +60,13 @@ if (WIN32)
   add_executable(${APP_NAME_WINMAIN} WIN32 video_winmain.cpp run_application.cpp)
 endif()
 
-# Command line executable with a simple OpenCV GUI
-add_executable(${APP_LOW_NAME}_test test/video_test_main.cpp
+# Tests
+add_executable(${TEST_APP_NAME} test/${TEST_APP_NAME}_main.cpp
                test/test_list_devices.cpp)
+add_executable(${TEST_APP_NAME}_main_2 test/${TEST_APP_NAME}_main.cpp
+               test/test_main_2.cpp video_main.cpp)
+target_compile_definitions(${TEST_APP_NAME}_main_2 PUBLIC _TEST_MAIN_2_)
+set(TESTS ${TEST_APP_NAME} ${TEST_APP_NAME}_main_2)
 
 # ------ Start dependencies ------               
 # OpenCV, Open Computer Vision (github.com/opencv/opencv)
@@ -107,9 +111,12 @@ file(DOWNLOAD
 find_file(HAVE_CATCH_HPP catch.hpp PATH_SUFFIXES catch2 catch)
 if(HAVE_CATCH_HPP)
   get_filename_component(CATCH_PATH ${HAVE_CATCH_HPP} DIRECTORY)
-  target_include_directories(${TEST_APP_NAME} INTERFACE ${CATCH_PATH}
-                             "${PROJECT_BINARY_DIR}"
-                             "${CMAKE_BINARY_DIR}")
+  foreach(Test_Target ${TESTS})
+    target_include_directories(${Test_Target} INTERFACE ${CATCH_PATH}
+                              "${CMAKE_CURRENT_SOURCE_DIR}"
+                               "${PROJECT_BINARY_DIR}"
+                               "${CMAKE_BINARY_DIR}")
+  endforeach()
 else()
   include(ExternalProject)
   find_package(Git)
@@ -125,12 +132,15 @@ else()
     LOG_DOWNLOAD ON)
 
   ExternalProject_Get_Property(git_catch source_dir)
-  add_dependencies(${TEST_APP_NAME} git_catch)
-  target_include_directories(${TEST_APP_NAME} PUBLIC
-                             ${source_dir}/single_include
-                             ${source_dir}/single_include/catch2
-                             "${PROJECT_BINARY_DIR}"
-                             "${CMAKE_BINARY_DIR}")
+  foreach(Test_Target ${TESTS})
+    add_dependencies(${Test_Target} git_catch)
+    target_include_directories(${Test_Target} PUBLIC
+                               ${source_dir}/single_include
+                               ${source_dir}/single_include/catch2
+                               "${CMAKE_CURRENT_SOURCE_DIR}"
+                               "${PROJECT_BINARY_DIR}"
+                               "${CMAKE_BINARY_DIR}")
+  endforeach()
 endif()
 # ------ End dependencies ------               
 
@@ -160,7 +170,10 @@ target_compile_options(${LIB_NAME} PRIVATE
      $<$<CXX_COMPILER_ID:MSVC>:
           /WX /Wall /w45038>)
 
-add_test(video_list_devices video_test "Scenario: ${ROOT_PROJECT_LOW_NAME} ${APP_LOW_NAME} list devices")
+# Tests
+foreach(Test_Target ${TESTS})
+  add_test(${Test_Target} ${Test_Target})
+endforeach()
 
 # CPack installer
 include(InstallRequiredSystemLibraries)
@@ -170,7 +183,9 @@ if (WIN32)
   install(TARGETS ${APP_NAME_WINMAIN} RUNTIME DESTINATION bin COMPONENT Applications)
 endif()
 install(TARGETS ${APP_LOW_NAME} RUNTIME DESTINATION bin COMPONENT Applications)
-install(TARGETS ${TEST_APP_NAME} RUNTIME DESTINATION bin COMPONENT Tests)
+foreach(Test_Target ${TESTS})
+  install(TARGETS ${Test_Target} RUNTIME DESTINATION bin COMPONENT Tests)
+endforeach()
 
 set(CPACK_COMPONENTS_ALL Applications Tests Dependencies)
 
