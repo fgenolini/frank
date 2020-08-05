@@ -2,7 +2,7 @@
 
 namespace frank::video {
 
-#ifndef _TEST_MAIN_2_
+#if !defined(_TEST_MAIN_2_) && !defined(_TEST_WINMAIN_4_)
 [[noreturn]]
 #endif
 extern void
