@@ -4,6 +4,10 @@
 #error _TEST_OPENCV_UI_1_ not defined
 #endif
 
+WARNINGS_OFF
+#include <iostream>
+WARNINGS_ON
+
 #include <catch2/catch.hpp>
 #include <catch2/trompeloeil.hpp>
 
@@ -28,6 +32,7 @@ public:
 
   int loop(std::vector<::frank::video::input_device> &inputs) override {
     if (!mock_) {
+      std::cerr << "loop: no mock\n";
       return -1;
     }
 
@@ -41,6 +46,7 @@ private:
 
 void do_nothing_exit(int result, void *mock_data) {
   if (!mock_data) {
+    std::cerr << "do_nothing_exit: no mock\n";
     return;
   }
 
@@ -56,6 +62,7 @@ namespace frank::video {
 std::unique_ptr<user_interface> make_user_interface(int webcam_count,
                                                     void *mock_data) {
   if (!mock_data) {
+    std::cerr << "make_user_interface: no mock\n";
     return std::make_unique<::test::frank::fake_user_interface>(webcam_count,
                                                                 nullptr);
   }

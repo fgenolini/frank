@@ -13,6 +13,7 @@ WARNINGS_ON
 namespace frank::video {
 
 extern std::vector<input_device>
-list_input_devices(device_register const *name_devices = nullptr);
+list_input_devices(device_register const *name_devices = nullptr,
+                   void *mock_data = nullptr);
 
 }

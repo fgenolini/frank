@@ -18,7 +18,7 @@ WARNINGS_ON
 namespace frank::video {
 
 std::vector<input_device>
-list_input_devices(device_register const *name_devices) {
+list_input_devices(device_register const *name_devices, void *) {
 
   auto make_devices = [](std::vector<std::string> device_names) {
     std::vector<input_device> returned_devices{};
