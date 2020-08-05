@@ -1,9 +1,9 @@
-#include <cstdlib>
-#include <cstring>
+#include "config.h"
+
 #include <iostream>
 
-#include "videoConfig.h"
 #include "run_application.h"
+#include "videoConfig.h"
 
 #ifdef _TEST_MAIN_2_
 namespace test::frank {
