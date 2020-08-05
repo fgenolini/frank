@@ -43,9 +43,7 @@ SCENARIO("frank video main 2", "[test_main_2]") {
         REQUIRE(test::frank::mock_called == true);
       }
 
-      AND_THEN("main returns 1") {
-        REQUIRE(results == ONE);
-      }
+      AND_THEN("main returns 1") { REQUIRE(results == ONE); }
     }
     WHEN("two arguments") {
       test::frank::mock_called = false;
@@ -58,9 +56,7 @@ SCENARIO("frank video main 2", "[test_main_2]") {
         REQUIRE(test::frank::mock_called == true);
       }
 
-      AND_THEN("main returns 2") {
-        REQUIRE(results == TWO);
-      }
+      AND_THEN("main returns 2") { REQUIRE(results == TWO); }
     }
   }
 }
