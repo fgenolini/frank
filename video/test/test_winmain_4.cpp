@@ -30,8 +30,8 @@ void mocked_run_application(winmain_mock *mock) {
   mock->called = true;
 }
 
-extern int CALLBACK WinMain(HINSTANCE, HINSTANCE, LPSTR, int show_option),
-    void *mock_data;
+extern int CALLBACK WinMain(HINSTANCE, HINSTANCE, LPSTR, int show_option,
+                            void *mock_data);
 
 } // namespace test::frank
 
