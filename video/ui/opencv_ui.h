@@ -10,7 +10,10 @@ WARNINGS_ON
 
 namespace frank::video {
 
-[[noreturn]] extern void
+#if !defined(_TEST_RUN_APPLICATION_2_)
+[[noreturn]]
+#endif
+extern void
 opencv_ui(std::vector<input_device> &connected_webcams);
 
 } // namespace frank::video

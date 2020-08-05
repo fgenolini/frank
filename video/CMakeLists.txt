@@ -65,17 +65,21 @@ add_executable(${TEST_APP_NAME} test/${TEST_APP_NAME}_main.cpp
                test/test_list_devices.cpp)
 add_executable(${TEST_APP_NAME}_main_2 test/${TEST_APP_NAME}_main.cpp
                test/test_main_2.cpp video_main.cpp)
+add_executable(${TEST_APP_NAME}_run_application_2 test/${TEST_APP_NAME}_main.cpp
+               test/test_run_application_2.cpp run_application.cpp)
 if (WIN32)
   add_executable(${TEST_APP_NAME}_winmain_4 test/${TEST_APP_NAME}_main.cpp
                  test/test_winmain_4.cpp video_winmain.cpp)
 endif()
 
 target_compile_definitions(${TEST_APP_NAME}_main_2 PUBLIC _TEST_MAIN_2_)
+target_compile_definitions(${TEST_APP_NAME}_run_application_2 PUBLIC _TEST_RUN_APPLICATION_2_)
 if (WIN32)
   target_compile_definitions(${TEST_APP_NAME}_winmain_4 PUBLIC _TEST_WINMAIN_4_)
 endif()
 
-set(TESTS ${TEST_APP_NAME} ${TEST_APP_NAME}_main_2)
+set(TESTS ${TEST_APP_NAME} ${TEST_APP_NAME}_main_2
+    ${TEST_APP_NAME}_run_application_2)
 if (WIN32)
   list(APPEND TESTS ${TEST_APP_NAME}_winmain_4)
 endif()
