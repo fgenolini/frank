@@ -44,3 +44,8 @@ endif()
 foreach(Test_Target ${TESTS})
   add_test(${Test_Target} ${Test_Target})
 endforeach()
+
+set(TESTS_WITH_OPENCV ${TEST_APP_NAME} ${TEST_APP_NAME}_video_gui_1)
+foreach(Link_With_OpenCV ${TESTS_WITH_OPENCV})
+  target_link_libraries(${Link_With_OpenCV} ${LIB_NAME} ${OpenCV_LIBS} Microsoft.GSL::GSL)
+endforeach()

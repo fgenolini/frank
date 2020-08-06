@@ -68,7 +68,6 @@ target_link_libraries(${APP_LOW_NAME} ${LIB_NAME} ${OpenCV_LIBS} Microsoft.GSL::
 if (WIN32)
   target_link_libraries(${APP_NAME_WINMAIN} ${LIB_NAME} ${OpenCV_LIBS} Microsoft.GSL::GSL)
 endif()
-target_link_libraries(${TEST_APP_NAME} ${LIB_NAME} ${OpenCV_LIBS} Microsoft.GSL::GSL)
 target_link_libraries(${LIB_NAME} ${OpenCV_LIBS} Microsoft.GSL::GSL)
 
 configure_file(videoConfig.h.in videoConfig.h)

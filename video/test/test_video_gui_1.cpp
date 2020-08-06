@@ -13,21 +13,19 @@ WARNINGS_ON
 
 #include "ui/video_gui.h"
 
-namespace test::frank {
+namespace test::frank {} // namespace test::frank
 
-} // namespace test::frank
-
-namespace frank::video {
-
-} // namespace frank::video
+namespace frank::video {} // namespace frank::video
 
 SCENARIO("frank video GUI 1", "[video_gui_1]") {
   GIVEN("Video GUI") {
-    WHEN("constructing") {
+    WHEN("constructing with 1 webcam") {
       constexpr auto WEBCAM_COUNT = 1;
-      frank::video::video_gui gui{WEBCAM_COUNT};
+      auto make_video_gui = []() { frank::video::video_gui gui{WEBCAM_COUNT}; };
 
-      THEN("exit is called") { REQUIRE(true == false); }
+      THEN("no exception should be thrown") {
+        REQUIRE_NOTHROW(make_video_gui());
+      }
     }
   }
 }
