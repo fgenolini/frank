@@ -27,8 +27,7 @@ public:
 
 class fake_user_interface : public virtual ::frank::video::user_interface {
 public:
-  fake_user_interface(int webcam_count, mock_user_interface *mock)
-      : webcam_count_(webcam_count), mock_(mock) {}
+  fake_user_interface(mock_user_interface *mock) : mock_(mock) {}
 
   int loop(std::vector<::frank::video::input_device> &inputs) override {
     if (!mock_) {
@@ -40,7 +39,6 @@ public:
   }
 
 private:
-  int webcam_count_;
   mock_user_interface *mock_;
 };
 
@@ -59,17 +57,14 @@ void do_nothing_exit(int result, void *mock_data) {
 
 namespace frank::video {
 
-std::unique_ptr<user_interface> make_user_interface(int webcam_count,
-                                                    void *mock_data) {
+std::unique_ptr<user_interface> make_user_interface(int, void *mock_data) {
   if (!mock_data) {
     std::cerr << "make_user_interface: no mock\n";
-    return std::make_unique<::test::frank::fake_user_interface>(webcam_count,
-                                                                nullptr);
+    return std::make_unique<::test::frank::fake_user_interface>(nullptr);
   }
 
   auto mock = static_cast<::test::frank::mock_user_interface *>(mock_data);
-  return std::make_unique<::test::frank::fake_user_interface>(webcam_count,
-                                                              mock);
+  return std::make_unique<::test::frank::fake_user_interface>(mock);
 }
 
 } // namespace frank::video

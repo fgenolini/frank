@@ -19,7 +19,7 @@ public:
   bool called{};
 };
 
-void mocked_run_application(int argc, char const *argv[], main_mock *mock) {
+void mocked_run_application(int, char const *[], main_mock *mock) {
   if (!mock) {
     std::cerr << "mocked_run_application: no mock\n";
     return;

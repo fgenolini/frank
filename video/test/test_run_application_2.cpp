@@ -23,7 +23,7 @@ public:
 };
 
 std::vector<::frank::video::input_device>
-mocked_list_input_devices(::frank::video::device_register const *name_devices,
+mocked_list_input_devices(::frank::video::device_register const *,
                           run_application_mock *mock) {
   if (!mock) {
     std::cerr << "mocked_list_input_devices: no mock\n";
@@ -34,9 +34,8 @@ mocked_list_input_devices(::frank::video::device_register const *name_devices,
   return std::vector<::frank::video::input_device>();
 }
 
-void mocked_opencv_ui(
-    std::vector<::frank::video::input_device> &connected_webcams,
-    run_application_mock *mock) {
+void mocked_opencv_ui(std::vector<::frank::video::input_device> &,
+                      run_application_mock *mock) {
   if (!mock) {
     std::cerr << "mocked_opencv_ui: no mock\n";
     return;
