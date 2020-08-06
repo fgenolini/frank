@@ -3,7 +3,6 @@
 #include "config.h"
 
 WARNINGS_OFF
-#include <string>
 #include <vector>
 WARNINGS_ON
 
