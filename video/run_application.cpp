@@ -14,7 +14,7 @@ namespace frank::video {
 
 NO_RETURN
 void run_application(int, char const *[], void *mock_data) {
-  std::set_terminate([]() {
+  std::set_terminate([]() noexcept {
     std::cerr << "Unhandled exception\n";
     std::abort();
   });

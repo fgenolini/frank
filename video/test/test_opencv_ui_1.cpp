@@ -6,16 +6,17 @@
 
 WARNINGS_OFF
 #include <iostream>
-WARNINGS_ON
 
 #include <catch2/catch.hpp>
 #include <catch2/trompeloeil.hpp>
+WARNINGS_ON
 
 #include "ui/opencv_ui.h"
 #include "ui/user_interface.h"
 
 namespace test::frank {
 
+WARNINGS_OFF
 class mock_user_interface
     : public trompeloeil::mock_interface<::frank::video::user_interface> {
 public:
@@ -24,7 +25,9 @@ public:
   int exit_count{};
   int exit_value{3};
 };
+WARNINGS_ON
 
+WARNINGS_OFF
 class fake_user_interface : public virtual ::frank::video::user_interface {
 public:
   fake_user_interface(mock_user_interface *mock) : mock_(mock) {}
@@ -41,6 +44,7 @@ public:
 private:
   mock_user_interface *mock_;
 };
+WARNINGS_ON
 
 void do_nothing_exit(int result, void *mock_data) {
   if (!mock_data) {

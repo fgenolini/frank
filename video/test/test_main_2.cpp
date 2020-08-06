@@ -6,9 +6,9 @@
 
 WARNINGS_OFF
 #include <iostream>
-WARNINGS_ON
 
 #include <catch2/catch.hpp>
+WARNINGS_ON
 
 #include "run_application.h"
 

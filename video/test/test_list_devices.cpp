@@ -1,21 +1,25 @@
 #include "config.h"
 
+WARNINGS_OFF
 #include <string>
 #include <vector>
 
 #include <catch2/catch.hpp>
 #include <catch2/trompeloeil.hpp>
+WARNINGS_ON
 
 #include "device/device_register.h"
 #include "device/list_devices.h"
 
 namespace test::frank {
 
+WARNINGS_OFF
 class mock_device_register
     : public trompeloeil::mock_interface<::frank::video::device_register> {
 public:
   IMPLEMENT_CONST_MOCK0(name_devices);
 };
+WARNINGS_ON
 
 } // namespace test::frank
 
