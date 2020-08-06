@@ -2,10 +2,10 @@
 
 #include "protected_cvui.h"
 
-#include "opencv/opencv_window.h"
-#include "opencv/paint_picture.h"
 #include "main_settings_window.h"
 #include "main_window.h"
+#include "opencv/opencv_window.h"
+#include "opencv/paint_picture.h"
 #include "statistics_window.h"
 
 namespace frank::video {
