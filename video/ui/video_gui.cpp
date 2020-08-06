@@ -40,7 +40,7 @@ constexpr auto WINDOW1_NAME = "Frank video 1";
 constexpr auto WINDOW2_NAME = "Frank video 2";
 constexpr auto WINDOW3_NAME = "Frank video 3";
 
-video_gui::video_gui(int webcam_count)
+video_gui::video_gui(int webcam_count, cvui_init mock_init, void *mock_data)
     : settings(SETTINGS_X, SETTINGS_Y, SETTINGS_WIDTH, SETTINGS_HEIGHT,
                SETTINGS_TITLE) {
   window_names.push_back(WINDOW_NAME);
@@ -93,7 +93,12 @@ video_gui::video_gui(int webcam_count)
       has_webcams[0], video_enabled[0], std::make_pair(0.0, 0.0),
       &overlay_buffers[0], USE_CANNY, USE_OVERLAY, overlay_image,
       NO_OVERLAY_ALPHA, LOW_THRESHOLD, HIGH_THRESHOLD, histograms[0]);
-  cvui::init(&window_names[0], window_names.size());
+  if (!mock_init) {
+    cvui::init(&window_names[0], window_names.size());
+  } else {
+    std::cerr << "video_gui: mocked window initialisation\n";
+    mock_init(&window_names[0], window_names.size(), mock_data);
+  }
 }
 
 video_gui::~video_gui() {
