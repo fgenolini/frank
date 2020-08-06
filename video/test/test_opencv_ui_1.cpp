@@ -74,7 +74,7 @@ std::unique_ptr<user_interface> make_user_interface(int webcam_count,
 
 } // namespace frank::video
 
-SCENARIO("frank video opencv ui 1", "[run_opencv_ui_1]") {
+SCENARIO("frank video opencv ui 1", "[opencv_ui_1]") {
   GIVEN("OpenCV UI") {
     WHEN("no connected webcam") {
       std::vector<frank::video::input_device> no_device{};

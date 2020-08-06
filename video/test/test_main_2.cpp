@@ -49,7 +49,7 @@ void run_application(int argc, char const *argv[], void *mock_data) {
 
 constexpr auto TEST_APP_NAME = "test_main_2";
 
-SCENARIO("frank video main 2", "[test_main_2]") {
+SCENARIO("frank video main 2", "[main_2]") {
   GIVEN("main entry point for command line application") {
     WHEN("one argument") {
       constexpr auto ONE = 1;

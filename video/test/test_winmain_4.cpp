@@ -52,7 +52,7 @@ void run_application(int, char const *[], void *mock_data) {
 
 constexpr auto TEST_APP_NAME = "test_winmain_4";
 
-SCENARIO("frank video winmain 4", "[test_winmain_4]") {
+SCENARIO("frank video winmain 4", "[winmain_4]") {
   GIVEN("WinMain entry point for Windows application") {
     WHEN("option show") {
       constexpr auto SHOW_OPTION = SW_SHOW;
