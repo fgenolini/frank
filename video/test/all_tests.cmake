@@ -1,23 +1,23 @@
 # Configure the CTest unit test runner.
 # Unit tests for frank video
 
-add_executable(${TEST_APP_NAME} test/${TEST_APP_NAME}_main.cpp
+add_executable(${TEST_APP_NAME} test/catch_implementation.cpp
                test/test_list_devices.cpp)
-add_executable(${TEST_APP_NAME}_main_2 test/${TEST_APP_NAME}_main.cpp
+add_executable(${TEST_APP_NAME}_main_2 test/catch_implementation.cpp
                test/test_main_2.cpp video_main.cpp)
-add_executable(${TEST_APP_NAME}_run_application_2 test/${TEST_APP_NAME}_main.cpp
+add_executable(${TEST_APP_NAME}_run_application_2 test/catch_implementation.cpp
                test/test_run_application_2.cpp run_application.cpp)
-add_executable(${TEST_APP_NAME}_opencv_ui_1
-               test/${TEST_APP_NAME}_main.cpp test/test_opencv_ui_1.cpp
+add_executable(${TEST_APP_NAME}_opencv_ui_1 test/catch_implementation.cpp
+               test/test_opencv_ui_1.cpp
                test/testable_exit.cpp
                ui/opencv_ui.cpp
                device/input_device.cpp)
-add_executable(${TEST_APP_NAME}_video_gui_1
-               test/${TEST_APP_NAME}_main.cpp test/test_video_gui_1.cpp
+add_executable(${TEST_APP_NAME}_video_gui_1 test/catch_implementation.cpp
+               test/test_video_gui_1.cpp
                ui/video_gui.cpp
                device/input_device.cpp)
 if (WIN32)
-  add_executable(${TEST_APP_NAME}_winmain_4 test/${TEST_APP_NAME}_main.cpp
+  add_executable(${TEST_APP_NAME}_winmain_4 test/catch_implementation.cpp
                  test/test_winmain_4.cpp video_winmain.cpp)
 endif()
 
