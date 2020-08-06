@@ -29,6 +29,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 include(CheckIncludeFiles)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
                ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+configure_file(videoConfig.h.in videoConfig.h)
 
 set(CommonSourcesList
     device/input_device.cpp device/list_devices.cpp
@@ -70,7 +71,6 @@ if (WIN32)
 endif()
 target_link_libraries(${LIB_NAME} ${OpenCV_LIBS} Microsoft.GSL::GSL)
 
-configure_file(videoConfig.h.in videoConfig.h)
 target_include_directories(${APP_LOW_NAME} PUBLIC
                            "${PROJECT_BINARY_DIR}"
                            "${CMAKE_BINARY_DIR}")
@@ -84,9 +84,7 @@ target_include_directories(${LIB_NAME} PUBLIC
                            "${PROJECT_BINARY_DIR}"
                            "${CMAKE_BINARY_DIR}")
 target_compile_options(${LIB_NAME} PRIVATE
-     $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:
-          -Werror -Wall -Wextra -Wpedantic>
-     $<$<CXX_COMPILER_ID:MSVC>:
-          /WX /Wall /w45038>)
+     $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:-Werror -Wall -Wextra -Wpedantic>
+     $<$<CXX_COMPILER_ID:MSVC>:/WX /Wall /w45038>)
 
 include(install/all_installers.cmake)
