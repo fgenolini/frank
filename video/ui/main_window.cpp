@@ -1,7 +1,5 @@
 #include "config.h"
 
-#define CVUI_IMPLEMENTATION
-
 #include "protected_cvui.h"
 
 #include "opencv/opencv_window.h"

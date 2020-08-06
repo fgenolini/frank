@@ -5,6 +5,8 @@ WARNINGS_OFF
 #include <iostream>
 WARNINGS_ON
 
+#define CVUI_IMPLEMENTATION
+
 #include "main_window.h"
 #include "opencv/exit_requested.h"
 #include "opencv/paint_histogram.h"
