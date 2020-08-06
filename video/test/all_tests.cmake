@@ -42,10 +42,18 @@ if (WIN32)
 endif()
 
 foreach(Test_Target ${TESTS})
+  target_compile_options(${Test_Target} PRIVATE
+    $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:-Werror -Wall -Wextra -Wpedantic>
+    $<$<CXX_COMPILER_ID:MSVC>:/WX /Wall /w45038>)
   add_test(${Test_Target} ${Test_Target})
 endforeach()
 
-set(TESTS_WITH_OPENCV ${TEST_APP_NAME} ${TEST_APP_NAME}_video_gui_1)
-foreach(Link_With_OpenCV ${TESTS_WITH_OPENCV})
-  target_link_libraries(${Link_With_OpenCV} ${LIB_NAME} ${OpenCV_LIBS} Microsoft.GSL::GSL)
+set(TESTS_WITH_OPENCV_AND_LIB ${TEST_APP_NAME})
+foreach(Link_With_OpenCV_And_Lib ${TESTS_WITH_OPENCV_AND_LIB})
+  target_link_libraries(${Link_With_OpenCV_And_Lib} ${LIB_NAME} ${OpenCV_LIBS} Microsoft.GSL::GSL)
+endforeach()
+
+set(TESTS_WITH_OPENCV_NO_LIB ${TEST_APP_NAME}_video_gui_1)
+foreach(Link_With_OpenCV_No_Lib ${TESTS_WITH_OPENCV_NO_LIB})
+  target_link_libraries(${Link_With_OpenCV_No_Lib} ${LIB_NAME} ${OpenCV_LIBS})
 endforeach()
