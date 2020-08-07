@@ -10,22 +10,38 @@ set(CommonSourcesList
   ui/main_settings_window.cpp ui/main_window.cpp
   ui/other_window.cpp ui/run_ui.cpp ui/statistics_window.cpp ui/video_gui.cpp)
 
+if(BUILD_SHARED_LIBS)
+  set(LIBRARY_TYPE SHARED)
+else()
+  set(LIBRARY_TYPE STATIC)
+endif()
+
 if (WIN32)
-  add_library(${LIB_NAME} device/win32_list_devices.cpp
-  ${CommonSourcesList})
+  add_library(${LIB_NAME} ${LIBRARY_TYPE} device/win32_list_devices.cpp
+    ${CommonSourcesList})
+  if(NOT BUILD_SHARED_LIBS)
+    set_property(TARGET ${LIB_NAME} PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+  endif()
 elseif(APPLE AND UNIX)
-  add_library(${LIB_NAME} device/macos_list_devices.cpp
-  ${CommonSourcesList})
+  add_library(${LIB_NAME} ${LIBRARY_TYPE} device/macos_list_devices.cpp
+    ${CommonSourcesList})
 elseif(UNIX AND (NOT APPLE) AND (NOT MINGW) AND (NOT MSYS) AND (NOT CYGWIN))
-  add_library(${LIB_NAME} device/linux_list_devices.cpp
+  add_library(${LIB_NAME} ${LIBRARY_TYPE} device/linux_list_devices.cpp
     ${CommonSourcesList})
 else()
-  add_library(${LIB_NAME} ${CommonSourcesList})
+  add_library(${LIB_NAME} ${LIBRARY_TYPE} ${CommonSourcesList})
 endif()
 
 # Command line executable with a simple OpenCV GUI
 add_executable(${APP_LOW_NAME} video_main.cpp run_application.cpp)
 if (WIN32)
+  if(NOT BUILD_SHARED_LIBS)
+    set_property(TARGET ${APP_LOW_NAME} PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+  endif()
+
   # WinMain instead of main, so that no DOS window is shown for Windows users
   add_executable(${APP_NAME_WINMAIN} WIN32 video_winmain.cpp run_application.cpp)
+  if(NOT BUILD_SHARED_LIBS)
+    set_property(TARGET ${APP_NAME_WINMAIN} PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+  endif()
 endif()

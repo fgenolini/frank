@@ -42,6 +42,12 @@ if (WIN32)
 endif()
 
 foreach(Test_Target ${TESTS})
+  if (WIN32)
+    if(NOT BUILD_SHARED_LIBS)
+      set_property(TARGET ${Test_Target} PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+    endif()
+  endif()
+  
   target_compile_options(${Test_Target} PRIVATE
     $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:-Werror -Wall -Wextra -Wpedantic>
     $<$<CXX_COMPILER_ID:MSVC>:/WX /Wall /wd5038 /wd4868>)

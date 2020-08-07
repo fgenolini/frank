@@ -55,9 +55,24 @@ If you use VS Code, edit your user settings to configure CMake:
 ```
     "cmake.configureSettings": {
         "Microsoft.GSL_DIR" : "/projects/GSL/share/cmake/Microsoft.GSL",
-        "OpenCV_DIR": "/projects/OpenCV"
-    }
+        "OpenCV_DIR": "/projects/OpenCV",
+        "OpenCV_STATIC" : "ON",
+        "BUILD_SHARED_LIBS" : "OFF",
+        "CMAKE_VERBOSE_MAKEFILE" : "ON"
+    },
+    "cmake.parallelJobs": 1,
+    "C_Cpp.clang_format_fallbackStyle": "LLVM",
+    "editor.rulers": [
+        80, 120
+    ]
 ```
+
+With these settings you can choose to link against a static version
+(for example if you want to debug or perform code coverage).
+You can also allow verbose builds showing which compiler command line
+parameters are used.
+You can also reduce the number of parallel build operations, so that any
+error in the build output makes more sense.
 
 ## Dependencies
 * Microsoft Windows, or Linux, or Apple Mac OSX
