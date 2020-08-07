@@ -27,19 +27,15 @@ HRESULT devices_from_category(REFGUID category, IEnumMoniker **devices) {
   auto class_creator =
       CoCreateInstance(CLSID_SystemDeviceEnum, nullptr, CLSCTX_INPROC_SERVER,
                        IID_PPV_ARGS(&system_device));
-  if (FAILED(class_creator)) {
-    std::cerr << "Could not create system device enumerator\n";
+  if (FAILED(class_creator))
     return class_creator;
-  }
 
   auto _ = finally([system_device] { system_device->Release(); });
 
   auto category_enumerator =
       system_device->CreateClassEnumerator(category, devices, 0);
-  if (category_enumerator == S_FALSE) {
-    std::cerr << "Empty category\n";
+  if (category_enumerator == S_FALSE)
     category_enumerator = VFW_E_NOT_FOUND;
-  }
 
   return category_enumerator;
 }
@@ -52,18 +48,15 @@ std::vector<std::string> device_information(IEnumMoniker *devices) {
     IPropertyBag *property_bag{};
     auto bind_to_storage =
         moniker->BindToStorage(0, 0, IID_PPV_ARGS(&property_bag));
-    if (FAILED(bind_to_storage)) {
-      std::cerr << "Could not bind to storage\n";
+    if (FAILED(bind_to_storage))
       continue;
-    }
 
     auto _1 = finally([property_bag] { property_bag->Release(); });
     VARIANT property;
     VariantInit(&property);
     auto get_description = property_bag->Read(L"Description", &property, 0);
-    if (FAILED(get_description)) {
+    if (FAILED(get_description))
       get_description = property_bag->Read(L"FriendlyName", &property, 0);
-    }
 
     auto convert_text = [](BSTR unicode_com_text) {
       auto source_text = _bstr_t(unicode_com_text);
@@ -83,17 +76,15 @@ std::vector<std::string> device_information(IEnumMoniker *devices) {
 
     VariantClear(&property);
     auto get_audio_id = property_bag->Read(L"WaveInID", &property, 0);
-    if (SUCCEEDED(get_audio_id)) {
+    if (SUCCEEDED(get_audio_id))
       printf("  WaveIn ID: %ld\n", property.lVal);
-    }
 
     VariantClear(&property);
     auto get_device_path = property_bag->Read(L"DevicePath", &property, 0);
     if (SUCCEEDED(get_device_path)) {
       printf("  Device path: %S\n", property.bstrVal);
-      if (new_device.size() < 1) {
+      if (new_device.size() < 1)
         new_device = convert_text(property.bstrVal);
-      }
     }
 
     VariantClear(&property);
@@ -108,10 +99,8 @@ void audio_devices() {
   IEnumMoniker *audio_devices{};
   auto enumerate =
       devices_from_category(CLSID_AudioInputDeviceCategory, &audio_devices);
-  if (FAILED(enumerate)) {
-    std::cerr << "Could not list audio input devices\n";
+  if (FAILED(enumerate))
     return;
-  }
 
   auto _ = finally([audio_devices] { audio_devices->Release(); });
   device_information(audio_devices);
@@ -122,11 +111,8 @@ std::vector<std::string> video_devices() {
   IEnumMoniker *video_devices{};
   auto enumerate =
       devices_from_category(CLSID_VideoInputDeviceCategory, &video_devices);
-  if (FAILED(enumerate)) {
-    std::cerr << "Could not list video input devices\n";
-    std::vector<std::string> no_device{};
-    return no_device;
-  }
+  if (FAILED(enumerate))
+    return std::vector<std::string>();
 
   auto _ = finally([video_devices] { video_devices->Release(); });
   return device_information(video_devices);
@@ -134,11 +120,8 @@ std::vector<std::string> video_devices() {
 
 std::vector<std::string> win32_list_device_names() {
   auto com = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
-  if (FAILED(com)) {
-    std::cerr << "Could not initialise COM\n";
-    std::vector<std::string> no_device{};
-    return no_device;
-  }
+  if (FAILED(com))
+    return std::vector<std::string>();
 
   auto _ = finally([] { CoUninitialize(); });
   auto devices = video_devices();
@@ -150,11 +133,10 @@ std::vector<std::string> win32_list_device_names() {
 std::vector<std::string>
 win32_list_devices(device_register const *name_devices) {
   auto device_names = win32_list_device_names();
-  if (name_devices) {
+  if (name_devices)
     device_names = name_devices->name_devices();
-  } else {
+  else
     std::cout << device_names.size() << " video input devices\n";
-  }
 
   return device_names;
 }

@@ -53,15 +53,14 @@ void main_settings_window::draw_canny() {
 WARNING_PUSH
 DISABLE_WARNING_MSC(4365)
 void main_settings_window::draw_webcam(
-    int webcam, std::vector<input_device> &input_devices) {
+    int webcam, std::vector<input_device> const &input_devices) {
   cvui::beginColumn();
   {
     std::string video_name{};
-    if ((int)input_devices.size() <= webcam) {
+    if ((int)input_devices.size() <= webcam)
       video_name = "Video " + std::to_string(webcam);
-    } else {
+    else
       video_name = std::to_string(webcam) + " " + input_devices[webcam].name();
-    }
 
     cvui::text(" ");
     cvui::text(" ");
@@ -114,11 +113,10 @@ void main_settings_window::draw_overlay(
       cvui::text(" ");
       cvui::text(" ");
       cv::String overlay_name{};
-      if (overlay_images[webcam].empty()) {
+      if (overlay_images[webcam].empty())
         overlay_name = "No overlay " + std::to_string(webcam);
-      } else {
+      else
         overlay_name = fs::path(overlay_images[webcam]).stem().string();
-      }
 
       cvui::checkbox(overlay_name, &overlay_enabled_array_[webcam]);
     }
@@ -138,12 +136,11 @@ void main_settings_window::draw_overlay(
 WARNINGS_ON
 
 void main_settings_window::draw(EnhancedWindow &settings,
-                                std::vector<input_device> &input_devices,
+                                std::vector<input_device> const &input_devices,
                                 std::vector<bool> &has_webcams,
                                 std::vector<cv::String> &overlay_images) {
-  if (settings.isMinimized()) {
+  if (settings.isMinimized())
     return;
-  }
 
   draw_canny();
   for (auto webcam = 0; webcam < (int)has_webcams.size(); ++webcam) {

@@ -28,7 +28,7 @@ public:
             void *mock_data = nullptr);
   ~video_gui();
 
-  int loop(std::vector<input_device> &connected_webcams) override;
+  void loop(std::vector<input_device> const &connected_webcams) override;
 
 private:
   void load_settings();

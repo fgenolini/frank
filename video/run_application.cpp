@@ -8,7 +8,7 @@ WARNINGS_ON
 
 #include "device/list_devices.h"
 #include "run_application.h"
-#include "ui/opencv_ui.h"
+#include "ui/run_ui.h"
 
 namespace frank::video {
 
@@ -19,11 +19,10 @@ void run_application(int, char const *[], void *mock_data) {
     std::abort();
   });
   auto input_devices = list_input_devices(nullptr, mock_data);
-  if (input_devices.size() < 1) {
+  if (input_devices.size() < 1)
     std::cerr << "Could not list video / audio input devices\n";
-  }
 
-  opencv_ui(input_devices, nullptr, mock_data);
+  run_ui(input_devices, nullptr, mock_data);
 }
 
 } // namespace frank::video

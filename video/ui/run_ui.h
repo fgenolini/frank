@@ -13,8 +13,8 @@ WARNINGS_ON
 namespace frank::video {
 
 NO_RETURN
-extern void opencv_ui(std::vector<input_device> &connected_webcams,
-                      user_interface_factory factory_from_test = nullptr,
-                      void *mock_data = nullptr);
+extern void run_ui(std::vector<input_device> const &connected_webcams,
+                   user_interface_factory mocked_factory = nullptr,
+                   void *mock_data = nullptr);
 
 } // namespace frank::video

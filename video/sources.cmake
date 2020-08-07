@@ -7,8 +7,8 @@ set(CommonSourcesList
   opencv/add_overlay.cpp opencv/exit_requested.cpp opencv/opencv_window.cpp
   opencv/paint_histogram.cpp opencv/paint_picture.cpp opencv/take_picture.cpp
   test/testable_exit.cpp
-  ui/main_settings_window.cpp ui/main_window.cpp ui/opencv_ui.cpp
-  ui/other_window.cpp ui/statistics_window.cpp ui/video_gui.cpp)
+  ui/main_settings_window.cpp ui/main_window.cpp
+  ui/other_window.cpp ui/run_ui.cpp ui/statistics_window.cpp ui/video_gui.cpp)
 
 if (WIN32)
   add_library(${LIB_NAME} device/win32_list_devices.cpp

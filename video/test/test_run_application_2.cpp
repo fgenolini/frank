@@ -12,63 +12,42 @@ WARNINGS_ON
 
 #include "device/list_devices.h"
 #include "run_application.h"
-#include "ui/opencv_ui.h"
+#include "ui/run_ui.h"
 
 namespace test::frank {
 
-class run_application_mock {
-public:
-  bool list_input_devices_called = false;
-  bool opencv_ui_called = false;
-};
-
-std::vector<::frank::video::input_device>
-mocked_list_input_devices(::frank::video::device_register const *,
-                          run_application_mock *mock) {
-  if (!mock) {
-    std::cerr << "mocked_list_input_devices: no mock\n";
+struct run_application_mock {
+  std::vector<::frank::video::input_device> list_input_devices() {
+    list_input_devices_called = true;
     return std::vector<::frank::video::input_device>();
   }
 
-  mock->list_input_devices_called = true;
-  return std::vector<::frank::video::input_device>();
-}
+  void run_ui() { run_ui_called = true; }
 
-void mocked_opencv_ui(std::vector<::frank::video::input_device> &,
-                      run_application_mock *mock) {
-  if (!mock) {
-    std::cerr << "mocked_opencv_ui: no mock\n";
-    return;
-  }
-
-  mock->opencv_ui_called = true;
-}
+  bool list_input_devices_called{};
+  bool run_ui_called{};
+};
 
 } // namespace test::frank
 
 namespace frank::video {
 
-std::vector<input_device>
-list_input_devices(device_register const *name_devices, void *mock_data) {
-  if (!mock_data) {
-    std::cerr << "list_input_devices: no mock\n";
-    return test::frank::mocked_list_input_devices(name_devices, nullptr);
-  }
+std::vector<input_device> list_input_devices(device_register const *,
+                                             void *mock_data) {
+  if (!mock_data)
+    return std::vector<input_device>();
 
   auto mock = static_cast<::test::frank::run_application_mock *>(mock_data);
-  return test::frank::mocked_list_input_devices(name_devices, mock);
+  return mock->list_input_devices();
 }
 
-void opencv_ui(std::vector<input_device> &connected_webcams,
-               user_interface_factory, void *mock_data) {
-  if (!mock_data) {
-    std::cerr << "opencv_ui: no mock\n";
-    test::frank::mocked_opencv_ui(connected_webcams, nullptr);
+void run_ui(std::vector<input_device> const &, user_interface_factory,
+            void *mock_data) {
+  if (!mock_data)
     return;
-  }
 
   auto mock = static_cast<::test::frank::run_application_mock *>(mock_data);
-  test::frank::mocked_opencv_ui(connected_webcams, mock);
+  mock->run_ui();
 }
 
 } // namespace frank::video
@@ -84,9 +63,7 @@ SCENARIO("frank video run application 2", "[run_application_2]") {
         REQUIRE(mock.list_input_devices_called == true);
       }
 
-      AND_THEN("opencv_ui is called") {
-        REQUIRE(mock.opencv_ui_called == true);
-      }
+      THEN("run_ui is called") { REQUIRE(mock.run_ui_called == true); }
     }
   }
 }

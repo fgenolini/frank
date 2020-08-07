@@ -16,19 +16,11 @@ WARNINGS_ON
 
 namespace test::frank {
 
-class winmain_mock {
-public:
-  bool called{};
+struct winmain_mock {
+  void run_application() { run_application_called = true; }
+
+  bool run_application_called{};
 };
-
-void mocked_run_application(winmain_mock *mock) {
-  if (!mock) {
-    std::cerr << "mocked_run_application: no mock\n";
-    return;
-  }
-
-  mock->called = true;
-}
 
 extern int CALLBACK WinMain(HINSTANCE, HINSTANCE, LPSTR, int show_option,
                             void *mock_data);
@@ -38,14 +30,11 @@ extern int CALLBACK WinMain(HINSTANCE, HINSTANCE, LPSTR, int show_option,
 namespace frank::video {
 
 void run_application(int, char const *[], void *mock_data) {
-  if (!mock_data) {
-    std::cerr << "run_application: no mock\n";
-    test::frank::mocked_run_application(nullptr);
+  if (!mock_data)
     return;
-  }
 
   auto mock = static_cast<::test::frank::winmain_mock *>(mock_data);
-  test::frank::mocked_run_application(mock);
+  mock->run_application();
 }
 
 } // namespace frank::video
@@ -61,9 +50,11 @@ SCENARIO("frank video winmain 4", "[winmain_4]") {
       auto results =
           test::frank::WinMain(nullptr, nullptr, nullptr, SHOW_OPTION, &mock);
 
-      THEN("run_application is called") { REQUIRE(mock.called == true); }
+      THEN("run_application is called") {
+        REQUIRE(mock.run_application_called == true);
+      }
 
-      AND_THEN("WinMain returns SW_SHOW") { REQUIRE(results == SHOW_OPTION); }
+      THEN("WinMain returns SW_SHOW") { REQUIRE(results == SHOW_OPTION); }
     }
     WHEN("option minimise") {
       constexpr auto SHOW_OPTION = SW_MINIMIZE;
@@ -72,9 +63,11 @@ SCENARIO("frank video winmain 4", "[winmain_4]") {
       auto results =
           test::frank::WinMain(nullptr, nullptr, nullptr, SHOW_OPTION, &mock);
 
-      THEN("run_application is called") { REQUIRE(mock.called == true); }
+      THEN("run_application is called") {
+        REQUIRE(mock.run_application_called == true);
+      }
 
-      AND_THEN("WinMain returns SW_MINIMIZE") {
+      THEN("WinMain returns SW_MINIMIZE") {
         REQUIRE(results == SHOW_OPTION);
       }
     }

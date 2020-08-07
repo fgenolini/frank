@@ -14,19 +14,11 @@ WARNINGS_ON
 
 namespace test::frank {
 
-class main_mock {
-public:
-  bool called{};
+struct main_mock {
+  void run_application() { run_application_called = true; }
+
+  bool run_application_called{};
 };
-
-void mocked_run_application(int, char const *[], main_mock *mock) {
-  if (!mock) {
-    std::cerr << "mocked_run_application: no mock\n";
-    return;
-  }
-
-  mock->called = true;
-}
 
 extern int main(int argc, char const *argv[], void *mock_data);
 
@@ -34,15 +26,12 @@ extern int main(int argc, char const *argv[], void *mock_data);
 
 namespace frank::video {
 
-void run_application(int argc, char const *argv[], void *mock_data) {
-  if (!mock_data) {
-    std::cerr << "run_application: no mock\n";
-    test::frank::mocked_run_application(argc, argv, nullptr);
+void run_application(int, char const *[], void *mock_data) {
+  if (!mock_data)
     return;
-  }
 
   auto mock = static_cast<::test::frank::main_mock *>(mock_data);
-  test::frank::mocked_run_application(argc, argv, mock);
+  mock->run_application();
 }
 
 } // namespace frank::video
@@ -58,9 +47,11 @@ SCENARIO("frank video main 2", "[main_2]") {
 
       auto results = test::frank::main(ONE, one_argument, &mock);
 
-      THEN("run_application is called") { REQUIRE(mock.called == true); }
+      THEN("run_application is called") {
+        REQUIRE(mock.run_application_called == true);
+      }
 
-      AND_THEN("main returns 1") { REQUIRE(results == ONE); }
+      THEN("main returns 1") { REQUIRE(results == ONE); }
     }
     WHEN("two arguments") {
       constexpr auto TWO = 2;
@@ -69,9 +60,11 @@ SCENARIO("frank video main 2", "[main_2]") {
 
       auto results = test::frank::main(TWO, two_arguments, &mock);
 
-      THEN("run_application is called") { REQUIRE(mock.called == true); }
+      THEN("run_application is called") {
+        REQUIRE(mock.run_application_called == true);
+      }
 
-      AND_THEN("main returns 2") { REQUIRE(results == TWO); }
+      THEN("main returns 2") { REQUIRE(results == TWO); }
     }
   }
 }

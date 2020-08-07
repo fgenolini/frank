@@ -19,13 +19,14 @@ public:
                        bool *overlay_enabled_array,
                        double *overlay_alpha_array);
 
-  void draw(EnhancedWindow &settings, std::vector<input_device> &input_devices,
+  void draw(EnhancedWindow &settings,
+            std::vector<input_device> const &input_devices,
             std::vector<bool> &has_webcams,
             std::vector<cv::String> &overlay_images);
 
 private:
   void draw_canny();
-  void draw_webcam(int webcam, std::vector<input_device> &input_devices);
+  void draw_webcam(int webcam, std::vector<input_device> const &input_devices);
   void draw_overlay(int webcam, std::vector<cv::String> &overlay_images);
 
   double *overlay_alpha_array_;

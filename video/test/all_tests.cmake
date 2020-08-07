@@ -7,10 +7,10 @@ add_executable(${TEST_APP_NAME}_main_2 test/catch_implementation.cpp
                test/test_main_2.cpp video_main.cpp)
 add_executable(${TEST_APP_NAME}_run_application_2 test/catch_implementation.cpp
                test/test_run_application_2.cpp run_application.cpp)
-add_executable(${TEST_APP_NAME}_opencv_ui_1 test/catch_implementation.cpp
-               test/test_opencv_ui_1.cpp
+add_executable(${TEST_APP_NAME}_run_ui_3 test/catch_implementation.cpp
+               test/test_run_ui_3.cpp
                test/testable_exit.cpp
-               ui/opencv_ui.cpp
+               ui/run_ui.cpp
                device/input_device.cpp)
 add_executable(${TEST_APP_NAME}_video_gui_1 test/catch_implementation.cpp
                test/test_video_gui_1.cpp
@@ -25,8 +25,8 @@ target_compile_definitions(${TEST_APP_NAME}_main_2
                            PUBLIC _TEST_MAIN_2_ _DO_NOTHING_EXIT_)
 target_compile_definitions(${TEST_APP_NAME}_run_application_2
                            PUBLIC _TEST_RUN_APPLICATION_2_ _DO_NOTHING_EXIT_)
-target_compile_definitions(${TEST_APP_NAME}_opencv_ui_1
-                           PUBLIC _TEST_OPENCV_UI_1_ _DO_NOTHING_EXIT_)
+target_compile_definitions(${TEST_APP_NAME}_run_ui_3
+                           PUBLIC _TEST_RUN_UI_3_ _DO_NOTHING_EXIT_)
 target_compile_definitions(${TEST_APP_NAME}_video_gui_1
                            PUBLIC _TEST_VIDEO_GUI_1_ _DO_NOTHING_EXIT_)
 if (WIN32)
@@ -35,7 +35,7 @@ if (WIN32)
 endif()
 
 set(TESTS ${TEST_APP_NAME} ${TEST_APP_NAME}_main_2
-    ${TEST_APP_NAME}_run_application_2 ${TEST_APP_NAME}_opencv_ui_1
+    ${TEST_APP_NAME}_run_application_2 ${TEST_APP_NAME}_run_ui_3
     ${TEST_APP_NAME}_video_gui_1)
 if (WIN32)
   list(APPEND TESTS ${TEST_APP_NAME}_winmain_4)

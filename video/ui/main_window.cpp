@@ -11,7 +11,7 @@
 namespace frank::video {
 
 void main_window(EnhancedWindow &settings, EnhancedWindow &statistics,
-                 std::vector<input_device> &input_devices,
+                 std::vector<input_device> const &input_devices,
                  std::vector<bool> &has_webcams, bool *video_enabled_array,
                  bool *overlay_enabled_array, double *overlay_alpha_array,
                  std::vector<cv::String> &overlay_images,
@@ -38,9 +38,8 @@ void main_window(EnhancedWindow &settings, EnhancedWindow &statistics,
       first_time, has_webcams[0], video_enabled_array[0], window, use_canny,
       low_threshold, high_threshold, overlay_enabled_array[0],
       overlay_alpha_array[0], overlay_images[0], overlay_buffer, &raw_picture);
-  if (!picture.empty()) {
+  if (!picture.empty())
     frame = picture;
-  }
 
   cvui::beginRow(frame, FIRST_ROW_X, FIRST_ROW_Y);
   {
@@ -52,11 +51,10 @@ void main_window(EnhancedWindow &settings, EnhancedWindow &statistics,
 
     if (has_webcams[0]) {
       cvui::text(" ");
-      if (first_time) {
+      if (first_time)
         cvui::printf("Opening webcam %d...", webcam_index);
-      } else {
+      else
         cvui::checkbox(STATISTICS_TITLE, &histograms);
-      }
     }
   }
   cvui::endRow();
@@ -68,9 +66,8 @@ void main_window(EnhancedWindow &settings, EnhancedWindow &statistics,
       overlay_enabled_array, overlay_alpha_array};
   settings_window.draw(settings, input_devices, has_webcams, overlay_images);
   settings.end();
-  if (histograms) {
+  if (histograms)
     statistics_window(statistics, frame, raw_picture, &histogram_threshold);
-  }
 
   cvui::imshow(window.name(), frame);
   window.set_high_threshold(high_threshold);

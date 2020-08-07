@@ -55,22 +55,20 @@ video_gui::video_gui(int webcam_count, cvui_init mock_init, void *mock_data)
     histogram_threshold[webcam] = DEFAULT_HISTOGRAM_THRESHOLD;
     overlay_buffers[webcam].addref();
     video_enabled[webcam] = has_webcam;
-    if (webcam == 0) {
+    if (webcam == 0)
       statistics_.push_back(
           EnhancedWindow(STATISTICS0_X, STATISTICS0_Y, STATISTICS0_WIDTH,
                          STATISTICS0_HEIGHT, STATISTICS_TITLE));
-    } else {
+    else
       statistics_.push_back(EnhancedWindow(STATISTICS_X, STATISTICS_Y,
                                            STATISTICS_WIDTH, STATISTICS_HEIGHT,
                                            STATISTICS_TITLE));
-    }
   }
 
-  if (!has_webcams[0]) {
+  if (!has_webcams[0])
     // Index 0 for OpenCV is also any default video input device, assume there
     // is at least one
     has_webcams[0] = true;
-  }
 
   for ([[maybe_unused]] auto _ : has_webcams) {
     height_width_pairs.push_back(std::make_pair(0.0, 0.0));
@@ -93,12 +91,10 @@ video_gui::video_gui(int webcam_count, cvui_init mock_init, void *mock_data)
       has_webcams[0], video_enabled[0], std::make_pair(0.0, 0.0),
       &overlay_buffers[0], USE_CANNY, USE_OVERLAY, overlay_image,
       NO_OVERLAY_ALPHA, LOW_THRESHOLD, HIGH_THRESHOLD, histograms[0]);
-  if (!mock_init) {
+  if (!mock_init)
     cvui::init(&window_names[0], window_names.size());
-  } else {
-    std::cerr << "video_gui: mocked window initialisation\n";
+  else
     mock_init(&window_names[0], window_names.size(), mock_data);
-  }
 }
 
 video_gui::~video_gui() {
@@ -111,7 +107,7 @@ video_gui::~video_gui() {
 
 WARNING_PUSH
 DISABLE_WARNING_MSC(4365)
-int video_gui::loop(std::vector<input_device> &connected_webcams) {
+void video_gui::loop(std::vector<input_device> const &connected_webcams) {
   load_settings();
   while (true) {
     window_template->set_histogram_threshold(histogram_threshold[0]);
@@ -121,14 +117,12 @@ int video_gui::loop(std::vector<input_device> &connected_webcams) {
     histograms[0] = window_template->histograms();
     histogram_threshold[0] = window_template->histogram_threshold();
     save_settings();
-    if (window_template->exit_requested()) {
-      return connected_webcams.size();
-    }
+    if (window_template->exit_requested())
+      return;
 
     for (auto webcam = 1; webcam < (int)window_names.size(); ++webcam) {
-      if (!has_webcams[webcam]) {
+      if (!has_webcams[webcam])
         continue;
-      }
 
       auto height_width_pair = height_width_pairs[webcam];
       opencv_window window(
@@ -141,9 +135,8 @@ int video_gui::loop(std::vector<input_device> &connected_webcams) {
           histograms[webcam]);
       window.set_histogram_threshold(histogram_threshold[webcam]);
       other_window(statistics_[webcam], window);
-      if (window.exit_requested()) {
-        return connected_webcams.size();
-      }
+      if (window.exit_requested())
+        return;
 
       height_width_pair.first = window.height();
       height_width_pair.second = window.width();
@@ -152,34 +145,28 @@ int video_gui::loop(std::vector<input_device> &connected_webcams) {
       histogram_threshold[webcam] = window.histogram_threshold();
     }
 
-    if (exit_requested()) {
-      return connected_webcams.size();
-    }
+    if (exit_requested())
+      return;
 
     window_template->set_first_time(false);
   }
-
-  return connected_webcams.size();
 }
 
 void video_gui::load_settings() {
   overlay_alpha_last_.clear();
   overlay_images_last_.clear();
   auto all_properties = serialiser_.read();
-  if (all_properties.empty()) {
+  if (all_properties.empty())
     return;
-  }
 
   for (auto i = 0; i < MAXIMUM_VIDEO_COUNT; ++i) {
     std::string alpha_key = ALPHA + std::to_string(i);
-    if (all_properties.count(alpha_key) > 0) {
+    if (all_properties.count(alpha_key) > 0)
       overlay_alpha[i] = std::stod(all_properties[alpha_key]);
-    }
 
     std::string overlay_key = OVERLAY + std::to_string(i);
-    if (all_properties.count(overlay_key) > 0) {
+    if (all_properties.count(overlay_key) > 0)
       overlay_images[i] = all_properties[overlay_key];
-    }
 
     overlay_alpha_last_.push_back(overlay_alpha[i]);
     overlay_images_last_.push_back(overlay_images[i]);
@@ -188,27 +175,23 @@ void video_gui::load_settings() {
 
 bool video_gui::settings_changed() const {
   if (overlay_images_last_.size() != MAXIMUM_VIDEO_COUNT ||
-      overlay_alpha_last_.size() != MAXIMUM_VIDEO_COUNT) {
+      overlay_alpha_last_.size() != MAXIMUM_VIDEO_COUNT)
     return true;
-  }
 
   for (auto i = 0; i < MAXIMUM_VIDEO_COUNT; ++i) {
-    if (overlay_alpha[i] != overlay_alpha_last_[i]) {
+    if (overlay_alpha[i] != overlay_alpha_last_[i])
       return true;
-    }
 
-    if (overlay_images[i].compare(overlay_images_last_[i]) != 0) {
+    if (overlay_images[i].compare(overlay_images_last_[i]) != 0)
       return true;
-    }
   }
 
   return false;
 }
 
 void video_gui::save_settings() {
-  if (!settings_changed()) {
+  if (!settings_changed())
     return;
-  }
 
   overlay_alpha_last_.clear();
   overlay_images_last_.clear();

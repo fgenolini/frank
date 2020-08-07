@@ -26,9 +26,8 @@ static cv::Scalar const blue_line_colour(255, 0, 0);
 cv::Mat paint_histogram(int height, int width, cv::Mat const &raw_picture,
                         int tone_down_threshold) {
   constexpr auto LINE_WIDTH = 1;
-  if (raw_picture.empty() || height < 1 || width < 1) {
+  if (raw_picture.empty() || height < 1 || width < 1)
     return cv::Mat();
-  }
 
   cv::Mat image(height, width, CV_8UC3, cv::Scalar(0, 0, 0));
   auto const pixel_count = raw_picture.cols * raw_picture.rows;

@@ -14,16 +14,13 @@ WARNINGS_ON
 
 namespace test::frank {
 
-class video_gui_mock {
-public:
+struct video_gui_mock {
   bool cvui_init_called{};
 };
 
 void mock_cvui_init(const cv::String[], size_t, void *mock_data) {
-  if (!mock_data) {
-    std::cerr << "mock_cvui_init: no mock\n";
+  if (!mock_data)
     return;
-  }
 
   auto mock = static_cast<video_gui_mock *>(mock_data);
   mock->cvui_init_called = true;
@@ -43,9 +40,7 @@ SCENARIO("frank video GUI 1", "[video_gui_1]") {
       };
       REQUIRE_NOTHROW(make_video_gui());
 
-      THEN("mock_cvui_init is called") {
-        REQUIRE(mock.cvui_init_called == true);
-      }
+      THEN("cvui_init is called") { REQUIRE(mock.cvui_init_called == true); }
     }
   }
 }

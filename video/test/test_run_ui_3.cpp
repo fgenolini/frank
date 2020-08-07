@@ -1,7 +1,7 @@
 #include "config.h"
 
-#ifndef _TEST_OPENCV_UI_1_
-#error _TEST_OPENCV_UI_1_ not defined
+#ifndef _TEST_RUN_UI_3_
+#error _TEST_RUN_UI_3_ not defined
 #endif
 
 WARNINGS_OFF
@@ -11,7 +11,7 @@ WARNINGS_OFF
 #include <catch2/trompeloeil.hpp>
 WARNINGS_ON
 
-#include "ui/opencv_ui.h"
+#include "ui/run_ui.h"
 #include "ui/user_interface.h"
 
 namespace test::frank {
@@ -25,20 +25,16 @@ public:
   int exit_count{};
   int exit_value{3};
 };
-WARNINGS_ON
 
-WARNINGS_OFF
 class fake_user_interface : public virtual ::frank::video::user_interface {
 public:
   fake_user_interface(mock_user_interface *mock) : mock_(mock) {}
 
-  int loop(std::vector<::frank::video::input_device> &inputs) override {
-    if (!mock_) {
-      std::cerr << "loop: no mock\n";
-      return -1;
-    }
+  void loop(std::vector<::frank::video::input_device> const &inputs) override {
+    if (!mock_)
+      return;
 
-    return mock_->loop(inputs);
+    mock_->loop(inputs);
   }
 
 private:
@@ -47,10 +43,8 @@ private:
 WARNINGS_ON
 
 void do_nothing_exit(int result, void *mock_data) {
-  if (!mock_data) {
-    std::cerr << "do_nothing_exit: no mock\n";
+  if (!mock_data)
     return;
-  }
 
   auto mock = static_cast<mock_user_interface *>(mock_data);
   ++(mock->exit_count);
@@ -62,10 +56,8 @@ void do_nothing_exit(int result, void *mock_data) {
 namespace frank::video {
 
 std::unique_ptr<user_interface> make_user_interface(int, void *mock_data) {
-  if (!mock_data) {
-    std::cerr << "make_user_interface: no mock\n";
+  if (!mock_data)
     return std::make_unique<::test::frank::fake_user_interface>(nullptr);
-  }
 
   auto mock = static_cast<::test::frank::mock_user_interface *>(mock_data);
   return std::make_unique<::test::frank::fake_user_interface>(mock);
@@ -73,16 +65,14 @@ std::unique_ptr<user_interface> make_user_interface(int, void *mock_data) {
 
 } // namespace frank::video
 
-SCENARIO("frank video opencv ui 1", "[opencv_ui_1]") {
-  GIVEN("OpenCV UI") {
+SCENARIO("frank video run ui 3", "[run_ui_3]") {
+  GIVEN("user interface is run") {
     WHEN("no connected webcam") {
       std::vector<frank::video::input_device> no_device{};
       test::frank::mock_user_interface mock{};
-      auto device_count = 0;
-      REQUIRE_CALL(mock, loop(no_device)).LR_RETURN(device_count);
+      REQUIRE_CALL(mock, loop(no_device));
 
-      frank::video::opencv_ui(no_device, frank::video::make_user_interface,
-                              &mock);
+      frank::video::run_ui(no_device, frank::video::make_user_interface, &mock);
 
       THEN("exit is called") { REQUIRE(mock.exit_count == 1); }
 
@@ -94,32 +84,15 @@ SCENARIO("frank video opencv ui 1", "[opencv_ui_1]") {
       std::vector<frank::video::input_device> one_device{
           frank::video::input_device()};
       test::frank::mock_user_interface mock{};
-      auto device_count = 1;
-      REQUIRE_CALL(mock, loop(one_device)).LR_RETURN(device_count);
+      REQUIRE_CALL(mock, loop(one_device));
 
-      frank::video::opencv_ui(one_device, frank::video::make_user_interface,
-                              &mock);
+      frank::video::run_ui(one_device, frank::video::make_user_interface,
+                           &mock);
 
       THEN("exit is called") { REQUIRE(mock.exit_count == 1); }
 
       THEN("exit returns EXIT_SUCCESS") {
         REQUIRE(mock.exit_value == EXIT_SUCCESS);
-      }
-    }
-    WHEN("wrong webcam count") {
-      std::vector<frank::video::input_device> one_device{
-          frank::video::input_device()};
-      test::frank::mock_user_interface mock{};
-      auto wrong_device_count = 42;
-      REQUIRE_CALL(mock, loop(one_device)).LR_RETURN(wrong_device_count);
-
-      frank::video::opencv_ui(one_device, frank::video::make_user_interface,
-                              &mock);
-
-      THEN("exit is called") { REQUIRE(mock.exit_count == 1); }
-
-      THEN("exit returns EXIT_FAILURE") {
-        REQUIRE(mock.exit_value == EXIT_FAILURE);
       }
     }
   }

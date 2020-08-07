@@ -30,26 +30,21 @@ std::vector<std::string> linux_list_device_names() {
   //   ...
   std::cout << "Video4linux input devices\n";
   const fs::path video4linux{"/sys/class/video4linux"};
-  if (!fs::exists(video4linux)) {
-    std::cerr << "No video4linux\n";
-    std::vector<std::string> no_device{};
-    return no_device;
-  }
+  if (!fs::exists(video4linux))
+    return std::vector<std::string>();
 
   std::vector<std::string> new_devices{};
   for (const auto &entry : fs::directory_iterator(video4linux)) {
     const auto video_device = entry.path().filename().string();
-    if (!entry.is_directory()) {
+    if (!entry.is_directory())
       continue;
-    }
 
     std::cout << "file: " << video_device << '\n';
     fs::path index;
     index += entry.path();
     index /= "index";
-    if (!fs::exists(index)) {
+    if (!fs::exists(index))
       continue;
-    }
 
     std::ifstream index_file(index, std::ifstream::in);
     if (index_file.is_open()) {
@@ -61,22 +56,19 @@ std::vector<std::string> linux_list_device_names() {
       auto contents = new char[contents_size];
       file_contents->sgetn(contents, contents_size);
       std::string video_device_index{contents};
-      if (video_device_index.compare(0, 1, "0") != 0) {
+      if (video_device_index.compare(0, 1, "0") != 0)
         continue;
-      }
     }
 
     fs::path name;
     name += entry.path();
     name /= "name";
-    if (!fs::exists(name)) {
+    if (!fs::exists(name))
       continue;
-    }
 
     std::ifstream name_file(name, std::ifstream::in);
-    if (!name_file.is_open()) {
+    if (!name_file.is_open())
       continue;
-    }
 
     auto _ = finally([&name_file] { name_file.close(); });
     auto file_contents = name_file.rdbuf();
@@ -97,11 +89,10 @@ std::vector<std::string> linux_list_device_names() {
 std::vector<std::string>
 linux_list_devices(device_register const *name_devices) {
   auto device_names = linux_list_device_names();
-  if (name_devices) {
+  if (name_devices)
     device_names = name_devices->name_devices();
-  } else {
+  else
     std::cout << device_names.size() << " video input devices\n";
-  }
 
   return device_names;
 }

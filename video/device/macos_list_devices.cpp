@@ -29,19 +29,16 @@ std::vector<std::string> macos_list_device_names() {
                            "}'"
                            "|swift -"};
   auto pipe = popen(swift_script.c_str(), "r");
-  if (!pipe) {
-    std::vector<std::string> no_device{};
-    return no_device;
-  }
+  if (!pipe)
+    return std::vector<std::string>();
 
   auto _ = finally([pipe] { pclose(pipe); });
   constexpr auto BUFFER_SIZE = 4096;
   std::array<char, BUFFER_SIZE> buffer{};
   std::string result{};
   while (!feof(pipe)) {
-    if (!fgets(buffer.data(), BUFFER_SIZE, pipe)) {
+    if (!fgets(buffer.data(), BUFFER_SIZE, pipe))
       break;
-    }
 
     result += buffer.data();
   }
@@ -49,9 +46,8 @@ std::vector<std::string> macos_list_device_names() {
   std::vector<std::string> device_list{};
   std::stringstream stream(result);
   std::string line{};
-  while (std::getline(stream, line)) {
+  while (std::getline(stream, line))
     device_list.push_back(line);
-  }
 
   return device_list;
 }
@@ -59,11 +55,10 @@ std::vector<std::string> macos_list_device_names() {
 std::vector<std::string>
 macos_list_devices(device_register const *name_devices) {
   auto device_names = macos_list_device_names();
-  if (name_devices) {
+  if (name_devices)
     device_names = name_devices->name_devices();
-  } else {
+  else
     std::cout << device_names.size() << " video input devices\n";
-  }
 
   return device_names;
 }

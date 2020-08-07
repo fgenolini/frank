@@ -7,6 +7,19 @@
 
 namespace frank::video {
 
+bool first_row(bool has_webcam, bool first_time, int webcam_index,
+               bool *histograms) {
+  if (!has_webcam)
+    return false;
+
+  if (first_time)
+    cvui::printf("Opening webcam %d...", webcam_index);
+  else
+    cvui::checkbox(STATISTICS_TITLE, histograms);
+
+  return !first_time;
+}
+
 void other_window(EnhancedWindow &statistics, opencv_window &window) {
   constexpr auto FIRST_ROW_X = 10;
   constexpr auto FIRST_ROW_Y = 10;
@@ -34,24 +47,15 @@ void other_window(EnhancedWindow &statistics, opencv_window &window) {
       paint_picture(first_time, has_webcam, video_enabled, window, use_canny,
                     low_threshold, high_threshold, overlay_enabled,
                     overlay_alpha, overlay_image, overlay_buffer, &raw_picture);
-  if (!picture.empty()) {
+  if (!picture.empty())
     frame = picture;
-  }
 
   cvui::beginRow(frame, FIRST_ROW_X, FIRST_ROW_Y);
-  {
-    if (window.has_webcam()) {
-      if (first_time) {
-        cvui::printf("Opening webcam %d...", webcam_index);
-      } else {
-        cvui::checkbox(STATISTICS_TITLE, &histograms);
-        if (histograms) {
-          statistics_window(statistics, frame, raw_picture,
-                            &histogram_threshold);
-        }
-      }
-    }
-  }
+  auto show_stats =
+      first_row(has_webcam, first_time, webcam_index, &histograms);
+  if (show_stats && histograms)
+    statistics_window(statistics, frame, raw_picture, &histogram_threshold);
+
   cvui::endRow();
   cvui::imshow(window.name(), frame);
   window.set_histogram_threshold(histogram_threshold);

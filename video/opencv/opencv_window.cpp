@@ -4,8 +4,8 @@ WARNINGS_OFF
 #include <string>
 WARNINGS_ON
 
-#include "opencv_window.h"
 #include "opencv/paint_histogram.h"
+#include "opencv_window.h"
 
 namespace frank::video {
 
@@ -98,14 +98,12 @@ void opencv_window::set_overlay_buffer(cv::Mat *overlay_buffer) {
 }
 
 void opencv_window::set_overlay_image(cv::String const &overlay_image) {
-  if (overlay_image_.compare(overlay_image) == 0) {
+  if (overlay_image_.compare(overlay_image) == 0)
     return;
-  }
 
   overlay_image_ = overlay_image;
-  if (!overlay_buffer_) {
+  if (!overlay_buffer_)
     return;
-  }
 
   cv::Mat empty;
   *overlay_buffer_ = empty;
