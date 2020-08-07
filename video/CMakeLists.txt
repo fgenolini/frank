@@ -9,7 +9,7 @@ project(${APP_LOW_NAME} VERSION ${APP_VERSION})
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-option(BUILD_SHARED_LIBS "Build shared libraries (DLL or SO) instead of static libraries (LIB or A)" ON)
+option(THIRD_PARTY_SHARED_LIBS "Link third party code as shared libraries (DLL or SO) instead of static libraries (LIB or A)" ON)
 
 include(CheckIncludeFiles)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in

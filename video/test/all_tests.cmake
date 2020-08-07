@@ -43,7 +43,7 @@ endif()
 
 foreach(Test_Target ${TESTS})
   if (WIN32)
-    if(NOT BUILD_SHARED_LIBS)
+    if(NOT ${THIRD_PARTY_SHARED_LIBS})
       set_property(TARGET ${Test_Target} PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
     endif()
   endif()
