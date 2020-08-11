@@ -126,7 +126,9 @@ SCENARIO("frank video list devices", "[list_devices]") {
       auto results = frank::video::list_devices(&mock);
 
       THEN("an empty list of devices is returned") {
+#if defined(APPLE) && defined(UNIX)
         REQUIRE(results.size() == DEVICE_COUNT);
+#endif
       }
     }
     WHEN("One video input device is connected to the computer") {
@@ -139,7 +141,9 @@ SCENARIO("frank video list devices", "[list_devices]") {
       auto results = frank::video::list_devices(&mock);
 
       THEN("a list of 1 devices is returned") {
+#if defined(APPLE) && defined(UNIX)
         REQUIRE(results.size() == DEVICE_COUNT);
+#endif
       }
     }
     WHEN("Five video input devices are connected to the computer") {
@@ -154,7 +158,9 @@ SCENARIO("frank video list devices", "[list_devices]") {
       auto results = frank::video::list_devices(&mock);
 
       THEN("a list of 5 devices is returned") {
+#if defined(APPLE) && defined(UNIX)
         REQUIRE(results.size() == DEVICE_COUNT);
+#endif
       }
     }
   }
