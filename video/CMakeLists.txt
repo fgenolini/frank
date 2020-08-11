@@ -28,6 +28,10 @@ endif()
 include(test/all_tests.cmake)
 include(third_party/dependencies.cmake)
 
+if (CODE_COVERAGE)
+  add_code_coverage()
+endif()
+
 target_link_libraries(${APP_LOW_NAME} ${LIB_NAME} ${OpenCV_LIBS} Microsoft.GSL::GSL)
 if (WIN32)
   set(CMAKE_FIND_LIBRARY_SUFFIXES ".lib")
@@ -47,10 +51,8 @@ target_compile_options(${LIB_NAME} PRIVATE
   $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:-Werror -Wall -Wextra -Wpedantic>
   $<$<CXX_COMPILER_ID:MSVC>:/WX /Wall /w45038>)
 
-if (WIN32)
-else()
+if (CODE_COVERAGE)
   add_code_coverage_all_targets(EXCLUDE video_main.cpp video_winmain.cpp)
-  target_code_coverage(${LIB_NAME} AUTO ALL)
   target_code_coverage(${APP_LOW_NAME} AUTO ALL)
   foreach(Test_Target ${TESTS})
     target_code_coverage(${Test_Target} AUTO ALL EXTERNAL)
