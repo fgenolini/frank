@@ -30,7 +30,6 @@ std::vector<std::string> linux_list_device_names(void *) {
   //   /sys/class/video4linux/video0/name
   //   /sys/class/video4linux/video1/name
   //   ...
-  std::cout << "Video4linux input devices\n";
   const fs::path video4linux{"/sys/class/video4linux"};
   if (!fs::exists(video4linux))
     return std::vector<std::string>();
