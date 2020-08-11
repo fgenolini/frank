@@ -56,9 +56,10 @@ if (CODE_COVERAGE)
     build/catch2/trompeloeil.hpp build/cvui.h
     build/EnhancedWindow.h
     build/nlohmann/json.hpp
-    build/trompeloeil.hpp)
+    build/trompeloeil.hpp
+    build/video/videoConfig.h)
   target_code_coverage(${LIB_NAME} AUTO ALL)
-  target_code_coverage(${APP_LOW_NAME} AUTO ALL)
+  target_code_coverage(${APP_LOW_NAME} AUTO ${APP_LOW_NAME})
   foreach(Test_Target ${TESTS})
     target_code_coverage(${Test_Target} AUTO ALL EXTERNAL)
   endforeach()
