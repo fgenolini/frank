@@ -9,11 +9,11 @@ WARNINGS_ON
 
 namespace frank::video {
 
-class file_dialogs {
-public:
-  std::vector<std::string>
-  open_file(std::string const &title, std::string const &default_path,
-            std::vector<std::string> const &filters) const;
+struct file_dialogs {
+  std::vector<std::string> open_file(std::string const &title,
+                                     std::string const &default_path,
+                                     std::vector<std::string> const &filters,
+                                     void *mock_data = nullptr) const;
 };
 
 } // namespace frank::video

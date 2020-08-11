@@ -53,11 +53,12 @@ target_compile_options(${LIB_NAME} PRIVATE
 
 if (CODE_COVERAGE)
   add_code_coverage_all_targets(EXCLUDE video_winmain.cpp
-    build/catch2/trompeloeil.hpp build/cvui.h
+    build/cvui.h
     build/EnhancedWindow.h
     build/nlohmann/json.hpp
-    build/trompeloeil.hpp
-    build/video/videoConfig.h)
+    build/portable-file-dialogs.h
+    build/video/videoConfig.h
+    ${NO_COVERAGE_SOURCES})
   target_code_coverage(${LIB_NAME} AUTO ALL)
   target_code_coverage(${APP_LOW_NAME} AUTO ${APP_LOW_NAME})
   foreach(Test_Target ${TESTS})
