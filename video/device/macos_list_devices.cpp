@@ -1,6 +1,6 @@
 #include "config.h"
 
-#if defined(APPLE) && defined(UNIX) && !defined(WIN32)
+#if defined(APPLE) && defined(UNIX)
 
 // Implementation of video/audio device enumeration on Apple Mac OSX
 
