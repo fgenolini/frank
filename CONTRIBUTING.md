@@ -25,8 +25,9 @@ disabling automated sorting of includes.
 Maximum recommended line width is 80 columns in general,
 and 120 columns in exceptional circumstances.
 
-Follow Robert C. Martin (Uncle Bob) principle of:
-good code does not require many comments (if any at all).
+Follow Robert C. Martin (Uncle Bob) suggestions of:
+* good code does not require many comments (if any at all)
+* code coverage should aim for 100%
 
 ## Code coverage
 Unit test code coverage is calculated on platforms that support Clang,
@@ -64,7 +65,10 @@ If you use VS Code, edit your user settings to configure CMake:
         "OpenCV_DIR": "/projects/OpenCV",
         "OpenCV_STATIC" : "OFF",
         "THIRD_PARTY_SHARED_LIBS" : "ON",
-        "CMAKE_VERBOSE_MAKEFILE" : "OFF"
+        "CMAKE_VERBOSE_MAKEFILE" : "OFF",
+        "CODE_COVERAGE" : "OFF",
+        "LLVM_COV_PATH" : "/usr/local/bin/llvm-cov",
+        "LLVM_PROFDATA_PATH": "/usr/local/bin/llvm-profdata"
     },
     "cmake.parallelJobs": 1,
     "C_Cpp.clang_format_fallbackStyle": "LLVM",
@@ -73,12 +77,11 @@ If you use VS Code, edit your user settings to configure CMake:
     ]
 ```
 
-With these settings you can choose to link third party libraries
-as dynamic (DLL or SO) or static (LIB or A).
-You can also allow verbose builds showing which compiler command line
-parameters are used.
-You can also reduce the number of parallel build operations, so that any
-error in the build output makes more sense.
+With these settings you can:
+* link third party libraries as dynamic (DLL or SO) or static (LIB or A)
+* allow verbose builds showing which compiler command line parameters are used
+* reduce the number of parallel build operations, so that any error in the build output makes more sense
+* enable code coverage (requires Debug mode) and specify code coverage tools
 
 ## Dependencies
 * Microsoft Windows, or Linux, or Apple Mac OSX
