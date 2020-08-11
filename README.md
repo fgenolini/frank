@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.com/fgenolini/frank.svg?branch=master)](https://travis-ci.com/fgenolini/frank) [![LinuxBuild](https://github.com/fgenolini/frank/workflows/LinuxBuild/badge.svg?branch=master)](https://github.com/fgenolini/frank/actions?query=workflow%3ALinuxBuild) [![WindowsBuildCI](https://github.com/fgenolini/frank/workflows/WindowsBuildCI/badge.svg?branch=master)](https://github.com/fgenolini/frank/actions?query=workflow%3AWindowsBuildCI)
-[coverage: func 55%, line 49%, region 49%](https://raw.githubusercontent.com/fgenolini/frank/colour-correction/docs/coverage-reports/20200811-134100/all-merged/)
+[coverage: func 55%, line 49%, region 49%](https://htmlpreview.github.io/?https://github.com/fgenolini/frank/blob/colour-correction/docs/coverage-reports/20200811-134100/all-merged/index.html)
 
 # frank
 video: OpenCV for up to 4 directly connected video inputs (webcams)
