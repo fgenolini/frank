@@ -15,6 +15,8 @@ WARNINGS_ON
 
 namespace test::frank {
 
+WARNING_PUSH
+DISABLE_WARNING_MSC(4820)
 class open_file_mock {
 public:
   open_file_mock(std::vector<std::string> const &fake_result)
@@ -35,6 +37,7 @@ private:
   bool constructor_called_{};
   bool result_called_{};
 };
+WARNINGS_ON
 
 } // namespace test::frank
 
