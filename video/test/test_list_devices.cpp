@@ -86,13 +86,13 @@ public:
   bool fgets_called() { return fgets_count > 0; }
   bool pclose_called{};
   bool popen_called{};
-  bool popen_fails_{};
 
 private:
   std::vector<std::string> test_devices_;
   FILE *file_{};
   int feof_count_{};
   int fgets_count{};
+  bool popen_fails_;
 };
 WARNINGS_ON
 
