@@ -6,7 +6,7 @@ set(CommonSourcesList
   json/persisted_settings.cpp
   opencv/add_overlay.cpp opencv/exit_requested.cpp opencv/opencv_window.cpp
   opencv/paint_histogram.cpp opencv/paint_picture.cpp opencv/take_picture.cpp
-  test/testable_exit.cpp
+  test/testable_cstdio.cpp test/testable_exit.cpp
   ui/main_settings_window.cpp ui/main_window.cpp
   ui/other_window.cpp ui/run_ui.cpp ui/statistics_window.cpp ui/video_gui.cpp)
 

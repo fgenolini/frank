@@ -17,14 +17,14 @@ WARNINGS_ON
 namespace test::frank {
 
 struct run_application_mock {
-  std::vector<::frank::video::input_device> list_input_devices() {
-    list_input_devices_called = true;
+  std::vector<::frank::video::input_device> list_devices() {
+    list_devices_called = true;
     return std::vector<::frank::video::input_device>();
   }
 
   void run_ui() { run_ui_called = true; }
 
-  bool list_input_devices_called{};
+  bool list_devices_called{};
   bool run_ui_called{};
 };
 
@@ -32,13 +32,12 @@ struct run_application_mock {
 
 namespace frank::video {
 
-std::vector<input_device> list_input_devices(device_register const *,
-                                             void *mock_data) {
+std::vector<input_device> list_devices(void *mock_data) {
   if (!mock_data)
     return std::vector<input_device>();
 
   auto mock = static_cast<::test::frank::run_application_mock *>(mock_data);
-  return mock->list_input_devices();
+  return mock->list_devices();
 }
 
 void run_ui(std::vector<input_device> const &, user_interface_factory,
@@ -60,7 +59,7 @@ SCENARIO("frank video run application 2", "[run_application_2]") {
       frank::video::run_application(0, nullptr, &mock);
 
       THEN("list_input_devices is called") {
-        REQUIRE(mock.list_input_devices_called == true);
+        REQUIRE(mock.list_devices_called == true);
       }
 
       THEN("run_ui is called") { REQUIRE(mock.run_ui_called == true); }

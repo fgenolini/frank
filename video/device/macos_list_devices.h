@@ -2,14 +2,13 @@
 
 #include "config.h"
 
+WARNINGS_OFF
 #include <string>
 #include <vector>
-
-#include "device_register.h"
+WARNINGS_ON
 
 namespace frank::video {
 
-extern std::vector<std::string>
-macos_list_devices(device_register const *name_devices = nullptr);
+extern std::vector<std::string> macos_list_devices(void *mock_data = nullptr);
 
 }

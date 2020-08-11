@@ -1,7 +1,6 @@
 #include "config.h"
 
 WARNINGS_OFF
-#include <cstdlib>
 #include <exception>
 #include <iostream>
 WARNINGS_ON
@@ -18,7 +17,7 @@ void run_application(int, char const *[], void *mock_data) {
     std::cerr << "Unhandled exception\n";
     std::abort();
   });
-  auto input_devices = list_input_devices(nullptr, mock_data);
+  auto input_devices = list_devices(mock_data);
   if (input_devices.size() < 1)
     std::cerr << "Could not list video / audio input devices\n";
 

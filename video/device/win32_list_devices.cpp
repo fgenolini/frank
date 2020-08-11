@@ -130,14 +130,8 @@ std::vector<std::string> win32_list_device_names() {
   return devices;
 }
 
-std::vector<std::string>
-win32_list_devices(device_register const *name_devices) {
+std::vector<std::string> win32_list_devices(void *) {
   auto device_names = win32_list_device_names();
-  if (name_devices)
-    device_names = name_devices->name_devices();
-  else
-    std::cout << device_names.size() << " video input devices\n";
-
   return device_names;
 }
 

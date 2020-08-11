@@ -12,8 +12,5 @@ string(TOLOWER ${APP_NAME} APP_LOW_NAME)
 # Microsoft Windows executable application that has no attached DOS command line window
 set(APP_NAME_WINMAIN "${APP_LOW_NAME}w")
 
-# Catch2 test runner application
-set(TEST_APP_NAME "${APP_LOW_NAME}_test")
-
 # Library that contains most of the source code for frank video
 set(LIB_NAME "${APP_LOW_NAME}_cv")

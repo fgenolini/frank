@@ -1,28 +1,42 @@
 # Configure the CTest unit test runner.
 # Unit tests for frank video
 
-add_executable(${TEST_APP_NAME} test/catch_implementation.cpp
-  test/test_list_devices.cpp)
-add_executable(${TEST_APP_NAME}_main_2 test/catch_implementation.cpp
+# Catch2 test runner application
+set(TEST_APP_NAME "${APP_LOW_NAME}_test")
+
+add_executable(${TEST_APP_NAME}_list_devices
+  test/catch_implementation.cpp
+  test/test_list_devices.cpp test/testable_cstdio.cpp
+  device/input_device.cpp device/linux_list_devices.cpp device/list_devices.cpp
+  device/macos_list_devices.cpp device/win32_list_devices.cpp)
+add_executable(${TEST_APP_NAME}_main_2
+  test/catch_implementation.cpp
   test/test_main_2.cpp video_main.cpp)
-add_executable(${TEST_APP_NAME}_open_file_3 test/catch_implementation.cpp
+add_executable(${TEST_APP_NAME}_open_file_3
+  test/catch_implementation.cpp
   test/test_open_file_3.cpp file/file_dialogs.cpp)
-add_executable(${TEST_APP_NAME}_run_application_2 test/catch_implementation.cpp
+add_executable(${TEST_APP_NAME}_run_application_2
+  test/catch_implementation.cpp
   test/test_run_application_2.cpp run_application.cpp)
-add_executable(${TEST_APP_NAME}_run_ui_3 test/catch_implementation.cpp
+add_executable(${TEST_APP_NAME}_run_ui_3
+  test/catch_implementation.cpp
   test/test_run_ui_3.cpp
   test/testable_exit.cpp
   ui/run_ui.cpp
   device/input_device.cpp)
-add_executable(${TEST_APP_NAME}_video_gui_1 test/catch_implementation.cpp
+add_executable(${TEST_APP_NAME}_video_gui_1
+  test/catch_implementation.cpp
   test/test_video_gui_1.cpp
   ui/video_gui.cpp
   device/input_device.cpp)
 if (WIN32)
-  add_executable(${TEST_APP_NAME}_winmain_4 test/catch_implementation.cpp
+  add_executable(${TEST_APP_NAME}_winmain_4
+    test/catch_implementation.cpp
     test/test_winmain_4.cpp video_winmain.cpp)
 endif()
 
+target_compile_definitions(${TEST_APP_NAME}_list_devices PUBLIC
+  _TEST_LIST_DEVICES_ _DO_NOTHING_STDIO_)
 target_compile_definitions(${TEST_APP_NAME}_main_2 PUBLIC
   _TEST_MAIN_2_ _DO_NOTHING_EXIT_)
 target_compile_definitions(${TEST_APP_NAME}_open_file_3 PUBLIC
@@ -38,7 +52,7 @@ if (WIN32)
     _TEST_WINMAIN_4_ _DO_NOTHING_EXIT_)
 endif()
 
-set(TESTS ${TEST_APP_NAME} ${TEST_APP_NAME}_main_2
+set(TESTS ${TEST_APP_NAME}_list_devices ${TEST_APP_NAME}_main_2
   ${TEST_APP_NAME}_open_file_3
   ${TEST_APP_NAME}_run_application_2 ${TEST_APP_NAME}_run_ui_3
   ${TEST_APP_NAME}_video_gui_1)
@@ -70,13 +84,18 @@ foreach(Test_Target ${TESTS})
   add_test(${Test_Target} ${Test_Target})
 endforeach()
 
-set(TESTS_WITH_OPENCV_AND_LIB ${TEST_APP_NAME})
+set(TESTS_WITH_GSL ${TEST_APP_NAME}_list_devices)
+foreach(Link_With_Gsl ${TESTS_WITH_GSL})
+  target_link_libraries(${Link_With_Gsl} Microsoft.GSL::GSL)
+endforeach()
+
+set(TESTS_WITH_OPENCV_AND_LIB ${TEST_APP_NAME}_video_gui_1)
 foreach(Link_With_OpenCV_And_Lib ${TESTS_WITH_OPENCV_AND_LIB})
   target_link_libraries(${Link_With_OpenCV_And_Lib} ${LIB_NAME} ${OpenCV_LIBS}
     Microsoft.GSL::GSL)
 endforeach()
 
-set(TESTS_WITH_OPENCV_NO_LIB ${TEST_APP_NAME}_video_gui_1)
-foreach(Link_With_OpenCV_No_Lib ${TESTS_WITH_OPENCV_NO_LIB})
-  target_link_libraries(${Link_With_OpenCV_No_Lib} ${LIB_NAME} ${OpenCV_LIBS})
-endforeach()
+# set(TESTS_WITH_OPENCV_NO_LIB )
+# foreach(Link_With_OpenCV_No_Lib ${TESTS_WITH_OPENCV_NO_LIB})
+#   target_link_libraries(${Link_With_OpenCV_No_Lib} ${OpenCV_LIBS})
+# endforeach()

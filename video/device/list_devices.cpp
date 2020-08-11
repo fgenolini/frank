@@ -8,7 +8,6 @@ WARNINGS_OFF
 WARNINGS_ON
 
 #include "config.h"
-#include "device_register.h"
 #include "input_device.h"
 #include "linux_list_devices.h"
 #include "list_devices.h"
@@ -17,8 +16,7 @@ WARNINGS_ON
 
 namespace frank::video {
 
-std::vector<input_device>
-list_input_devices(device_register const *name_devices, void *) {
+std::vector<input_device> list_devices(void *mock_data) {
 
   auto make_devices = [](std::vector<std::string> device_names) {
     std::vector<input_device> returned_devices{};
@@ -30,14 +28,14 @@ list_input_devices(device_register const *name_devices, void *) {
     return returned_devices;
   };
 
-  auto get_device_names = [name_devices]() {
+  auto get_device_names = [&]() {
 #if defined(WIN32)
-    return win32_list_devices(name_devices);
+    return win32_list_devices(mock_data);
 #elif defined(UNIX)
 #if defined(APPLE)
-    return macos_list_devices(name_devices);
+    return macos_list_devices(mock_data);
 #elif !defined(MINGW) && !defined(MSYS) && !defined(CYGWIN)
-    return linux_list_devices(name_devices);
+    return linux_list_devices(mock_data);
 #else
     std::cout << "Unsupported UNIX / POSIX variant\n";
     std::vector<std::string> no_device{};

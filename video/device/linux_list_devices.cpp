@@ -3,6 +3,7 @@
 #if defined(UNIX) && !defined(APPLE) && !defined(MINGW) && !defined(MSYS) &&   \
     !defined(CYGWIN) && !defined(WIN32)
 
+WARNINGS_OFF
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -11,6 +12,7 @@
 #include <vector>
 
 #include <gsl/gsl_util>
+WARNINGS_ON
 
 using namespace gsl;
 
@@ -23,7 +25,7 @@ namespace fs = std::filesystem;
 namespace frank::video {
 
 // Linux listing of video input devices using video4linux
-std::vector<std::string> linux_list_device_names() {
+std::vector<std::string> linux_list_device_names(void *) {
   // On Linux: list all files called
   //   /sys/class/video4linux/video0/name
   //   /sys/class/video4linux/video1/name
@@ -86,14 +88,8 @@ std::vector<std::string> linux_list_device_names() {
   return new_devices;
 }
 
-std::vector<std::string>
-linux_list_devices(device_register const *name_devices) {
-  auto device_names = linux_list_device_names();
-  if (name_devices)
-    device_names = name_devices->name_devices();
-  else
-    std::cout << device_names.size() << " video input devices\n";
-
+std::vector<std::string> linux_list_devices(void *mock_data) {
+  auto device_names = linux_list_device_names(mock_data);
   return device_names;
 }
 

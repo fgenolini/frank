@@ -47,8 +47,6 @@ namespace pfd {
 open_file::open_file(std::string const &, std::string const &,
                      std::vector<std::string> const &, opt, void *mock_data)
     : mock_data_(mock_data) {
-  if (!mock_data_)
-    return;
   auto mock = static_cast<::test::frank::open_file_mock *>(mock_data_);
   mock->construct();
 }
