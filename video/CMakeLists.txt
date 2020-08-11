@@ -52,7 +52,12 @@ target_compile_options(${LIB_NAME} PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/WX /Wall /w45038>)
 
 if (CODE_COVERAGE)
-  add_code_coverage_all_targets(EXCLUDE video_main.cpp video_winmain.cpp)
+  add_code_coverage_all_targets(EXCLUDE video_winmain.cpp
+    build/catch2/trompeloeil.hpp build/cvui.h
+    build/EnhancedWindow.h
+    build/nlohmann/json.hpp
+    build/trompeloeil.hpp)
+  target_code_coverage(${LIB_NAME} AUTO ALL)
   target_code_coverage(${APP_LOW_NAME} AUTO ALL)
   foreach(Test_Target ${TESTS})
     target_code_coverage(${Test_Target} AUTO ALL EXTERNAL)
