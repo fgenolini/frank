@@ -21,10 +21,20 @@ char *fgets(char *buffer, int buffer_size, FILE *pipe, void *) {
 }
 
 FILE *popen(char const *command, char const *mode, void *) {
+#if defined(WIN32)
+  return ::_popen(command, mode);
+#else
   return ::popen(command, mode);
+#endif
 }
 
-void pclose(FILE *pipe, void *) { ::pclose(pipe); }
+void pclose(FILE *pipe, void *) {
+#if defined(WIN32)
+  ::_pclose(pipe);
+#else
+  ::pclose(pipe);
+#endif
+}
 
 #else
 
