@@ -20,8 +20,9 @@ constexpr auto END_OF_FILE = 1;
 WARNINGS_OFF
 class mock_list_devices {
 public:
-  mock_list_devices(std::vector<std::string> const &test_devices)
-      : test_devices_(test_devices) {}
+  mock_list_devices(std::vector<std::string> const &test_devices,
+                    bool popen_fails = false)
+      : test_devices_(test_devices), popen_fails_(popen_fails) {}
 
   int feof(FILE *file) {
     ++feof_count_;
@@ -70,6 +71,9 @@ public:
 
   FILE *popen() {
     popen_called = true;
+    if (popen_fails_)
+      return nullptr;
+
 #if defined(APPLE) && defined(UNIX) && !defined(WIN32)
     file_ = TEST_FILE;
     return TEST_FILE;
@@ -82,6 +86,7 @@ public:
   bool fgets_called() { return fgets_count > 0; }
   bool pclose_called{};
   bool popen_called{};
+  bool popen_fails_{};
 
 private:
   std::vector<std::string> test_devices_;
@@ -162,6 +167,24 @@ SCENARIO("frank video list devices", "[list_devices]") {
         REQUIRE(results.size() == DEVICE_COUNT);
 #endif
       }
+#if defined(APPLE) && defined(UNIX)
+      WHEN("Apple Mac OSX script could not be opened") {
+        constexpr auto DEVICE_COUNT = 0;
+        constexpr auto POPEN_FAILS = true;
+        std::vector<std::string> five_devices{"test device 0", "test device 1",
+                                              "test device 2", "test device 3",
+                                              "test device 4"};
+        test::frank::mock_list_devices mock(five_devices, POPEN_FAILS);
+
+        REQUIRE(five_devices.size() == 5);
+
+        auto results = frank::video::list_devices(&mock);
+
+        THEN("an empty list of devices is returned") {
+          REQUIRE(results.size() == DEVICE_COUNT);
+        }
+      }
+#endif
     }
   }
 }
