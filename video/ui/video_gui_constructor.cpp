@@ -40,7 +40,8 @@ constexpr auto WINDOW3_NAME = "Frank video 3";
 video_gui::video_gui(int webcam_count, cvui_init const &initialise_windows,
                      void *mock_data)
     : settings(SETTINGS_X, SETTINGS_Y, SETTINGS_WIDTH, SETTINGS_HEIGHT,
-               SETTINGS_TITLE) {
+               SETTINGS_TITLE),
+      mock_data_(mock_data) {
   window_names.push_back(WINDOW_NAME);
   window_names.push_back(WINDOW1_NAME);
   window_names.push_back(WINDOW2_NAME);
@@ -88,7 +89,7 @@ video_gui::video_gui(int webcam_count, cvui_init const &initialise_windows,
       has_webcams[0], video_enabled[0], std::make_pair(0.0, 0.0),
       &overlay_buffers[0], USE_CANNY, USE_OVERLAY, overlay_image,
       NO_OVERLAY_ALPHA, LOW_THRESHOLD, HIGH_THRESHOLD, histograms[0]);
-  initialise_windows.execute(&window_names[0], window_names.size(), mock_data);
+  initialise_windows.execute(&window_names[0], window_names.size(), mock_data_);
 }
 
 } // namespace frank::video

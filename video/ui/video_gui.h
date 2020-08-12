@@ -49,6 +49,7 @@ private:
   std::vector<std::unique_ptr<cv::VideoCapture>> input_video_devices{};
   bool overlay_enabled[MAXIMUM_VIDEO_COUNT]{};
   bool video_enabled[MAXIMUM_VIDEO_COUNT]{};
+  void *mock_data_;
 };
 WARNINGS_ON
 

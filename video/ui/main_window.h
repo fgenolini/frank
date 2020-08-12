@@ -17,7 +17,7 @@ void main_window(EnhancedWindow &settings, EnhancedWindow &statistics,
                  std::vector<input_device> const &input_devices,
                  std::vector<bool> &has_webcams, bool *video_enabled,
                  bool *overlay_enabled, double *overlay_alpha,
-                 std::vector<cv::String> &overlay_images,
-                 opencv_window &window);
+                 std::vector<cv::String> &overlay_images, opencv_window &window,
+                 void *mock_data = nullptr);
 
 } // namespace frank::video

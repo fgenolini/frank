@@ -31,7 +31,7 @@ void video_gui::loop(std::vector<input_device> const &connected_webcams) {
     window_template->set_histogram_threshold(histogram_threshold[0]);
     main_window(settings, statistics_[0], connected_webcams, has_webcams,
                 video_enabled, overlay_enabled, overlay_alpha, overlay_images,
-                *window_template);
+                *window_template, mock_data_);
     histograms[0] = window_template->histograms();
     histogram_threshold[0] = window_template->histogram_threshold();
     save_settings();

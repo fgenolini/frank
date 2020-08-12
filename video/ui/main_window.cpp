@@ -14,8 +14,8 @@ void main_window(EnhancedWindow &settings, EnhancedWindow &statistics,
                  std::vector<input_device> const &input_devices,
                  std::vector<bool> &has_webcams, bool *video_enabled_array,
                  bool *overlay_enabled_array, double *overlay_alpha_array,
-                 std::vector<cv::String> &overlay_images,
-                 opencv_window &window) {
+                 std::vector<cv::String> &overlay_images, opencv_window &window,
+                 void *mock_data) {
   constexpr auto FIRST_ROW_X = 10;
   constexpr auto FIRST_ROW_Y = 10;
   constexpr auto QUIT = "Quit";
@@ -60,10 +60,16 @@ void main_window(EnhancedWindow &settings, EnhancedWindow &statistics,
   cvui::endRow();
 
   settings.begin(frame);
-  main_settings_window settings_window{
-      video_enabled_array,   &use_canny,
-      &low_threshold,        &high_threshold,
-      overlay_enabled_array, overlay_alpha_array};
+  button_command button{};
+  checkbox_command checkbox{};
+  layout_command layout{};
+  text_command text{};
+  trackbar_double_command trackbar_double{};
+  trackbar_int_command trackbar_int{};
+  main_settings_window settings_window(
+      button, checkbox, layout, text, trackbar_double, trackbar_int,
+      video_enabled_array, &use_canny, &low_threshold, &high_threshold,
+      overlay_enabled_array, overlay_alpha_array, mock_data);
   settings_window.draw(settings.isMinimized(), input_devices, has_webcams,
                        overlay_images);
   settings.end();
