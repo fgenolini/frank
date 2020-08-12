@@ -15,6 +15,8 @@ WARNINGS_ON
 
 namespace frank::video {
 
+WARNING_PUSH
+DISABLE_WARNING_MSC(4820)
 class ui_controls {
 public:
   ui_controls(void *mock_data);
@@ -40,5 +42,6 @@ private:
   trackbar_double_command trackbar_double_{};
   trackbar_int_command trackbar_int_{};
 };
+WARNINGS_ON
 
 } // namespace frank::video

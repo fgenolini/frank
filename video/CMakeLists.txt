@@ -49,7 +49,7 @@ target_include_directories(${LIB_NAME} PUBLIC
   "${CMAKE_CURRENT_SOURCE_DIR}" "${PROJECT_BINARY_DIR}" "${CMAKE_BINARY_DIR}")
 target_compile_options(${LIB_NAME} PRIVATE
   $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:-Werror -Wall -Wextra -Wpedantic>
-  $<$<CXX_COMPILER_ID:MSVC>:/WX /Wall /w45038>)
+  $<$<CXX_COMPILER_ID:MSVC>:/WX /Wall /w45038 /wd4820>)
 
 if (CODE_COVERAGE)
   add_code_coverage_all_targets(EXCLUDE
