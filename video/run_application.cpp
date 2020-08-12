@@ -17,8 +17,8 @@ auto application(void *mock_data) noexcept(false) {
   auto input_devices = list_devices(mock_data);
   if (input_devices.size() < 1)
     std::cerr << "Could not list video / audio input devices\n";
-
-  run_ui(input_devices, nullptr, mock_data);
+  cvui_init initialise_windows{};
+  run_ui(input_devices, initialise_windows, nullptr, mock_data);
 }
 
 NO_RETURN

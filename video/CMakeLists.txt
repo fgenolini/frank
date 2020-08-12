@@ -52,13 +52,15 @@ target_compile_options(${LIB_NAME} PRIVATE
   $<$<CXX_COMPILER_ID:MSVC>:/WX /Wall /w45038>)
 
 if (CODE_COVERAGE)
-  add_code_coverage_all_targets(EXCLUDE video_winmain.cpp
+  add_code_coverage_all_targets(EXCLUDE
     build/cvui.h
     build/EnhancedWindow.h
     build/nlohmann/json.hpp
     build/portable-file-dialogs.h
     build/video/videoConfig.h
     test/testable_exit.cpp
+    ui/cvui_init.cpp
+    video_winmain.cpp
     ${NO_COVERAGE_SOURCES})
   target_code_coverage(${LIB_NAME} AUTO ALL)
   target_code_coverage(${APP_LOW_NAME} AUTO ${APP_LOW_NAME})

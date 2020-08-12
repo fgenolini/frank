@@ -21,7 +21,7 @@ WARNING_PUSH
 DISABLE_WARNING_MSC(4820)
 class video_gui : public virtual user_interface {
 public:
-  video_gui(int webcam_count, cvui_init mock_init = nullptr,
+  video_gui(int webcam_count, cvui_init const &initialise_windows,
             void *mock_data = nullptr);
   ~video_gui();
 

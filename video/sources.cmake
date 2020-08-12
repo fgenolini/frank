@@ -8,8 +8,10 @@ set(CommonSourcesList
   opencv/add_overlay.cpp opencv/exit_requested.cpp opencv/opencv_window.cpp
   opencv/paint_histogram.cpp opencv/paint_picture.cpp opencv/take_picture.cpp
   test/testable_cstdio.cpp test/testable_exit.cpp
-  ui/main_settings_window.cpp ui/main_window.cpp
-  ui/other_window.cpp ui/run_ui.cpp ui/statistics_window.cpp ui/video_gui.cpp)
+  ui/cvui_init.cpp ui/main_settings_window.cpp ui/main_window.cpp
+  ui/other_window.cpp ui/run_ui.cpp ui/statistics_window.cpp ui/video_gui.cpp
+  ui/video_gui_constructor.cpp
+  )
 
 set(LIBRARY_TYPE STATIC)
 

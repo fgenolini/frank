@@ -84,8 +84,8 @@ std::vector<input_device> list_devices(void *mock_data) {
   return mock->list_devices();
 }
 
-void run_ui(std::vector<input_device> const &, user_interface_factory,
-            void *mock_data) {
+void run_ui(std::vector<input_device> const &, cvui_init const &,
+            user_interface_factory, void *mock_data) {
   if (!mock_data)
     return;
 

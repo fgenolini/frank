@@ -10,6 +10,7 @@ WARNINGS_OFF
 #include <catch2/catch.hpp>
 WARNINGS_ON
 
+#include "ui/cvui_init.h"
 #include "ui/video_gui.h"
 
 namespace test::frank {
@@ -18,25 +19,29 @@ struct video_gui_mock {
   bool cvui_init_called{};
 };
 
-void mock_cvui_init(const cv::String[], size_t, void *mock_data) {
+} // namespace test::frank
+
+namespace frank::video {
+
+void cvui_init::execute(const std::string[], size_t, void *mock_data) const {
   if (!mock_data)
     return;
 
-  auto mock = static_cast<video_gui_mock *>(mock_data);
+  auto mock = static_cast<test::frank::video_gui_mock *>(mock_data);
   mock->cvui_init_called = true;
 }
 
-} // namespace test::frank
+} // namespace frank::video
 
 SCENARIO("frank video GUI 1", "[video_gui_1]") {
   GIVEN("Video GUI") {
     WHEN("constructing with 1 webcam") {
       constexpr auto WEBCAM_COUNT = frank::video::MAXIMUM_VIDEO_COUNT + 1;
+      frank::video::cvui_init mock_cvui_init{};
       test::frank::video_gui_mock mock{};
 
       auto make_video_gui = [&]() {
-        frank::video::video_gui gui(WEBCAM_COUNT, test::frank::mock_cvui_init,
-                                    &mock);
+        frank::video::video_gui gui(WEBCAM_COUNT, mock_cvui_init, &mock);
       };
       REQUIRE_NOTHROW(make_video_gui());
 
@@ -44,11 +49,12 @@ SCENARIO("frank video GUI 1", "[video_gui_1]") {
     }
     WHEN("constructing using make_user_interface") {
       constexpr auto WEBCAM_COUNT = 0;
+      frank::video::cvui_init mock_cvui_init{};
       test::frank::video_gui_mock mock{};
 
       auto make_video_gui = [&]() {
-        auto gui = frank::video::make_user_interface(
-            WEBCAM_COUNT, test::frank::mock_cvui_init, &mock);
+        auto gui = frank::video::make_user_interface(WEBCAM_COUNT,
+                                                     mock_cvui_init, &mock);
       };
       REQUIRE_NOTHROW(make_video_gui());
 

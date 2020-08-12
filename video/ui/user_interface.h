@@ -9,11 +9,9 @@ WARNINGS_OFF
 WARNINGS_ON
 
 #include "device/input_device.h"
+#include "ui/cvui_init.h"
 
 namespace frank::video {
-
-typedef void (*cvui_init)(const std::string window_names[], size_t window_count,
-                          void *mock_data);
 
 // Abstract interface for a user interface, such as a windowed GUI
 class user_interface {
@@ -24,10 +22,10 @@ public:
 };
 
 std::unique_ptr<user_interface>
-make_user_interface(int webcam_count, cvui_init mock_init = nullptr,
+make_user_interface(int webcam_count, cvui_init const &initialise_windows,
                     void *mock_data = nullptr);
 
 typedef std::unique_ptr<user_interface> (*user_interface_factory)(
-    int webcam_count, cvui_init mock_init, void *mock_data);
+    int webcam_count, cvui_init const &initialise_windows, void *mock_data);
 
 } // namespace frank::video

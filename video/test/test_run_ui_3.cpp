@@ -38,6 +38,8 @@ public:
     mock_->loop(inputs);
   }
 
+  bool cvui_init_called{};
+
 private:
   mock_user_interface *mock_;
 };
@@ -60,7 +62,15 @@ void do_nothing_abort(void *mock_data) noexcept {
 
 namespace frank::video {
 
-std::unique_ptr<user_interface> make_user_interface(int, cvui_init,
+void cvui_init::execute(const std::string[], size_t, void *mock_data) const {
+  if (!mock_data)
+    return;
+
+  auto mock = static_cast<test::frank::fake_user_interface *>(mock_data);
+  mock->cvui_init_called = true;
+}
+
+std::unique_ptr<user_interface> make_user_interface(int, cvui_init const &,
                                                     void *mock_data) {
   if (!mock_data)
     return std::make_unique<::test::frank::fake_user_interface>(nullptr);
@@ -75,10 +85,12 @@ SCENARIO("frank video run ui 3", "[run_ui_3]") {
   GIVEN("user interface is run") {
     WHEN("no connected webcam") {
       std::vector<frank::video::input_device> no_device{};
+      frank::video::cvui_init mock_cvui_init{};
       test::frank::mock_user_interface mock{};
       REQUIRE_CALL(mock, loop(no_device));
 
-      frank::video::run_ui(no_device, frank::video::make_user_interface, &mock);
+      frank::video::run_ui(no_device, mock_cvui_init,
+                           frank::video::make_user_interface, &mock);
 
       THEN("exit is called") { REQUIRE(mock.exit_count == 1); }
 
@@ -89,11 +101,12 @@ SCENARIO("frank video run ui 3", "[run_ui_3]") {
     WHEN("one connected webcam") {
       std::vector<frank::video::input_device> one_device{
           frank::video::input_device()};
+      frank::video::cvui_init mock_cvui_init{};
       test::frank::mock_user_interface mock{};
       REQUIRE_CALL(mock, loop(one_device));
 
-      frank::video::run_ui(one_device, frank::video::make_user_interface,
-                           &mock);
+      frank::video::run_ui(one_device, mock_cvui_init,
+                           frank::video::make_user_interface, &mock);
 
       THEN("exit is called") { REQUIRE(mock.exit_count == 1); }
 

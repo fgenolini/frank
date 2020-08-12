@@ -29,9 +29,7 @@ add_executable(${TEST_APP_NAME}_run_ui_3
   device/input_device.cpp)
 add_executable(${TEST_APP_NAME}_video_gui_1
   test/catch_implementation.cpp
-  test/test_video_gui_1.cpp
-  ui/video_gui.cpp
-  device/input_device.cpp)
+  test/test_video_gui_1.cpp)
 if (WIN32)
   add_executable(${TEST_APP_NAME}_winmain_4
     test/catch_implementation.cpp
