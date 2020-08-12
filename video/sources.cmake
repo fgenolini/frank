@@ -2,6 +2,7 @@
 
 set(CommonSourcesList
   device/input_device.cpp device/list_devices.cpp
+  exception/handler.cpp
   file/file_dialogs.cpp
   json/persisted_settings.cpp
   opencv/add_overlay.cpp opencv/exit_requested.cpp opencv/opencv_window.cpp

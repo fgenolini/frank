@@ -17,7 +17,7 @@ add_executable(${TEST_APP_NAME}_open_file_3
   test/test_open_file_3.cpp file/file_dialogs.cpp)
 add_executable(${TEST_APP_NAME}_run_application_2
   test/catch_implementation.cpp
-  test/test_run_application_2.cpp run_application.cpp)
+  test/test_run_application_2.cpp run_application.cpp exception/handler.cpp)
 add_executable(${TEST_APP_NAME}_run_ui_3
   test/catch_implementation.cpp
   test/test_run_ui_3.cpp
