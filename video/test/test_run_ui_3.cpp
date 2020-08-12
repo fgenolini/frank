@@ -60,7 +60,8 @@ void do_nothing_abort(void *mock_data) noexcept {
 
 namespace frank::video {
 
-std::unique_ptr<user_interface> make_user_interface(int, void *mock_data) {
+std::unique_ptr<user_interface> make_user_interface(int, cvui_init,
+                                                    void *mock_data) {
   if (!mock_data)
     return std::make_unique<::test::frank::fake_user_interface>(nullptr);
 

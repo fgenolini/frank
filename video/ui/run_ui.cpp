@@ -13,7 +13,7 @@ namespace frank::video {
 
 void interface_with_user(std::vector<input_device> const &connected_webcams,
                          user_interface_factory make_ui, void *mock_data) {
-  auto ui = make_ui((int)connected_webcams.size(), mock_data);
+  auto ui = make_ui((int)connected_webcams.size(), nullptr, mock_data);
   ui->loop(connected_webcams);
 }
 

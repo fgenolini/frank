@@ -16,8 +16,9 @@ WARNINGS_ON
 
 namespace frank::video {
 
-std::unique_ptr<user_interface> make_user_interface(int webcam_count, void *) {
-  return std::make_unique<video_gui>(webcam_count);
+std::unique_ptr<user_interface>
+make_user_interface(int webcam_count, cvui_init mock_init, void *mock_data) {
+  return std::make_unique<video_gui>(webcam_count, mock_init, mock_data);
 }
 
 constexpr auto ALPHA = "alpha_";
@@ -91,10 +92,10 @@ video_gui::video_gui(int webcam_count, cvui_init mock_init, void *mock_data)
       has_webcams[0], video_enabled[0], std::make_pair(0.0, 0.0),
       &overlay_buffers[0], USE_CANNY, USE_OVERLAY, overlay_image,
       NO_OVERLAY_ALPHA, LOW_THRESHOLD, HIGH_THRESHOLD, histograms[0]);
-  if (!mock_init)
-    cvui::init(&window_names[0], window_names.size());
-  else
+  if (mock_init)
     mock_init(&window_names[0], window_names.size(), mock_data);
+  else
+    cvui::init(&window_names[0], window_names.size());
 }
 
 video_gui::~video_gui() {

@@ -42,5 +42,17 @@ SCENARIO("frank video GUI 1", "[video_gui_1]") {
 
       THEN("cvui_init is called") { REQUIRE(mock.cvui_init_called == true); }
     }
+    WHEN("constructing using make_user_interface") {
+      constexpr auto WEBCAM_COUNT = 0;
+      test::frank::video_gui_mock mock{};
+
+      auto make_video_gui = [&]() {
+        auto gui = frank::video::make_user_interface(
+            WEBCAM_COUNT, test::frank::mock_cvui_init, &mock);
+      };
+      REQUIRE_NOTHROW(make_video_gui());
+
+      THEN("cvui_init is called") { REQUIRE(mock.cvui_init_called == true); }
+    }
   }
 }

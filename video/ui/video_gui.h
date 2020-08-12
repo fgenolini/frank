@@ -17,9 +17,6 @@ namespace frank::video {
 
 constexpr auto MAXIMUM_VIDEO_COUNT = 4;
 
-typedef void (*cvui_init)(const cv::String window_names[], size_t window_count,
-                          void *mock_data);
-
 WARNING_PUSH
 DISABLE_WARNING_MSC(4820)
 class video_gui : public virtual user_interface {
