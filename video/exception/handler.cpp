@@ -10,9 +10,20 @@ WARNINGS_ON
 namespace frank::video {
 
 NO_RETURN
-void all_exceptions_handler() {
-  std::cerr << "Unhandled exception\n";
+void all_exceptions_handler(std::exception const *caught_exception,
+                            void *) noexcept {
+  if (!caught_exception) {
+    std::cerr << "Unhandled exception\n";
+  } else {
+    std::cerr << "Unhandled exception: " << caught_exception->what() << '\n';
+  }
+
   std::abort();
+}
+
+NO_RETURN
+void unhandled_exception_handler() noexcept {
+  all_exceptions_handler(nullptr, nullptr);
 }
 
 } // namespace frank::video

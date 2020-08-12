@@ -2,11 +2,21 @@
 
 #include "config.h"
 
+WARNINGS_OFF
+#include <exception>
+#include <iostream>
+WARNINGS_ON
+
 #include "test/testable_exit.h"
 
 namespace frank::video {
 
 NO_RETURN
-extern void all_exceptions_handler();
+extern void unhandled_exception_handler() noexcept;
+
+NO_RETURN
+extern void
+all_exceptions_handler(std::exception const *caught_exception = nullptr,
+                       void *mock_data = nullptr) noexcept;
 
 } // namespace frank::video

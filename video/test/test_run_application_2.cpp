@@ -5,6 +5,7 @@
 #endif
 
 WARNINGS_OFF
+#include <exception>
 #include <iostream>
 
 #include <catch2/catch.hpp>
@@ -17,12 +18,25 @@ WARNINGS_ON
 
 namespace test::frank {
 
-struct run_application_exception : public std::exception {};
+struct run_application_exception : public std::exception {
+  char const *what() const noexcept override {
+    return "run_application_2 exception";
+  }
+};
 
+WARNING_PUSH
+DISABLE_WARNING_MSC(4820)
 class run_application_mock {
 public:
   run_application_mock(bool throw_in_list_devices = false)
       : throw_in_list_devices_(throw_in_list_devices) {}
+
+  std::exception const *exception_caught() const { return caught_exception_; }
+
+  void handler(std::exception const *caught_exception = nullptr) {
+    exceptions_handler_called = true;
+    caught_exception_ = caught_exception;
+  }
 
   std::vector<::frank::video::input_device> list_devices() {
     list_devices_called = true;
@@ -34,13 +48,17 @@ public:
 
   void run_ui() { run_ui_called = true; }
 
+private:
+  std::exception const *caught_exception_{};
+  run_application_exception exception_{};
+  bool throw_in_list_devices_{};
+
+public:
+  bool exceptions_handler_called{};
   bool list_devices_called{};
   bool run_ui_called{};
-
-private:
-  bool throw_in_list_devices_{};
-  run_application_exception exception_{};
 };
+WARNINGS_ON
 
 } // namespace test::frank
 
@@ -63,11 +81,18 @@ void run_ui(std::vector<input_device> const &, user_interface_factory,
   mock->run_ui();
 }
 
-static auto exceptions_handler_called = false;
+void all_exceptions_handler(std::exception const *caught_exception,
+                            void *mock_data) noexcept {
+  std::cerr << "Mocked exception handler\n";
+  if (!mock_data)
+    return;
 
-void all_exceptions_handler() {
-  std::cerr << "Mocked unhandled exception\n";
-  exceptions_handler_called = true;
+  auto mock = static_cast<::test::frank::run_application_mock *>(mock_data);
+  mock->handler(caught_exception);
+}
+
+void unhandled_exception_handler() noexcept {
+  all_exceptions_handler(nullptr, nullptr);
 }
 
 } // namespace frank::video
@@ -75,7 +100,6 @@ void all_exceptions_handler() {
 SCENARIO("frank video run application 2", "[run_application_2]") {
   GIVEN("run the frank video application") {
     WHEN("no argument") {
-      frank::video::exceptions_handler_called = false;
       test::frank::run_application_mock mock{};
 
       frank::video::run_application(0, nullptr, &mock);
@@ -87,12 +111,11 @@ SCENARIO("frank video run application 2", "[run_application_2]") {
       THEN("run_ui is called") { REQUIRE(mock.run_ui_called == true); }
 
       THEN("exceptions_handler is not called") {
-        REQUIRE(frank::video::exceptions_handler_called == false);
+        REQUIRE(mock.exceptions_handler_called == false);
       }
     }
     WHEN("exception thrown in list_devices") {
       constexpr auto THROW_IN_LIST_DEVICES = true;
-      frank::video::exceptions_handler_called = false;
       test::frank::run_application_mock mock{THROW_IN_LIST_DEVICES};
 
       frank::video::run_application(0, nullptr, &mock);
@@ -102,7 +125,7 @@ SCENARIO("frank video run application 2", "[run_application_2]") {
       }
 
       THEN("exceptions_handler is called") {
-        REQUIRE(frank::video::exceptions_handler_called == true);
+        REQUIRE(mock.exceptions_handler_called == true);
       }
     }
   }

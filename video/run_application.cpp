@@ -23,11 +23,13 @@ auto application(void *mock_data) {
 
 NO_RETURN
 void run_application(int, char const *[], void *mock_data) {
-  std::set_terminate(all_exceptions_handler);
+  std::set_terminate(unhandled_exception_handler);
   try {
     application(mock_data);
+  } catch (std::exception const &e) {
+    all_exceptions_handler(&e, mock_data);
   } catch (...) {
-    all_exceptions_handler();
+    all_exceptions_handler(nullptr, mock_data);
   }
 }
 
