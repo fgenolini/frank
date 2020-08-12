@@ -31,7 +31,7 @@ void mock_cvui_init(const cv::String[], size_t, void *mock_data) {
 SCENARIO("frank video GUI 1", "[video_gui_1]") {
   GIVEN("Video GUI") {
     WHEN("constructing with 1 webcam") {
-      constexpr auto WEBCAM_COUNT = 1;
+      constexpr auto WEBCAM_COUNT = frank::video::MAXIMUM_VIDEO_COUNT + 1;
       test::frank::video_gui_mock mock{};
 
       auto make_video_gui = [&]() {
