@@ -60,16 +60,10 @@ void main_window(EnhancedWindow &settings, EnhancedWindow &statistics,
   cvui::endRow();
 
   settings.begin(frame);
-  button_command button{};
-  checkbox_command checkbox{};
-  layout_command layout{};
-  text_command text{};
-  trackbar_double_command trackbar_double{};
-  trackbar_int_command trackbar_int{};
+  ui_controls controls{mock_data};
   main_settings_window settings_window(
-      button, checkbox, layout, text, trackbar_double, trackbar_int,
-      video_enabled_array, &use_canny, &low_threshold, &high_threshold,
-      overlay_enabled_array, overlay_alpha_array, mock_data);
+      controls, video_enabled_array, &use_canny, &low_threshold,
+      &high_threshold, overlay_enabled_array, overlay_alpha_array, mock_data);
   settings_window.draw(settings.isMinimized(), input_devices, has_webcams,
                        overlay_images);
   settings.end();

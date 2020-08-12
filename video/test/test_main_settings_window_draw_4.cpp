@@ -126,20 +126,14 @@ SCENARIO("frank video main settings window draw 4",
     constexpr auto SETTINGS_MINIMISED = true;
 
     WHEN("draw") {
-      frank::video::button_command button_mock{};
-      frank::video::checkbox_command checkbox_mock{};
-      frank::video::layout_command layout_mock{};
-      frank::video::text_command text_mock{};
-      frank::video::trackbar_double_command trackbar_double_mock{};
-      frank::video::trackbar_int_command trackbar_int_mock{};
       std::vector<frank::video::input_device> devices{};
       std::vector<bool> has_webcams{true, false, false, false};
       std::vector<cv::String> images{};
       test::frank::draw_mock mock{};
-      frank::video::main_settings_window window(
-          button_mock, checkbox_mock, layout_mock, text_mock,
-          trackbar_double_mock, trackbar_int_mock, nullptr, nullptr, nullptr,
-          nullptr, nullptr, nullptr, &mock);
+      frank::video::ui_controls controls_mock{&mock};
+      frank::video::main_settings_window window(controls_mock, nullptr, nullptr,
+                                                nullptr, nullptr, nullptr,
+                                                nullptr, &mock);
 
       window.draw(SETTINGS_MINIMISED, devices, has_webcams, images);
 
@@ -160,20 +154,14 @@ SCENARIO("frank video main settings window draw 4",
     constexpr auto SETTINGS_NOT_MINIMISED = false;
 
     WHEN("draw") {
-      frank::video::button_command button_mock{};
-      frank::video::checkbox_command checkbox_mock{};
-      frank::video::layout_command layout_mock{};
-      frank::video::text_command text_mock{};
-      frank::video::trackbar_double_command trackbar_double_mock{};
-      frank::video::trackbar_int_command trackbar_int_mock{};
       std::vector<frank::video::input_device> devices{};
       std::vector<bool> has_webcams{true, false, false, false};
       std::vector<cv::String> images{};
       test::frank::draw_mock mock{};
-      frank::video::main_settings_window window(
-          button_mock, checkbox_mock, layout_mock, text_mock,
-          trackbar_double_mock, trackbar_int_mock, nullptr, nullptr, nullptr,
-          nullptr, nullptr, nullptr, &mock);
+      frank::video::ui_controls controls_mock{&mock};
+      frank::video::main_settings_window window(controls_mock, nullptr, nullptr,
+                                                nullptr, nullptr, nullptr,
+                                                nullptr, &mock);
 
       window.draw(SETTINGS_NOT_MINIMISED, devices, has_webcams, images);
 

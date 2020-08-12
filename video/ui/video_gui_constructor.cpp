@@ -92,4 +92,12 @@ video_gui::video_gui(int webcam_count, cvui_init const &initialise_windows,
   initialise_windows.execute(&window_names[0], window_names.size(), mock_data_);
 }
 
+video_gui::~video_gui() {
+  delete window_template;
+  for (auto &video_capture : input_video_devices) {
+    auto capturing_device = video_capture.get();
+    capturing_device->release();
+  }
+}
+
 } // namespace frank::video
