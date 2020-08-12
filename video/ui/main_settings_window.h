@@ -18,6 +18,8 @@ WARNINGS_ON
 
 namespace frank::video {
 
+WARNING_PUSH
+DISABLE_WARNING_MSC(4820)
 class main_settings_window {
 public:
   main_settings_window(button_command const &button,
@@ -54,5 +56,6 @@ private:
   bool *video_enabled_array_;
   void *mock_data_;
 };
+WARNINGS_ON
 
 } // namespace frank::video
