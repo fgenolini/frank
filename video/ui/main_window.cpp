@@ -64,7 +64,8 @@ void main_window(EnhancedWindow &settings, EnhancedWindow &statistics,
       video_enabled_array,   &use_canny,
       &low_threshold,        &high_threshold,
       overlay_enabled_array, overlay_alpha_array};
-  settings_window.draw(settings, input_devices, has_webcams, overlay_images);
+  settings_window.draw(settings.isMinimized(), input_devices, has_webcams,
+                       overlay_images);
   settings.end();
   if (histograms)
     statistics_window(statistics, frame, raw_picture, &histogram_threshold);

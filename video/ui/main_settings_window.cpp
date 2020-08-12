@@ -135,11 +135,11 @@ void main_settings_window::draw_overlay(
 }
 WARNINGS_ON
 
-void main_settings_window::draw(EnhancedWindow &settings,
+void main_settings_window::draw(bool settings_minimised,
                                 std::vector<input_device> const &input_devices,
                                 std::vector<bool> &has_webcams,
                                 std::vector<cv::String> &overlay_images) {
-  if (settings.isMinimized())
+  if (settings_minimised)
     return;
 
   draw_canny();

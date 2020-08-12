@@ -15,6 +15,9 @@ add_executable(${TEST_APP_NAME}_list_devices
 add_executable(${TEST_APP_NAME}_main_2
   test/catch_implementation.cpp
   test/test_main_2.cpp video_main.cpp)
+add_executable(${TEST_APP_NAME}_main_settings_window_draw_4
+  test/catch_implementation.cpp
+  test/test_main_settings_window_draw_4.cpp)
 add_executable(${TEST_APP_NAME}_open_file_3
   test/catch_implementation.cpp
   test/test_open_file_3.cpp file/file_dialogs.cpp)
@@ -42,6 +45,8 @@ target_compile_definitions(${TEST_APP_NAME}_list_devices PUBLIC
   _TEST_LIST_DEVICES_ _DO_NOTHING_STDIO_)
 target_compile_definitions(${TEST_APP_NAME}_main_2 PUBLIC
   _TEST_MAIN_2_ _DO_NOTHING_EXIT_)
+target_compile_definitions(${TEST_APP_NAME}_main_settings_window_draw_4 PUBLIC
+  _TEST_MAIN_SETTINGS_WINDOW_DRAW_4_ _DO_NOTHING_EXIT_)
 target_compile_definitions(${TEST_APP_NAME}_open_file_3 PUBLIC
   _TEST_OPEN_FILE_3_ _DO_NOTHING_EXIT_ _FAKE_FILE_DIALOGS_)
 target_compile_definitions(${TEST_APP_NAME}_run_application_2 PUBLIC
@@ -59,6 +64,7 @@ set(TESTS
   ${TEST_APP_NAME}_exceptions_handler
   ${TEST_APP_NAME}_list_devices
   ${TEST_APP_NAME}_main_2
+  ${TEST_APP_NAME}_main_settings_window_draw_4
   ${TEST_APP_NAME}_open_file_3
   ${TEST_APP_NAME}_run_application_2
   ${TEST_APP_NAME}_run_ui_3
@@ -73,10 +79,13 @@ set(NO_COVERAGE_SOURCES
   test/test_exceptions_handler.cpp
   test/test_list_devices.cpp
   test/test_main_2.cpp
+  test/test_main_settings_window_draw_4.cpp
   test/test_open_file_3.cpp
   test/test_run_application_2.cpp
   test/test_run_ui_3.cpp
-  test/test_video_gui_1.cpp)
+  test/test_video_gui_1.cpp
+  test/testable_exit.cpp
+  )
 
 foreach(Test_Target ${TESTS})
   if (WIN32)
@@ -97,13 +106,9 @@ foreach(Link_With_Gsl ${TESTS_WITH_GSL})
   target_link_libraries(${Link_With_Gsl} Microsoft.GSL::GSL)
 endforeach()
 
-set(TESTS_WITH_OPENCV_AND_LIB ${TEST_APP_NAME}_video_gui_1)
+set(TESTS_WITH_OPENCV_AND_LIB
+  ${TEST_APP_NAME}_main_settings_window_draw_4 ${TEST_APP_NAME}_video_gui_1)
 foreach(Link_With_OpenCV_And_Lib ${TESTS_WITH_OPENCV_AND_LIB})
   target_link_libraries(${Link_With_OpenCV_And_Lib} ${LIB_NAME} ${OpenCV_LIBS}
     Microsoft.GSL::GSL)
 endforeach()
-
-# set(TESTS_WITH_OPENCV_NO_LIB )
-# foreach(Link_With_OpenCV_No_Lib ${TESTS_WITH_OPENCV_NO_LIB})
-#   target_link_libraries(${Link_With_OpenCV_No_Lib} ${OpenCV_LIBS})
-# endforeach()

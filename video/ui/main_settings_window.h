@@ -19,7 +19,7 @@ public:
                        bool *overlay_enabled_array,
                        double *overlay_alpha_array);
 
-  void draw(EnhancedWindow &settings,
+  void draw(bool settings_minimised,
             std::vector<input_device> const &input_devices,
             std::vector<bool> &has_webcams,
             std::vector<cv::String> &overlay_images);

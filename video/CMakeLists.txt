@@ -58,7 +58,6 @@ if (CODE_COVERAGE)
     build/nlohmann/json.hpp
     build/portable-file-dialogs.h
     build/video/videoConfig.h
-    test/testable_exit.cpp
     ui/cvui_init.cpp
     video_winmain.cpp
     ${NO_COVERAGE_SOURCES})
