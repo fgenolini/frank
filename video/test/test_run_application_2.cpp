@@ -12,7 +12,7 @@ WARNINGS_OFF
 WARNINGS_ON
 
 #include "device/list_devices.h"
-#include "exception/handler.h"
+#include "exception/exceptions_handler.h"
 #include "run_application.h"
 #include "ui/run_ui.h"
 
@@ -93,8 +93,8 @@ void run_ui(std::vector<input_device> const &, user_interface_factory,
   mock->run_ui();
 }
 
-void all_exceptions_handler(std::exception const *caught_exception,
-                            void *mock_data) noexcept {
+void exceptions_handler(std::exception const *caught_exception,
+                        void *mock_data) noexcept {
   std::cerr << "Mocked exception handler\n";
   if (!mock_data)
     return;
@@ -104,7 +104,7 @@ void all_exceptions_handler(std::exception const *caught_exception,
 }
 
 void unhandled_exception_handler() noexcept {
-  all_exceptions_handler(nullptr, nullptr);
+  exceptions_handler(nullptr, nullptr);
 }
 
 } // namespace frank::video

@@ -4,6 +4,9 @@
 # Catch2 test runner application
 set(TEST_APP_NAME "${APP_LOW_NAME}_test")
 
+add_executable(${TEST_APP_NAME}_exceptions_handler
+  test/catch_implementation.cpp
+  test/test_exceptions_handler.cpp exception/exceptions_handler.cpp)
 add_executable(${TEST_APP_NAME}_list_devices
   test/catch_implementation.cpp
   test/test_list_devices.cpp test/testable_cstdio.cpp
@@ -35,6 +38,8 @@ if (WIN32)
     test/test_winmain_4.cpp video_winmain.cpp)
 endif()
 
+target_compile_definitions(${TEST_APP_NAME}_exceptions_handler PUBLIC
+  _TEST_EXCEPTIONS_HANDLER_ _DO_NOTHING_EXIT_)
 target_compile_definitions(${TEST_APP_NAME}_list_devices PUBLIC
   _TEST_LIST_DEVICES_ _DO_NOTHING_STDIO_)
 target_compile_definitions(${TEST_APP_NAME}_main_2 PUBLIC
@@ -52,9 +57,13 @@ if (WIN32)
     _TEST_WINMAIN_4_ _DO_NOTHING_EXIT_)
 endif()
 
-set(TESTS ${TEST_APP_NAME}_list_devices ${TEST_APP_NAME}_main_2
+set(TESTS
+  ${TEST_APP_NAME}_exceptions_handler
+  ${TEST_APP_NAME}_list_devices
+  ${TEST_APP_NAME}_main_2
   ${TEST_APP_NAME}_open_file_3
-  ${TEST_APP_NAME}_run_application_2 ${TEST_APP_NAME}_run_ui_3
+  ${TEST_APP_NAME}_run_application_2
+  ${TEST_APP_NAME}_run_ui_3
   ${TEST_APP_NAME}_video_gui_1)
 if (WIN32)
   list(APPEND TESTS ${TEST_APP_NAME}_winmain_4)
@@ -63,6 +72,7 @@ endif()
 set(NO_COVERAGE_SOURCES
   build/catch2/trompeloeil.hpp
   build/trompeloeil.hpp
+  test/test_exceptions_handler.cpp
   test/test_list_devices.cpp
   test/test_main_2.cpp
   test/test_open_file_3.cpp
