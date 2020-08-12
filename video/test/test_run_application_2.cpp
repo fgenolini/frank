@@ -24,11 +24,20 @@ struct run_application_exception : public std::exception {
   }
 };
 
+enum class exception_type {
+  none,
+  exception_object,
+  int_number,
+};
+
+constexpr auto INT_EXCEPTION = 42;
+
 WARNING_PUSH
 DISABLE_WARNING_MSC(4820)
 class run_application_mock {
 public:
-  run_application_mock(bool throw_in_list_devices = false)
+  run_application_mock(
+      exception_type throw_in_list_devices = exception_type::none)
       : throw_in_list_devices_(throw_in_list_devices) {}
 
   std::exception const *exception_caught() const { return caught_exception_; }
@@ -40,8 +49,11 @@ public:
 
   std::vector<::frank::video::input_device> list_devices() {
     list_devices_called = true;
-    if (throw_in_list_devices_)
+    if (throw_in_list_devices_ == exception_type::exception_object)
       throw exception_;
+
+    if (throw_in_list_devices_ == exception_type::int_number)
+      throw INT_EXCEPTION;
 
     return std::vector<::frank::video::input_device>();
   }
@@ -51,7 +63,7 @@ public:
 private:
   std::exception const *caught_exception_{};
   run_application_exception exception_{};
-  bool throw_in_list_devices_{};
+  exception_type throw_in_list_devices_{};
 
 public:
   bool exceptions_handler_called{};
@@ -114,8 +126,24 @@ SCENARIO("frank video run application 2", "[run_application_2]") {
         REQUIRE(mock.exceptions_handler_called == false);
       }
     }
-    WHEN("exception thrown in list_devices") {
-      constexpr auto THROW_IN_LIST_DEVICES = true;
+    WHEN("exception object thrown in list_devices") {
+      constexpr auto THROW_IN_LIST_DEVICES =
+          test::frank::exception_type::exception_object;
+      test::frank::run_application_mock mock{THROW_IN_LIST_DEVICES};
+
+      frank::video::run_application(0, nullptr, &mock);
+
+      THEN("list_devices is called") {
+        REQUIRE(mock.list_devices_called == true);
+      }
+
+      THEN("exceptions_handler is called") {
+        REQUIRE(mock.exceptions_handler_called == true);
+      }
+    }
+    WHEN("int number thrown in list_devices") {
+      constexpr auto THROW_IN_LIST_DEVICES =
+          test::frank::exception_type::int_number;
       test::frank::run_application_mock mock{THROW_IN_LIST_DEVICES};
 
       frank::video::run_application(0, nullptr, &mock);
