@@ -58,6 +58,7 @@ if (CODE_COVERAGE)
     build/nlohmann/json.hpp
     build/portable-file-dialogs.h
     build/video/videoConfig.h
+    test/testable_exit.cpp
     ${NO_COVERAGE_SOURCES})
   target_code_coverage(${LIB_NAME} AUTO ALL)
   target_code_coverage(${APP_LOW_NAME} AUTO ${APP_LOW_NAME})
