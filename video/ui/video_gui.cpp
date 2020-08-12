@@ -1,6 +1,7 @@
 #include "config.h"
 
 WARNINGS_OFF
+#include <cassert>
 #include <cstdlib>
 #include <iostream>
 WARNINGS_ON
@@ -48,9 +49,8 @@ video_gui::video_gui(int webcam_count, cvui_init mock_init, void *mock_data)
   window_names.push_back(WINDOW1_NAME);
   window_names.push_back(WINDOW2_NAME);
   window_names.push_back(WINDOW3_NAME);
-  for (auto webcam = 0;
-       webcam < (int)window_names.size() && webcam < MAXIMUM_VIDEO_COUNT;
-       ++webcam) {
+  assert(window_names.size() == MAXIMUM_VIDEO_COUNT);
+  for (auto webcam = 0; webcam < (int)window_names.size(); ++webcam) {
     auto has_webcam = webcam < webcam_count;
     has_webcams.push_back(has_webcam);
     histogram_threshold[webcam] = DEFAULT_HISTOGRAM_THRESHOLD;
