@@ -11,14 +11,14 @@ namespace frank::video {
 
 NO_RETURN
 void all_exceptions_handler(std::exception const *caught_exception,
-                            void *) noexcept {
+                            void *mock_data) noexcept {
   if (!caught_exception) {
     std::cerr << "Unhandled exception\n";
   } else {
     std::cerr << "Unhandled exception: " << caught_exception->what() << '\n';
   }
 
-  std::abort();
+  abort(mock_data);
 }
 
 NO_RETURN

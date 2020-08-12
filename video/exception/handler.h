@@ -4,7 +4,6 @@
 
 WARNINGS_OFF
 #include <exception>
-#include <iostream>
 WARNINGS_ON
 
 #include "test/testable_exit.h"
@@ -12,11 +11,11 @@ WARNINGS_ON
 namespace frank::video {
 
 NO_RETURN
-extern void unhandled_exception_handler() noexcept;
-
-NO_RETURN
 extern void
 all_exceptions_handler(std::exception const *caught_exception = nullptr,
                        void *mock_data = nullptr) noexcept;
+
+NO_RETURN
+extern void unhandled_exception_handler() noexcept;
 
 } // namespace frank::video

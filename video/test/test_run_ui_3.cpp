@@ -5,6 +5,7 @@
 #endif
 
 WARNINGS_OFF
+#include <cstdlib>
 #include <iostream>
 
 #include <catch2/catch.hpp>
@@ -42,13 +43,17 @@ private:
 };
 WARNINGS_ON
 
-void do_nothing_exit(int result, void *mock_data) {
+void do_nothing_exit(int result, void *mock_data) noexcept {
   if (!mock_data)
     return;
 
   auto mock = static_cast<mock_user_interface *>(mock_data);
   ++(mock->exit_count);
   mock->exit_value = result;
+}
+
+void do_nothing_abort(void *mock_data) noexcept {
+  do_nothing_exit(EXIT_FAILURE, mock_data);
 }
 
 } // namespace test::frank
