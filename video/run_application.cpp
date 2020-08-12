@@ -13,13 +13,22 @@ WARNINGS_ON
 namespace frank::video {
 
 NO_RETURN
-void run_application(int, char const *[], void *mock_data) {
-  std::set_terminate(all_exceptions_handler);
+auto application(void *mock_data) {
   auto input_devices = list_devices(mock_data);
   if (input_devices.size() < 1)
     std::cerr << "Could not list video / audio input devices\n";
 
   run_ui(input_devices, nullptr, mock_data);
+}
+
+NO_RETURN
+void run_application(int, char const *[], void *mock_data) {
+  std::set_terminate(all_exceptions_handler);
+  try {
+    application(mock_data);
+  } catch (...) {
+    all_exceptions_handler();
+  }
 }
 
 } // namespace frank::video
