@@ -10,6 +10,7 @@ WARNINGS_ON
 
 namespace frank::video {
 
-extern cv::Mat take_picture(opencv_window &window) noexcept(false);
+extern bool open_webcam(opencv_window &window, cv::VideoCapture *webcam,
+                        int webcam_index);
 
 } // namespace frank::video

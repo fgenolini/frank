@@ -5,8 +5,9 @@ set(CommonSourcesList
   exception/exceptions_handler.cpp
   file/file_dialogs.cpp
   json/persisted_settings.cpp
-  opencv/add_overlay.cpp opencv/exit_requested.cpp opencv/opencv_window.cpp
-  opencv/paint_histogram.cpp opencv/paint_picture.cpp opencv/take_picture.cpp
+  opencv/add_overlay.cpp opencv/exit_requested.cpp opencv/open_webcam.cpp
+  opencv/opencv_window.cpp opencv/paint_histogram.cpp opencv/paint_picture.cpp
+  opencv/reduce_resolution.cpp opencv/take_picture.cpp
   test/testable_cstdio.cpp test/testable_exit.cpp
   ui/button_command.cpp ui/checkbox_command.cpp
   ui/cvui_init.cpp
