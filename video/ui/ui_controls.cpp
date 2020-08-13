@@ -1,9 +1,5 @@
 #include "config.h"
 
-WARNINGS_OFF
-#include <string>
-WARNINGS_ON
-
 #include "ui/ui_controls.h"
 
 namespace frank::video {
