@@ -9,6 +9,8 @@ WARNINGS_ON
 
 namespace frank::video {
 
+opencv_window::opencv_window() {}
+
 opencv_window::opencv_window(cv::String name, cv::VideoCapture *webcam,
                              int webcam_index, bool first_time, bool has_webcam,
                              bool video_enabled,

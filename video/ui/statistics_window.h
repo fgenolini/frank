@@ -1,6 +1,6 @@
 #pragma once
 
-#include "protected_cvui.h"
+#include "ui/protected_cvui.h"
 
 namespace frank::video {
 

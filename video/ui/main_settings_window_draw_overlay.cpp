@@ -5,7 +5,7 @@ WARNINGS_OFF
 WARNINGS_ON
 
 #include "file/file_dialogs.h"
-#include "main_settings_window.h"
+#include "ui/main_settings_window.h"
 
 namespace fs = std::filesystem;
 
@@ -13,8 +13,7 @@ namespace frank::video {
 
 WARNING_PUSH
 DISABLE_WARNING_MSC(4365)
-void main_settings_window::draw_overlay(
-    int webcam, std::vector<cv::String> &overlay_images) {
+void main_settings_window::draw_overlay(int webcam) {
   constexpr auto ALPHA_MAX = 1.0;
   constexpr auto ALPHA_MIN = 0.0;
   constexpr auto BUTTON_HEIGHT = 30;
@@ -39,13 +38,14 @@ void main_settings_window::draw_overlay(
             "Choose image file to use as overlay", DEFAULT_PATH,
             {"JPEG Files (.jpg .jpeg)", "*.jpg *.jpeg", "All Files", "*"});
         std::cout << "Selected files:";
-        for (auto const &name : file_names) {
-          if (name.empty())
-            continue;
-          std::cout << " " + name;
-          overlay_images[webcam] = name;
-          break;
-        }
+        if (webcam < (int)state_.overlay_images.size())
+          for (auto const &name : file_names) {
+            if (name.empty())
+              continue;
+            std::cout << " " + name;
+            state_.overlay_images[webcam] = name;
+            break;
+          }
 
         std::cout << '\n';
       }
@@ -57,19 +57,30 @@ void main_settings_window::draw_overlay(
       controls_.text(" ");
       controls_.text(" ");
       cv::String overlay_name{};
-      if ((int)overlay_images.size() <= webcam ||
-          overlay_images[webcam].empty())
+      if (webcam >= (int)state_.overlay_images.size() ||
+          state_.overlay_images[webcam].empty())
         overlay_name = "No overlay " + std::to_string(webcam);
       else
-        overlay_name = fs::path(overlay_images[webcam]).stem().string();
+        overlay_name = fs::path(state_.overlay_images[webcam]).stem().string();
 
-      if (overlay_enabled_array_)
-        controls_.checkbox(overlay_name, &overlay_enabled_array_[webcam]);
+      bool overlay_enabled{};
+      if (webcam < (int)state_.overlay_enabled.size())
+        overlay_enabled = state_.overlay_enabled[webcam];
+
+      controls_.checkbox(overlay_name, &overlay_enabled);
+      if (webcam < (int)state_.overlay_enabled.size())
+        state_.overlay_enabled[webcam] = overlay_enabled;
     }
     controls_.end_column();
-    if (overlay_alpha_array_)
-      controls_.trackbar_double(TRACKBAR_WIDTH, &overlay_alpha_array_[webcam],
-                                ALPHA_MIN, ALPHA_MAX);
+    double overlay_alpha{};
+    if (webcam < (int)state_.overlay_alpha.size())
+      overlay_alpha = state_.overlay_alpha[webcam];
+
+    controls_.trackbar_double(TRACKBAR_WIDTH, &overlay_alpha, ALPHA_MIN,
+                              ALPHA_MAX);
+    if (webcam < (int)state_.overlay_alpha.size())
+      state_.overlay_alpha[webcam] = overlay_alpha;
+
     controls_.begin_column();
     {
       controls_.text(" ");

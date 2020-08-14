@@ -126,16 +126,12 @@ SCENARIO("frank video main settings window draw 4",
     constexpr auto SETTINGS_MINIMISED = true;
 
     WHEN("draw") {
-      std::vector<frank::video::input_device> devices{};
-      std::vector<bool> has_webcams{true, false, false, false};
-      std::vector<cv::String> images{};
+      frank::video::application_state state{frank::video::MAXIMUM_VIDEO_COUNT};
       test::frank::draw_mock mock{};
       frank::video::ui_controls controls_mock{&mock};
-      frank::video::main_settings_window window(controls_mock, nullptr, nullptr,
-                                                nullptr, nullptr, nullptr,
-                                                nullptr, &mock);
 
-      window.draw(SETTINGS_MINIMISED, devices, has_webcams, images);
+      frank::video::main_settings_window window(controls_mock, state, &mock);
+      window.draw(SETTINGS_MINIMISED);
 
       THEN("no GUI control is shown") {
         REQUIRE(mock.begin_column_count == 0);
@@ -154,30 +150,27 @@ SCENARIO("frank video main settings window draw 4",
     constexpr auto SETTINGS_NOT_MINIMISED = false;
 
     WHEN("draw") {
-      std::vector<frank::video::input_device> devices{};
-      std::vector<bool> has_webcams{true, false, false, false};
-      std::vector<cv::String> images{};
+      frank::video::application_state state{frank::video::MAXIMUM_VIDEO_COUNT};
       test::frank::draw_mock mock{};
       frank::video::ui_controls controls_mock{&mock};
-      frank::video::main_settings_window window(controls_mock, nullptr, nullptr,
-                                                nullptr, nullptr, nullptr,
-                                                nullptr, &mock);
 
-      window.draw(SETTINGS_NOT_MINIMISED, devices, has_webcams, images);
+      frank::video::main_settings_window window(controls_mock, state, &mock);
+      window.draw(SETTINGS_NOT_MINIMISED);
 
-      THEN("4 buttons are shown") { REQUIRE(mock.button_count == 4); }
-
-      THEN("1 checkbox is shown") { REQUIRE(mock.checkbox_count == 1); }
-
-      THEN("46 text labels are shown") { REQUIRE(mock.text_count == 46); }
-
-      THEN("no double trackbar is shown") {
-        REQUIRE(mock.trackbar_double_count == 0);
+      THEN("buttons are shown") {
+        REQUIRE(mock.button_count == frank::video::MAXIMUM_VIDEO_COUNT);
       }
 
-      THEN("2 int trackbars are shown") {
-        REQUIRE(mock.trackbar_int_count == 2);
+      THEN("checkboxes are shown") { REQUIRE(mock.checkbox_count == 9); }
+
+      THEN("text labels are shown") { REQUIRE(mock.text_count == 46); }
+
+      THEN("double trackbars are shown") {
+        REQUIRE(mock.trackbar_double_count ==
+                frank::video::MAXIMUM_VIDEO_COUNT);
       }
+
+      THEN("int trackbars are shown") { REQUIRE(mock.trackbar_int_count == 2); }
 
       THEN("layout was performed") {
         REQUIRE(mock.begin_column_count > 0);

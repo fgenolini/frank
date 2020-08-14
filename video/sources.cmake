@@ -9,6 +9,7 @@ set(CommonSourcesList
   opencv/opencv_window.cpp opencv/paint_histogram.cpp opencv/paint_picture.cpp
   opencv/reduce_resolution.cpp opencv/take_picture.cpp
   test/testable_cstdio.cpp test/testable_exit.cpp
+  ui/application_state.cpp
   ui/button_command.cpp ui/checkbox_command.cpp
   ui/cvui_init.cpp
   ui/layout_command.cpp

@@ -1,6 +1,7 @@
 #include "config.h"
 
-#include "protected_cvui.h"
+#include "ui/protected_cvui.h"
+
 #include "ui/cvui_init.h"
 
 namespace frank::video {

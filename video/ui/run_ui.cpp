@@ -5,9 +5,9 @@ WARNINGS_OFF
 WARNINGS_ON
 
 #include "device/input_device.h"
-#include "run_ui.h"
 #include "test/testable_exit.h"
-#include "user_interface.h"
+#include "ui/run_ui.h"
+#include "ui/user_interface.h"
 
 namespace frank::video {
 

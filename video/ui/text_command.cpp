@@ -4,7 +4,7 @@ WARNINGS_OFF
 #include <string>
 WARNINGS_ON
 
-#include "protected_cvui.h"
+#include "ui/protected_cvui.h"
 
 #include "ui/text_command.h"
 

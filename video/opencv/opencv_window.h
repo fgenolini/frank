@@ -14,6 +14,7 @@ WARNING_PUSH
 DISABLE_WARNING_MSC(4820)
 class opencv_window {
 public:
+  opencv_window();
   opencv_window(cv::String name, cv::VideoCapture *webcam, int webcam_index,
                 bool first_time, bool has_webcam, bool video_enabled,
                 std::pair<double, double> const &height_width,
@@ -55,24 +56,24 @@ public:
   void set_width(double width);
 
 private:
-  cv::Mat *overlay_buffer_;
-  cv::String name_;
-  cv::String overlay_image_;
-  cv::VideoCapture *webcam_;
-  double height_;
-  double overlay_alpha_;
-  double width_;
-  int high_threshold_;
-  int histogram_threshold_;
-  int low_threshold_;
-  int webcam_index_;
-  bool exit_requested_;
-  bool first_time_;
-  bool has_webcam_;
-  bool histograms_;
-  bool use_canny_;
-  bool use_overlay_;
-  bool video_enabled_;
+  cv::Mat *overlay_buffer_{};
+  cv::String name_{};
+  cv::String overlay_image_{};
+  cv::VideoCapture *webcam_{};
+  double height_{};
+  double overlay_alpha_{};
+  double width_{};
+  int high_threshold_{};
+  int histogram_threshold_{};
+  int low_threshold_{};
+  int webcam_index_{};
+  bool exit_requested_{};
+  bool first_time_{};
+  bool has_webcam_{};
+  bool histograms_{};
+  bool use_canny_{};
+  bool use_overlay_{};
+  bool video_enabled_{};
 };
 WARNINGS_ON
 

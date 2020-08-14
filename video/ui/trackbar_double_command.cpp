@@ -1,6 +1,6 @@
 #include "config.h"
 
-#include "protected_cvui.h"
+#include "ui/protected_cvui.h"
 
 #include "ui/trackbar_double_command.h"
 

@@ -18,7 +18,7 @@ class user_interface {
 public:
   virtual ~user_interface() = default;
 
-  virtual void loop(std::vector<input_device> const &inputs) = 0;
+  virtual void loop(std::vector<input_device> const &connected_webcams) = 0;
 };
 
 std::unique_ptr<user_interface>
