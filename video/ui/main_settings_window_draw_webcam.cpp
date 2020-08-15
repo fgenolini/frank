@@ -4,8 +4,6 @@
 
 namespace frank::video {
 
-WARNING_PUSH
-DISABLE_WARNING_MSC(4365)
 void main_settings_window::draw_webcam(int webcam) {
   controls_.begin_column();
   {
@@ -26,6 +24,5 @@ void main_settings_window::draw_webcam(int webcam) {
   }
   controls_.end_column();
 }
-WARNINGS_ON
 
 } // namespace frank::video

@@ -7,8 +7,6 @@ namespace frank::video {
 constexpr auto ALPHA = "alpha_";
 constexpr auto OVERLAY = "overlay_";
 
-WARNING_PUSH
-DISABLE_WARNING_MSC(4365)
 void video_gui::load_settings() {
   overlay_alpha_last_.clear();
   overlay_images_last_.clear();
@@ -64,6 +62,5 @@ void video_gui::save_settings() {
 
   serialiser_.write(all_properties);
 }
-WARNINGS_ON
 
 } // namespace frank::video

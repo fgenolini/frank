@@ -26,8 +26,6 @@ void main_settings_window::open_overlay_file(int webcam) {
   state_.overlay_images[(size_t)webcam] = file_names[0];
 }
 
-WARNING_PUSH
-DISABLE_WARNING_MSC(4365)
 void main_settings_window::draw_overlay(int webcam) {
   constexpr auto ALPHA_MAX = 1.0;
   constexpr auto ALPHA_MIN = 0.0;
@@ -84,6 +82,5 @@ void main_settings_window::draw_overlay(int webcam) {
   }
   controls_.end_row();
 }
-WARNINGS_ON
 
 } // namespace frank::video
