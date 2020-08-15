@@ -26,12 +26,12 @@ file_dialogs::open_file(std::string const &title,
 #endif
 ) const {
   std::vector<std::string> output{};
+  auto f = pfd::open_file(title, default_path, filters, pfd::opt::force_path
 #if defined(_FAKE_FILE_DIALOGS_)
-  auto f = pfd::open_file(title, default_path, filters, pfd::opt::force_path,
-                          mock_data);
-#else
-  auto f = pfd::open_file(title, default_path, filters, pfd::opt::force_path);
+                          ,
+                          mock_data
 #endif
+  );
   for (auto const &name : f.result()) {
     if (name.empty())
       continue;
