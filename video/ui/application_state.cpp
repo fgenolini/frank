@@ -4,8 +4,6 @@
 
 namespace frank::video {
 
-application_state::application_state() {}
-
 application_state::application_state(int webcam_count) {
   has_webcams.push_back(true);
   for (auto i = 1; i < webcam_count; ++i) {

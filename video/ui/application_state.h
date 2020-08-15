@@ -15,9 +15,8 @@ constexpr auto MAXIMUM_VIDEO_COUNT = 4;
 
 class application_state {
 public:
-  application_state();
   application_state(int webcam_count);
-  
+
   std::vector<bool> has_webcams{};
   std::vector<bool> overlay_enabled{};
   std::vector<bool> video_enabled{};
