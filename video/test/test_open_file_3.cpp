@@ -112,8 +112,8 @@ SCENARIO("frank video open file 3", "[open_file_3]") {
     constexpr auto TEST_PATH = "test path";
     constexpr auto TEST_TITLE = "test title";
     std::vector<std::string> const test_filters{"test filter"};
-    std::vector<std::string> const several_results{"test file 1",
-                                                   "test file 2"};
+    std::vector<std::string> const several_results{"test file 1", "test file 2",
+                                                   ""};
     test::frank::open_file_mock mock{several_results};
 
     frank::video::file_dialogs dialogs{};
