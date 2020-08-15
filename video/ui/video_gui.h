@@ -28,6 +28,8 @@ public:
 
 private:
   void load_settings();
+  bool one_iteration(int windows);
+  bool other_window_iteration(int webcam);
   void save_settings();
   bool settings_changed() const;
 
