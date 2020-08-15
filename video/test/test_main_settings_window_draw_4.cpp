@@ -151,6 +151,7 @@ SCENARIO("frank video main settings window draw 4",
 
     WHEN("draw") {
       frank::video::application_state state{frank::video::MAXIMUM_VIDEO_COUNT};
+      state.overlay_images[0] = "test image";
       test::frank::draw_mock mock{};
       frank::video::ui_controls controls_mock{&mock};
 

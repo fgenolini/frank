@@ -37,17 +37,13 @@ void main_settings_window::draw_overlay(int webcam) {
         auto file_names = dialogs.open_file(
             "Choose image file to use as overlay", DEFAULT_PATH,
             {"JPEG Files (.jpg .jpeg)", "*.jpg *.jpeg", "All Files", "*"});
-        std::cout << "Selected files:";
         if (webcam < (int)state_.overlay_images.size())
           for (auto const &name : file_names) {
             if (name.empty())
               continue;
-            std::cout << " " + name;
             state_.overlay_images[webcam] = name;
             break;
           }
-
-        std::cout << '\n';
       }
     }
     controls_.end_column();
@@ -56,11 +52,9 @@ void main_settings_window::draw_overlay(int webcam) {
     {
       controls_.text(" ");
       controls_.text(" ");
-      cv::String overlay_name{};
-      if (webcam >= (int)state_.overlay_images.size() ||
-          state_.overlay_images[webcam].empty())
-        overlay_name = "No overlay " + std::to_string(webcam);
-      else
+      cv::String overlay_name{"No overlay " + std::to_string(webcam)};
+      if (webcam < (int)state_.overlay_images.size() &&
+          !state_.overlay_images[webcam].empty())
         overlay_name = fs::path(state_.overlay_images[webcam]).stem().string();
 
       bool overlay_enabled{};
