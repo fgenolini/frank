@@ -46,7 +46,8 @@ void settings_display(EnhancedWindow &settings, cv::Mat frame,
                       ui_controls const &controls, application_state &state,
                       void *mock_data) {
   settings.begin(frame);
-  main_settings_window settings_window(controls, state, mock_data);
+  file_dialogs dialogs{};
+  main_settings_window settings_window(controls, state, dialogs, mock_data);
   settings_window.draw(settings.isMinimized());
   settings.end();
 }

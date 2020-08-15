@@ -4,14 +4,20 @@
 #error _TEST_MAIN_SETTINGS_WINDOW_DRAW_4_ not defined
 #endif
 
+#ifndef _FAKE_FILE_DIALOGS_
+#error _FAKE_FILE_DIALOGS_ not defined
+#endif
+
 WARNINGS_OFF
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include <catch2/catch.hpp>
 WARNINGS_ON
 
 #include "device/input_device.h"
+#include "file/file_dialogs.h"
 #include "ui/main_settings_window.h"
 
 namespace test::frank {
@@ -20,8 +26,11 @@ struct draw_mock {
   void begin_column() { ++begin_column_count; }
   void begin_row() { ++begin_row_count; }
 
-  bool button() {
+  bool button(std::string const &label) {
     ++button_count;
+    if (label.compare(::frank::video::OVERLAY_BUTTON_LABEL) == 0)
+      return true;
+
     return false;
   }
 
@@ -32,6 +41,14 @@ struct draw_mock {
 
   void end_column() { ++end_column_count; }
   void end_row() { ++end_row_count; }
+
+  std::vector<std::string> open_file() {
+    ++open_file_count;
+    if (open_file_count > 2)
+      return std::vector<std::string>();
+
+    return std::vector<std::string>{"test file"};
+  }
 
   void text() { ++text_count; }
 
@@ -51,6 +68,7 @@ struct draw_mock {
   int checkbox_count{};
   int end_column_count{};
   int end_row_count{};
+  int open_file_count{};
   int text_count{};
   int trackbar_double_count{};
   int trackbar_int_count{};
@@ -60,10 +78,10 @@ struct draw_mock {
 
 namespace frank::video {
 
-bool button_command::execute(int, int, std::string const &,
+bool button_command::execute(int, int, std::string const &label,
                              void *mock_data) const {
   auto mock = static_cast<test::frank::draw_mock *>(mock_data);
-  return mock->button();
+  return mock->button(label);
 }
 
 bool checkbox_command::execute(std::string const &, bool *returned_value,
@@ -73,6 +91,14 @@ bool checkbox_command::execute(std::string const &, bool *returned_value,
   if (returned_value)
     *returned_value = result;
   return result;
+}
+
+std::vector<std::string>
+file_dialogs::open_file(std::string const &, std::string const &,
+                        std::vector<std::string> const &,
+                        void *mock_data) const {
+  auto mock = static_cast<test::frank::draw_mock *>(mock_data);
+  return mock->open_file();
 }
 
 void layout_command::begin_column(void *mock_data) const {
@@ -128,9 +154,11 @@ SCENARIO("frank video main settings window draw 4",
     WHEN("draw") {
       frank::video::application_state state{frank::video::MAXIMUM_VIDEO_COUNT};
       test::frank::draw_mock mock{};
+      frank::video::file_dialogs dialogs_mock{};
       frank::video::ui_controls controls_mock{&mock};
 
-      frank::video::main_settings_window window(controls_mock, state, &mock);
+      frank::video::main_settings_window window(controls_mock, state,
+                                                dialogs_mock, &mock);
       window.draw(SETTINGS_MINIMISED);
 
       THEN("no GUI control is shown") {
@@ -140,6 +168,7 @@ SCENARIO("frank video main settings window draw 4",
         REQUIRE(mock.checkbox_count == 0);
         REQUIRE(mock.end_column_count == 0);
         REQUIRE(mock.end_row_count == 0);
+        REQUIRE(mock.open_file_count == 0);
         REQUIRE(mock.text_count == 0);
         REQUIRE(mock.trackbar_double_count == 0);
         REQUIRE(mock.trackbar_int_count == 0);
@@ -153,9 +182,11 @@ SCENARIO("frank video main settings window draw 4",
       frank::video::application_state state{frank::video::MAXIMUM_VIDEO_COUNT};
       state.overlay_images[0] = "test image";
       test::frank::draw_mock mock{};
+      frank::video::file_dialogs dialogs_mock{};
       frank::video::ui_controls controls_mock{&mock};
 
-      frank::video::main_settings_window window(controls_mock, state, &mock);
+      frank::video::main_settings_window window(controls_mock, state,
+                                                dialogs_mock, &mock);
       window.draw(SETTINGS_NOT_MINIMISED);
 
       THEN("buttons are shown") {
@@ -172,6 +203,8 @@ SCENARIO("frank video main settings window draw 4",
       }
 
       THEN("int trackbars are shown") { REQUIRE(mock.trackbar_int_count == 2); }
+
+      THEN("open_file was called") { REQUIRE(mock.open_file_count > 0); }
 
       THEN("layout was performed") {
         REQUIRE(mock.begin_column_count > 0);

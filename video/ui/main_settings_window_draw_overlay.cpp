@@ -4,12 +4,27 @@ WARNINGS_OFF
 #include <filesystem>
 WARNINGS_ON
 
-#include "file/file_dialogs.h"
 #include "ui/main_settings_window.h"
 
 namespace fs = std::filesystem;
 
 namespace frank::video {
+
+void main_settings_window::open_overlay_file(int webcam) {
+#if _WIN32
+  constexpr auto DEFAULT_PATH = "C:\\";
+#else
+  constexpr auto DEFAULT_PATH = "/tmp";
+#endif
+  auto file_names = dialogs_.open_file(
+      "Choose image file to use as overlay", DEFAULT_PATH,
+      {"JPEG Files (.jpg .jpeg)", "*.jpg *.jpeg", "All Files", "*"},
+      mock_data_);
+  if (file_names.size() == 0 || webcam >= (int)state_.overlay_images.size())
+    return;
+
+  state_.overlay_images[webcam] = file_names[0];
+}
 
 WARNING_PUSH
 DISABLE_WARNING_MSC(4365)
@@ -18,11 +33,6 @@ void main_settings_window::draw_overlay(int webcam) {
   constexpr auto ALPHA_MIN = 0.0;
   constexpr auto BUTTON_HEIGHT = 30;
   constexpr auto BUTTON_WIDTH = 70;
-#if _WIN32
-  constexpr auto DEFAULT_PATH = "C:\\";
-#else
-  constexpr auto DEFAULT_PATH = "/tmp";
-#endif
   constexpr auto TRACKBAR_WIDTH = 100;
 
   controls_.begin_row();
@@ -31,20 +41,9 @@ void main_settings_window::draw_overlay(int webcam) {
     {
       controls_.text(" ");
       auto select_file =
-          controls_.button(BUTTON_WIDTH, BUTTON_HEIGHT, "Overlay...");
-      if (select_file) {
-        file_dialogs dialogs{};
-        auto file_names = dialogs.open_file(
-            "Choose image file to use as overlay", DEFAULT_PATH,
-            {"JPEG Files (.jpg .jpeg)", "*.jpg *.jpeg", "All Files", "*"});
-        if (webcam < (int)state_.overlay_images.size())
-          for (auto const &name : file_names) {
-            if (name.empty())
-              continue;
-            state_.overlay_images[webcam] = name;
-            break;
-          }
-      }
+          controls_.button(BUTTON_WIDTH, BUTTON_HEIGHT, OVERLAY_BUTTON_LABEL);
+      if (select_file)
+        open_overlay_file(webcam);
     }
     controls_.end_column();
     controls_.text(" ");

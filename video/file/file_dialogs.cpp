@@ -33,6 +33,9 @@ file_dialogs::open_file(std::string const &title,
   auto f = pfd::open_file(title, default_path, filters, pfd::opt::force_path);
 #endif
   for (auto const &name : f.result()) {
+    if (name.empty())
+      continue;
+
     output.push_back(name);
   }
 

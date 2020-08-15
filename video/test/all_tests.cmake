@@ -46,7 +46,7 @@ target_compile_definitions(${TEST_APP_NAME}_list_devices PUBLIC
 target_compile_definitions(${TEST_APP_NAME}_main_2 PUBLIC
   _TEST_MAIN_2_ _DO_NOTHING_EXIT_)
 target_compile_definitions(${TEST_APP_NAME}_main_settings_window_draw_4 PUBLIC
-  _TEST_MAIN_SETTINGS_WINDOW_DRAW_4_ _DO_NOTHING_EXIT_)
+  _TEST_MAIN_SETTINGS_WINDOW_DRAW_4_ _DO_NOTHING_EXIT_ _FAKE_FILE_DIALOGS_)
 target_compile_definitions(${TEST_APP_NAME}_open_file_3 PUBLIC
   _TEST_OPEN_FILE_3_ _DO_NOTHING_EXIT_ _FAKE_FILE_DIALOGS_)
 target_compile_definitions(${TEST_APP_NAME}_run_application_2 PUBLIC
