@@ -9,10 +9,8 @@ DISABLE_WARNING_MSC(4365)
 void main_settings_window::draw_webcam(int webcam) {
   controls_.begin_column();
   {
-    std::string video_name{};
-    if (webcam >= (int)state_.input_devices.size())
-      video_name = "Video " + std::to_string(webcam);
-    else
+    std::string video_name{"Video " + std::to_string(webcam)};
+    if (webcam < (int)state_.input_devices.size())
       video_name =
           std::to_string(webcam) + " " + state_.input_devices[webcam].name();
 
