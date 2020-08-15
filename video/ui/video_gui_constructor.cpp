@@ -46,13 +46,14 @@ video_gui::video_gui(int webcam_count, cvui_init const &initialise_windows,
   window_names_.push_back(WINDOW1_NAME);
   window_names_.push_back(WINDOW2_NAME);
   window_names_.push_back(WINDOW3_NAME);
-  assert(window_names_.size() == MAXIMUM_VIDEO_COUNT);
-  for (auto webcam = 0; webcam < (int)window_names_.size(); ++webcam) {
+  auto const expected_window_count = state_.has_webcams.size();
+  assert(window_names_.size() == expected_window_count);
+  for (auto webcam = 0; webcam < (int)expected_window_count; ++webcam) {
     auto has_webcam = webcam < webcam_count;
-    state_.has_webcams[webcam] = has_webcam;
+    state_.has_webcams[(size_t)webcam] = has_webcam;
     histogram_threshold_.push_back(DEFAULT_HISTOGRAM_THRESHOLD);
     overlay_buffers_.push_back(cv::Mat());
-    state_.video_enabled[webcam] = has_webcam;
+    state_.video_enabled[(size_t)webcam] = has_webcam;
     if (webcam == 0)
       statistics_.push_back(
           EnhancedWindow(STATISTICS0_X, STATISTICS0_Y, STATISTICS0_WIDTH,
