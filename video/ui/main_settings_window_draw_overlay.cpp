@@ -23,7 +23,7 @@ void main_settings_window::open_overlay_file(int webcam) {
   if (file_names.size() == 0 || webcam >= (int)state_.overlay_images.size())
     return;
 
-  state_.overlay_images[webcam] = file_names[0];
+  state_.overlay_images[(size_t)webcam] = file_names[0];
 }
 
 WARNING_PUSH
