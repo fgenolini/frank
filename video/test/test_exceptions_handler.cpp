@@ -6,7 +6,6 @@
 
 WARNINGS_OFF
 #include <exception>
-#include <iostream>
 
 #include <catch2/catch.hpp>
 WARNINGS_ON
@@ -41,6 +40,7 @@ void abort(void *mock_data) noexcept {
   abort_called = true;
   if (!mock_data)
     return;
+
   auto mock = static_cast<::test::frank::exceptions_handler_mock *>(mock_data);
   return mock->abort();
 }

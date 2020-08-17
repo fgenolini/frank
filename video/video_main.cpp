@@ -4,7 +4,7 @@ WARNINGS_OFF
 #include <iostream>
 WARNINGS_ON
 
-#include "run_application.h"
+#include "application.h"
 #include "videoConfig.h"
 
 #ifdef _TEST_MAIN_2_
@@ -19,7 +19,8 @@ int main(int argc, char const *argv[])
 {
   std::cerr << argv[0] << " v" << VIDEO_VERSION_MAJOR << "."
             << VIDEO_VERSION_MINOR << '\n';
-  ::frank::video::run_application(argc, argv, mock_data);
+  ::frank::video::application app(mock_data);
+  app.run(argc, argv);
   return argc;
 }
 

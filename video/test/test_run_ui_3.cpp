@@ -46,9 +46,6 @@ private:
 WARNINGS_ON
 
 void do_nothing_exit(int result, void *mock_data) noexcept {
-  if (!mock_data)
-    return;
-
   auto mock = static_cast<mock_user_interface *>(mock_data);
   ++(mock->exit_count);
   mock->exit_value = result;
@@ -63,18 +60,12 @@ void do_nothing_abort(void *mock_data) noexcept {
 namespace frank::video {
 
 void cvui_init::execute(const std::string[], size_t, void *mock_data) const {
-  if (!mock_data)
-    return;
-
   auto mock = static_cast<test::frank::fake_user_interface *>(mock_data);
   mock->cvui_init_called = true;
 }
 
 std::unique_ptr<user_interface> make_user_interface(int, cvui_init const &,
                                                     void *mock_data) {
-  if (!mock_data)
-    return std::make_unique<::test::frank::fake_user_interface>(nullptr);
-
   auto mock = static_cast<::test::frank::mock_user_interface *>(mock_data);
   return std::make_unique<::test::frank::fake_user_interface>(mock);
 }

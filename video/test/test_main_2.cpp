@@ -5,12 +5,10 @@
 #endif
 
 WARNINGS_OFF
-#include <iostream>
-
 #include <catch2/catch.hpp>
 WARNINGS_ON
 
-#include "run_application.h"
+#include "application.h"
 
 namespace test::frank {
 
@@ -26,11 +24,10 @@ extern int main(int argc, char const *argv[], void *mock_data);
 
 namespace frank::video {
 
-void run_application(int, char const *[], void *mock_data) {
-  if (!mock_data)
-    return;
+application::application(void *mock_data) : mock_data_(mock_data) {}
 
-  auto mock = static_cast<::test::frank::main_mock *>(mock_data);
+void application::run(int, char const *[]) {
+  auto mock = static_cast<::test::frank::main_mock *>(mock_data_);
   mock->run_application();
 }
 

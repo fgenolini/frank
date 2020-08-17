@@ -5,8 +5,6 @@
 #endif
 
 WARNINGS_OFF
-#include <iostream>
-
 #include <catch2/catch.hpp>
 WARNINGS_ON
 
@@ -24,9 +22,6 @@ struct video_gui_mock {
 namespace frank::video {
 
 void cvui_init::execute(const std::string[], size_t, void *mock_data) const {
-  if (!mock_data)
-    return;
-
   auto mock = static_cast<test::frank::video_gui_mock *>(mock_data);
   mock->cvui_init_called = true;
 }

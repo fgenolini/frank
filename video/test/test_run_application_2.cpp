@@ -6,14 +6,13 @@
 
 WARNINGS_OFF
 #include <exception>
-#include <iostream>
 
 #include <catch2/catch.hpp>
 WARNINGS_ON
 
+#include "application.h"
 #include "device/list_devices.h"
 #include "exception/exceptions_handler.h"
-#include "run_application.h"
 #include "ui/run_ui.h"
 
 namespace test::frank {
@@ -77,28 +76,18 @@ WARNINGS_ON
 namespace frank::video {
 
 std::vector<input_device> list_devices(void *mock_data) {
-  if (!mock_data)
-    return std::vector<input_device>();
-
   auto mock = static_cast<::test::frank::run_application_mock *>(mock_data);
   return mock->list_devices();
 }
 
 void run_ui(std::vector<input_device> const &, cvui_init const &,
             user_interface_factory, void *mock_data) {
-  if (!mock_data)
-    return;
-
   auto mock = static_cast<::test::frank::run_application_mock *>(mock_data);
   mock->run_ui();
 }
 
 void exceptions_handler(std::exception const *caught_exception,
                         void *mock_data) noexcept {
-  std::cerr << "Mocked exception handler\n";
-  if (!mock_data)
-    return;
-
   auto mock = static_cast<::test::frank::run_application_mock *>(mock_data);
   mock->handler(caught_exception);
 }
@@ -114,7 +103,8 @@ SCENARIO("frank video run application 2", "[run_application_2]") {
     WHEN("no argument") {
       test::frank::run_application_mock mock{};
 
-      frank::video::run_application(0, nullptr, &mock);
+      frank::video::application app(&mock);
+      app.run(0, nullptr);
 
       THEN("list_devices is called") {
         REQUIRE(mock.list_devices_called == true);
@@ -131,7 +121,8 @@ SCENARIO("frank video run application 2", "[run_application_2]") {
           test::frank::exception_type::exception_object;
       test::frank::run_application_mock mock{THROW_IN_LIST_DEVICES};
 
-      frank::video::run_application(0, nullptr, &mock);
+      frank::video::application app(&mock);
+      app.run(0, nullptr);
 
       THEN("list_devices is called") {
         REQUIRE(mock.list_devices_called == true);
@@ -146,7 +137,8 @@ SCENARIO("frank video run application 2", "[run_application_2]") {
           test::frank::exception_type::int_number;
       test::frank::run_application_mock mock{THROW_IN_LIST_DEVICES};
 
-      frank::video::run_application(0, nullptr, &mock);
+      frank::video::application app(&mock);
+      app.run(0, nullptr);
 
       THEN("list_devices is called") {
         REQUIRE(mock.list_devices_called == true);

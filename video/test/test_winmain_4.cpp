@@ -5,8 +5,6 @@
 #endif
 
 WARNINGS_OFF
-#include <iostream>
-
 #include <windows.h>
 
 #include <catch2/catch.hpp>
@@ -29,11 +27,10 @@ extern int CALLBACK WinMain(HINSTANCE, HINSTANCE, LPSTR, int show_option,
 
 namespace frank::video {
 
-void run_application(int, char const *[], void *mock_data) {
-  if (!mock_data)
-    return;
+run_application::run_application(void *mock_data) : mock_data_(mock_data) {}
 
-  auto mock = static_cast<::test::frank::winmain_mock *>(mock_data);
+void run_application::run(int, char const *[]) {
+  auto mock = static_cast<::test::frank::winmain_mock *>(mock_data_);
   mock->run_application();
 }
 
@@ -67,9 +64,7 @@ SCENARIO("frank video winmain 4", "[winmain_4]") {
         REQUIRE(mock.run_application_called == true);
       }
 
-      THEN("WinMain returns SW_MINIMIZE") {
-        REQUIRE(results == SHOW_OPTION);
-      }
+      THEN("WinMain returns SW_MINIMIZE") { REQUIRE(results == SHOW_OPTION); }
     }
   }
 }
