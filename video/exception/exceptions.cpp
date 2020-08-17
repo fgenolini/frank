@@ -14,13 +14,12 @@ exceptions::exceptions(aborter *injected_aborter)
 
 exceptions::~exceptions() {}
 
-WARNING_PUSH
-DISABLE_WARNING_GCC_QUOTED("-Wreturn-type")
+WARNINGS_OFF
 
 NO_RETURN void abort_noreturn(aborter *a) {
   // noreturn not guaranteed to be inherited by derived classes
   a->abort();
-};
+}
 
 WARNINGS_ON
 
