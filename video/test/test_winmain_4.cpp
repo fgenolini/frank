@@ -10,7 +10,7 @@ WARNINGS_OFF
 #include <catch2/catch.hpp>
 WARNINGS_ON
 
-#include "run_application.h"
+#include "application.h"
 
 namespace test::frank {
 
@@ -27,9 +27,9 @@ extern int CALLBACK WinMain(HINSTANCE, HINSTANCE, LPSTR, int show_option,
 
 namespace frank::video {
 
-run_application::run_application(void *mock_data) : mock_data_(mock_data) {}
+application::application(void *mock_data) : mock_data_(mock_data) {}
 
-void run_application::run(int, char const *[]) {
+void application::run(int, char const *[]) {
   auto mock = static_cast<::test::frank::winmain_mock *>(mock_data_);
   mock->run_application();
 }
