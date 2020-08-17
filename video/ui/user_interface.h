@@ -4,7 +4,6 @@
 
 WARNINGS_OFF
 #include <memory>
-#include <string>
 #include <vector>
 WARNINGS_ON
 
@@ -21,11 +20,12 @@ public:
   virtual void loop(std::vector<input_device> const &connected_webcams) = 0;
 };
 
-std::unique_ptr<user_interface>
-make_user_interface(int webcam_count, cvui_init const &initialise_windows,
-                    void *mock_data = nullptr);
+class user_interface_factory {
+public:
+  virtual ~user_interface_factory();
 
-typedef std::unique_ptr<user_interface> (*user_interface_factory)(
-    int webcam_count, cvui_init const &initialise_windows, void *mock_data);
+  virtual std::unique_ptr<user_interface> make(int webcam_count,
+                                               cvui_init *initialise_windows);
+};
 
 } // namespace frank::video

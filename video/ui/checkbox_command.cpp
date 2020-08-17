@@ -10,8 +10,7 @@ WARNINGS_ON
 
 namespace frank::video {
 
-bool checkbox_command::execute(std::string const &label, bool *returned_value,
-                               void *) const {
+bool checkbox_command::execute(std::string const &label, bool *returned_value) {
   return cvui::checkbox(label, returned_value);
 }
 

@@ -4,7 +4,7 @@ WARNINGS_OFF
 #include <string>
 WARNINGS_ON
 
-#include "input_device.h"
+#include "device/input_device.h"
 
 namespace frank::video {
 

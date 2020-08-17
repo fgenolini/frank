@@ -4,7 +4,7 @@ WARNINGS_OFF
 #include <opencv2/opencv.hpp>
 WARNINGS_ON
 
-#include "exit_requested.h"
+#include "opencv/exit_requested.h"
 
 namespace frank::video {
 

@@ -1,21 +1,37 @@
 #pragma once
 
+#include "config.h"
+
+WARNINGS_OFF
+#include <vector>
+WARNINGS_ON
+
+#include "device/input_device.h"
+#include "device/video_devices.h"
+#include "exception/exceptions.h"
 #include "test/testable_exit.h"
+#include "ui/ui.h"
 
 namespace frank::video {
 
 class application {
 public:
-  application(void *mock_data = nullptr);
+  application(video_devices *devices = nullptr, ui *ui_runner = nullptr,
+              exceptions *exception_handler = nullptr);
 
-  NO_RETURN
-  void run(int argc = 0, char const *argv[] = nullptr);
+  NO_RETURN virtual void run(int argc = 0, char const *argv[] = nullptr);
 
 private:
-  NO_RETURN
-  void webcam_viewer() noexcept(false);
+  std::vector<input_device> list_devices();
 
-  void *mock_data_;
+  NO_RETURN void
+  run_ui(std::vector<input_device> const &devices) noexcept(false);
+
+  NO_RETURN void webcam_viewer() noexcept(false);
+
+  exceptions *exception_handler_;
+  ui *ui_runner_;
+  video_devices *devices_;
 };
 
 } // namespace frank::video

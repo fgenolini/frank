@@ -7,8 +7,11 @@ WARNINGS_OFF
 #include <vector>
 WARNINGS_ON
 
+#include "test/testable_cstdio.h"
+
 namespace frank::video {
 
-extern std::vector<std::string> macos_list_devices(void *mock_data = nullptr);
+extern std::vector<std::string>
+macos_list_devices(standard_io *stdio = nullptr);
 
 }

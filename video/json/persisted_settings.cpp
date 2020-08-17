@@ -10,7 +10,7 @@ WARNINGS_OFF
 #include <nlohmann/json.hpp>
 WARNINGS_ON
 
-#include "persisted_settings.h"
+#include "json/persisted_settings.h"
 
 namespace fs = std::filesystem;
 

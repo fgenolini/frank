@@ -6,7 +6,7 @@ WARNINGS_OFF
 #include <opencv2/opencv.hpp>
 WARNINGS_ON
 
-#include "opencv_window.h"
+#include "opencv/opencv_window.h"
 
 namespace frank::video {
 

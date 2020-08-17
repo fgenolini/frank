@@ -8,10 +8,20 @@
 
 namespace frank::video {
 
-NO_RETURN
-extern void abort(void *mock_data = nullptr) noexcept;
+class aborter {
+public:
+  virtual ~aborter();
 
-NO_RETURN
-extern void exit(int result, void *mock_data = nullptr) noexcept;
+  NO_RETURN
+  virtual void abort() noexcept;
+};
+
+class exiter {
+public:
+  virtual ~exiter();
+
+  NO_RETURN
+  virtual void exit(int result) noexcept;
+};
 
 } // namespace frank::video

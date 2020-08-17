@@ -16,7 +16,7 @@ WARNINGS_ON
 
 using namespace gsl;
 
-#include "linux_list_devices.h"
+#include "device/linux_list_devices.h"
 
 // Implementation of video/audio device enumeration on Linux
 
@@ -25,7 +25,7 @@ namespace fs = std::filesystem;
 namespace frank::video {
 
 // Linux listing of video input devices using video4linux
-std::vector<std::string> linux_list_device_names(void *) {
+std::vector<std::string> linux_list_device_names(standard_io *) {
   // On Linux: list all files called
   //   /sys/class/video4linux/video0/name
   //   /sys/class/video4linux/video1/name
@@ -87,8 +87,8 @@ std::vector<std::string> linux_list_device_names(void *) {
   return new_devices;
 }
 
-std::vector<std::string> linux_list_devices(void *mock_data) {
-  auto device_names = linux_list_device_names(mock_data);
+std::vector<std::string> linux_list_devices(standard_io *stdio) {
+  auto device_names = linux_list_device_names(stdio);
   return device_names;
 }
 

@@ -15,26 +15,23 @@ WARNINGS_ON
 
 namespace frank::video {
 
-WARNING_PUSH
-DISABLE_WARNING_MSC(4820)
 class ui_controls {
 public:
-  ui_controls(void *mock_data);
+  virtual ~ui_controls();
 
-  void begin_column() const;
-  void begin_row() const;
-  bool button(int width, int height, std::string const &label) const;
-  bool checkbox(std::string const &label, bool *returned_value) const;
-  void end_column() const;
-  void end_row() const;
-  void text(std::string const &label) const;
-  bool trackbar_double(int width, double *returned_value, double minimum,
-                       double maximum) const;
-  bool trackbar_int(int width, int *returned_value, int minimum,
-                    int maximum) const;
+  virtual void begin_column();
+  virtual void begin_row();
+  virtual bool button(int width, int height, std::string const &label);
+  virtual bool checkbox(std::string const &label, bool *returned_value);
+  virtual void end_column();
+  virtual void end_row();
+  virtual void text(std::string const &label);
+  virtual bool trackbar_double(int width, double *returned_value,
+                               double minimum, double maximum);
+  virtual bool trackbar_int(int width, int *returned_value, int minimum,
+                            int maximum);
 
-private:
-  void *mock_data_;
+protected:
   button_command button_{};
   checkbox_command checkbox_{};
   layout_command layout_{};
@@ -42,6 +39,5 @@ private:
   trackbar_double_command trackbar_double_{};
   trackbar_int_command trackbar_int_{};
 };
-WARNINGS_ON
 
 } // namespace frank::video

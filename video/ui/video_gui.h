@@ -20,11 +20,11 @@ WARNING_PUSH
 DISABLE_WARNING_MSC(4820)
 class video_gui : public virtual user_interface {
 public:
-  video_gui(int webcam_count, cvui_init const &initialise_windows,
-            void *mock_data = nullptr);
-  ~video_gui();
+  video_gui(int webcam_count, cvui_init *initialise_windows);
+  virtual ~video_gui();
 
-  void loop(std::vector<input_device> const &connected_webcams) override;
+  virtual void
+  loop(std::vector<input_device> const &connected_webcams) override;
 
 private:
   void load_settings();
@@ -46,7 +46,6 @@ private:
   std::vector<int> histogram_threshold_{};
   std::vector<std::pair<double, double>> height_width_pairs_{};
   std::vector<std::unique_ptr<cv::VideoCapture>> input_video_devices_{};
-  void *mock_data_;
 };
 WARNINGS_ON
 

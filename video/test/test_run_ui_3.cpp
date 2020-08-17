@@ -9,65 +9,88 @@ WARNINGS_OFF
 #include <iostream>
 
 #include <catch2/catch.hpp>
-#include <catch2/trompeloeil.hpp>
 WARNINGS_ON
 
-#include "ui/run_ui.h"
+#include "ui/ui.h"
 #include "ui/user_interface.h"
 
 namespace test::frank {
 
-WARNINGS_OFF
-class mock_user_interface
-    : public trompeloeil::mock_interface<::frank::video::user_interface> {
+class mock_exiter : public ::frank::video::exiter {
 public:
-  IMPLEMENT_MOCK1(loop);
-
-  int exit_count{};
-  int exit_value{3};
-};
-
-class fake_user_interface : public virtual ::frank::video::user_interface {
-public:
-  fake_user_interface(mock_user_interface *mock) : mock_(mock) {}
-
-  void loop(std::vector<::frank::video::input_device> const &inputs) override {
-    if (!mock_)
-      return;
-
-    mock_->loop(inputs);
+  virtual void exit(int value) noexcept override {
+    exit_called_ = true;
+    exit_value_ = value;
   }
 
-  bool cvui_init_called{};
+  bool exit_called() { return exit_called_; }
+
+  int exit_value() { return exit_value_; }
 
 private:
-  mock_user_interface *mock_;
+  bool exit_called_{};
+  int exit_value_{};
 };
-WARNINGS_ON
 
-void do_nothing_exit(int result, void *mock_data) noexcept {
-  auto mock = static_cast<mock_user_interface *>(mock_data);
-  ++(mock->exit_count);
-  mock->exit_value = result;
-}
+class mock_video_gui : public ::frank::video::user_interface {
+public:
+  virtual ~mock_video_gui() override {}
 
-void do_nothing_abort(void *mock_data) noexcept {
-  do_nothing_exit(EXIT_FAILURE, mock_data);
-}
+  virtual void
+  loop(std::vector<::frank::video::input_device> const &) override {
+    loop_called_ = true;
+  }
+
+  bool loop_called() { return loop_called_; }
+
+private:
+  bool loop_called_{};
+};
+
+class mock_video_gui_holder : public ::frank::video::user_interface {
+public:
+  mock_video_gui_holder(mock_video_gui &mock) : mock_(mock) {}
+  virtual ~mock_video_gui_holder() override {}
+
+  virtual void
+  loop(std::vector<::frank::video::input_device> const &devices) override {
+    mock_.loop(devices);
+  }
+
+  bool loop_called() { return mock_.loop_called(); }
+
+private:
+  mock_video_gui &mock_;
+};
+
+class mock_user_interface_factory
+    : public ::frank::video::user_interface_factory {
+public:
+  mock_user_interface_factory(std::unique_ptr<mock_video_gui_holder> &mock)
+      : mock_(mock) {}
+  ~mock_user_interface_factory() {}
+
+  virtual std::unique_ptr<::frank::video::user_interface>
+  make(int, ::frank::video::cvui_init *) override {
+    make_called_ = true;
+    return std::move(mock_);
+  }
+
+  bool make_called() { return make_called_; }
+
+private:
+  std::unique_ptr<mock_video_gui_holder> &mock_;
+  bool make_called_{};
+};
 
 } // namespace test::frank
 
 namespace frank::video {
 
-void cvui_init::execute(const std::string[], size_t, void *mock_data) const {
-  auto mock = static_cast<test::frank::fake_user_interface *>(mock_data);
-  mock->cvui_init_called = true;
-}
+user_interface_factory::~user_interface_factory() {}
 
-std::unique_ptr<user_interface> make_user_interface(int, cvui_init const &,
-                                                    void *mock_data) {
-  auto mock = static_cast<::test::frank::mock_user_interface *>(mock_data);
-  return std::make_unique<::test::frank::fake_user_interface>(mock);
+std::unique_ptr<user_interface> user_interface_factory::make(int, cvui_init *) {
+  return nullptr;
 }
 
 } // namespace frank::video
@@ -76,33 +99,59 @@ SCENARIO("frank video run ui 3", "[run_ui_3]") {
   GIVEN("user interface is run") {
     WHEN("no connected webcam") {
       std::vector<frank::video::input_device> no_device{};
-      frank::video::cvui_init mock_cvui_init{};
-      test::frank::mock_user_interface mock{};
-      REQUIRE_CALL(mock, loop(no_device));
+      test::frank::mock_exiter mocked_exiter{};
+      test::frank::mock_video_gui mocked_video_gui{};
+      auto mocked_video_gui_holder =
+          std::make_unique<test::frank::mock_video_gui_holder>(
+              mocked_video_gui);
+      test::frank::mock_user_interface_factory mocked_user_interface_factory(
+          mocked_video_gui_holder);
 
-      frank::video::run_ui(no_device, mock_cvui_init,
-                           frank::video::make_user_interface, &mock);
+      frank::video::ui ui_test(no_device, nullptr,
+                               &mocked_user_interface_factory, &mocked_exiter);
+      ui_test.run();
 
-      THEN("exit is called") { REQUIRE(mock.exit_count == 1); }
+      THEN("make user_interface is called") {
+        REQUIRE(mocked_user_interface_factory.make_called() == true);
+      }
+
+      THEN("gui loop is called") {
+        REQUIRE(mocked_video_gui.loop_called() == true);
+      }
+
+      THEN("exit is called") { REQUIRE(mocked_exiter.exit_called() == true); }
 
       THEN("exit returns EXIT_SUCCESS") {
-        REQUIRE(mock.exit_value == EXIT_SUCCESS);
+        REQUIRE(mocked_exiter.exit_value() == EXIT_SUCCESS);
       }
     }
     WHEN("one connected webcam") {
       std::vector<frank::video::input_device> one_device{
           frank::video::input_device()};
-      frank::video::cvui_init mock_cvui_init{};
-      test::frank::mock_user_interface mock{};
-      REQUIRE_CALL(mock, loop(one_device));
+      test::frank::mock_exiter mocked_exiter{};
+      test::frank::mock_video_gui mocked_video_gui{};
+      auto mocked_video_gui_holder =
+          std::make_unique<test::frank::mock_video_gui_holder>(
+              mocked_video_gui);
+      test::frank::mock_user_interface_factory mocked_user_interface_factory(
+          mocked_video_gui_holder);
 
-      frank::video::run_ui(one_device, mock_cvui_init,
-                           frank::video::make_user_interface, &mock);
+      frank::video::ui ui_test(one_device, nullptr,
+                               &mocked_user_interface_factory, &mocked_exiter);
+      ui_test.run();
 
-      THEN("exit is called") { REQUIRE(mock.exit_count == 1); }
+      THEN("make user_interface is called") {
+        REQUIRE(mocked_user_interface_factory.make_called() == true);
+      }
+
+      THEN("gui loop is called") {
+        REQUIRE(mocked_video_gui.loop_called() == true);
+      }
+
+      THEN("exit is called") { REQUIRE(mocked_exiter.exit_called() == true); }
 
       THEN("exit returns EXIT_SUCCESS") {
-        REQUIRE(mock.exit_value == EXIT_SUCCESS);
+        REQUIRE(mocked_exiter.exit_value() == EXIT_SUCCESS);
       }
     }
   }

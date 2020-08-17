@@ -17,10 +17,11 @@ WARNING_PUSH
 DISABLE_WARNING_MSC(4820)
 class main_settings_window {
 public:
-  main_settings_window(ui_controls const &controls, application_state &state,
-                       file_dialogs const &dialogs, void *mock_data = nullptr);
+  main_settings_window(ui_controls &controls, application_state &state,
+                       file_dialogs &dialogs);
+  virtual ~main_settings_window();
 
-  void draw(bool settings_minimised);
+  virtual void draw(bool settings_minimised);
 
 private:
   void draw_canny();
@@ -30,9 +31,8 @@ private:
   void open_overlay_file(int webcam);
 
   application_state &state_;
-  file_dialogs const &dialogs_;
-  ui_controls const &controls_;
-  void *mock_data_;
+  file_dialogs &dialogs_;
+  ui_controls &controls_;
 };
 WARNINGS_ON
 

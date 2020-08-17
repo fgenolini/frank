@@ -1,8 +1,8 @@
 # C++ source files
 
 set(CommonSourcesList
-  device/input_device.cpp device/list_devices.cpp
-  exception/exceptions_handler.cpp
+  device/input_device.cpp device/video_devices.cpp
+  exception/exceptions.cpp
   file/file_dialogs.cpp
   json/persisted_settings.cpp
   opencv/add_overlay.cpp opencv/exit_requested.cpp opencv/open_webcam.cpp
@@ -14,9 +14,9 @@ set(CommonSourcesList
   ui/main_settings_window_draw.cpp ui/main_settings_window_draw_canny.cpp
   ui/main_settings_window_draw_overlay.cpp
   ui/main_settings_window_draw_webcam.cpp ui/main_window.cpp ui/other_window.cpp
-  ui/run_ui.cpp ui/statistics_window.cpp ui/text_command.cpp
-  ui/trackbar_double_command.cpp ui/trackbar_int_command.cpp ui/ui_controls.cpp
-  ui/video_gui_loop.cpp ui/video_gui_constructor.cpp ui/video_gui_settings.cpp
+  ui/statistics_window.cpp ui/text_command.cpp ui/trackbar_double_command.cpp
+  ui/trackbar_int_command.cpp ui/ui.cpp ui/ui_controls.cpp ui/video_gui_loop.cpp
+  ui/video_gui_constructor.cpp ui/video_gui_settings.cpp
   )
 
 set(LIBRARY_TYPE STATIC)

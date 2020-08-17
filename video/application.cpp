@@ -5,33 +5,50 @@ WARNINGS_OFF
 #include <iostream>
 WARNINGS_ON
 
-#include "device/list_devices.h"
-#include "exception/exceptions_handler.h"
 #include "application.h"
-#include "ui/run_ui.h"
 
 namespace frank::video {
 
-application::application(void *mock_data) : mock_data_(mock_data) {}
+application::application(video_devices *devices, ui *ui_runner,
+                         exceptions *exception_handler)
+    : exception_handler_(exception_handler), ui_runner_(ui_runner),
+      devices_(devices) {}
+
+std::vector<input_device> application::list_devices() {
+  video_devices default_devices{};
+  auto devices = devices_ ? devices_ : &default_devices;
+  auto input_devices = devices->list();
+  if (input_devices.size() < 1)
+    std::cerr << "Could not list video / audio input devices\n";
+
+  return input_devices;
+}
+
+NO_RETURN void
+application::run_ui(std::vector<input_device> const &devices) noexcept(false) {
+  cvui_init initialise_windows{};
+  ui default_ui_runner(devices, &initialise_windows);
+  auto runner = ui_runner_ ? ui_runner_ : &default_ui_runner;
+  runner->run();
+}
 
 NO_RETURN
 void application::webcam_viewer() noexcept(false) {
-  auto input_devices = list_devices(mock_data_);
-  if (input_devices.size() < 1)
-    std::cerr << "Could not list video / audio input devices\n";
-  cvui_init initialise_windows{};
-  run_ui(input_devices, initialise_windows, nullptr, mock_data_);
+  auto devices = list_devices();
+  run_ui(devices);
 }
 
 NO_RETURN
 void application::run(int, char const *[]) {
   std::set_terminate(unhandled_exception_handler);
+  exceptions default_handler{};
+  auto handler = exception_handler_ ? exception_handler_ : &default_handler;
   try {
     webcam_viewer();
   } catch (std::exception const &e) {
-    exceptions_handler(&e, mock_data_);
+    handler->handler(&e);
   } catch (...) {
-    exceptions_handler(nullptr, mock_data_);
+    handler->handler();
   }
 }
 

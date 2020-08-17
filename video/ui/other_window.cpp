@@ -22,7 +22,8 @@ bool first_row(bool has_webcam, bool first_time, int webcam_index,
   return !first_time;
 }
 
-void other_window(EnhancedWindow &statistics, opencv_window &window) {
+void other_window(EnhancedWindow &statistics, application_state &state,
+                  opencv_window &window) {
   constexpr auto FIRST_ROW_X = 10;
   constexpr auto FIRST_ROW_Y = 10;
   constexpr auto WINDOW_HEIGHT = 180;
@@ -35,7 +36,7 @@ void other_window(EnhancedWindow &statistics, opencv_window &window) {
   auto const overlay_buffer = window.overlay_buffer();
   auto const overlay_enabled = window.use_overlay();
   auto const overlay_image = window.overlay_image();
-  auto const use_canny = window.use_canny();
+  auto const use_canny = state.use_canny;
   auto const video_enabled = window.video_enabled();
   auto const webcam_index = window.webcam_index();
   auto histogram_threshold = window.histogram_threshold();

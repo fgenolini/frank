@@ -13,8 +13,12 @@ WARNINGS_ON
 
 namespace frank::video {
 
-void main_window(EnhancedWindow &settings, EnhancedWindow &statistics,
-                 application_state &state, opencv_window &window,
-                 void *mock_data = nullptr);
+class main_window {
+public:
+  virtual ~main_window();
+
+  virtual void draw(EnhancedWindow &settings, EnhancedWindow &statistics,
+                    application_state &state, opencv_window &window);
+};
 
 } // namespace frank::video

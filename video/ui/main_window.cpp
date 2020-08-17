@@ -43,30 +43,30 @@ void first_row(bool has_webcam, opencv_window &window, bool &should_exit) {
 }
 
 void settings_display(EnhancedWindow &settings, cv::Mat frame,
-                      ui_controls const &controls, application_state &state,
-                      void *mock_data) {
+                      ui_controls &controls, application_state &state) {
   settings.begin(frame);
   file_dialogs dialogs{};
-  main_settings_window settings_window(controls, state, dialogs, mock_data);
+  main_settings_window settings_window(controls, state, dialogs);
   settings_window.draw(settings.isMinimized());
   settings.end();
 }
 
-void main_window(EnhancedWindow &settings, EnhancedWindow &statistics,
-                 application_state &state, opencv_window &window,
-                 void *mock_data) {
+main_window::~main_window() {}
+
+void main_window::draw(EnhancedWindow &settings, EnhancedWindow &statistics,
+                       application_state &state, opencv_window &window) {
   constexpr auto FIRST_ROW_X = 10;
   constexpr auto FIRST_ROW_Y = 10;
   constexpr auto WINDOW_HEIGHT = 480;
   constexpr auto WINDOW_WIDTH = 640;
-  ui_controls controls{mock_data};
+  ui_controls controls{};
   auto const first_time = window.first_time();
   auto high_threshold = window.high_threshold();
   auto histogram_threshold = window.histogram_threshold();
   auto low_threshold = window.low_threshold();
   auto frame = cv::Mat(WINDOW_HEIGHT, WINDOW_WIDTH, CV_8UC3);
   auto overlay_buffer = window.overlay_buffer();
-  auto use_canny = window.use_canny();
+  auto use_canny = state.use_canny;
   cv::Scalar background_colour{0, 0, 0};
   frame = background_colour;
   cvui::context(window.name());
@@ -86,7 +86,7 @@ void main_window(EnhancedWindow &settings, EnhancedWindow &statistics,
     return;
 
   cvui::endRow();
-  settings_display(settings, frame, controls, state, mock_data);
+  settings_display(settings, frame, controls, state);
   auto histograms = window.histograms();
   if (histograms)
     statistics_window(statistics, frame, raw_picture, &histogram_threshold);
@@ -95,7 +95,6 @@ void main_window(EnhancedWindow &settings, EnhancedWindow &statistics,
   window.set_high_threshold(high_threshold);
   window.set_histogram_threshold(histogram_threshold);
   window.set_low_threshold(low_threshold);
-  window.set_use_canny(use_canny);
 }
 
 } // namespace frank::video

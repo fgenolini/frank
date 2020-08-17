@@ -10,7 +10,7 @@ WARNINGS_ON
 
 namespace frank::video {
 
-void text_command::execute(std::string const &label, void *) const {
+void text_command::execute(std::string const &label) {
   cvui::text(label);
 }
 

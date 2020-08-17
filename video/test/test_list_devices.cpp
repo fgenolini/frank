@@ -7,8 +7,7 @@ WARNINGS_OFF
 #include <catch2/catch.hpp>
 WARNINGS_ON
 
-#include "device/list_devices.h"
-#include "test/do_nothing_cstdio.h"
+#include "device/video_devices.h"
 #include "test/testable_cstdio.h"
 
 namespace test::frank {
@@ -96,26 +95,23 @@ private:
 };
 WARNINGS_ON
 
-int do_nothing_feof(FILE *file, void *mock_data) {
-  auto mock = static_cast<::test::frank::mock_list_devices *>(mock_data);
-  return mock->feof(file);
-}
+class mock_standard_io : public ::frank::video::standard_io {
+public:
+  mock_standard_io(mock_list_devices &mock) : mock_(mock) {}
 
-char *do_nothing_fgets(char *buffer, int buffer_size, FILE *file,
-                       void *mock_data) {
-  auto mock = static_cast<::test::frank::mock_list_devices *>(mock_data);
-  return mock->fgets(buffer, buffer_size, file);
-}
+  int feof(FILE *file) override { return mock_.feof(file); }
 
-void do_nothing_pclose(FILE *file, void *mock_data) {
-  auto mock = static_cast<::test::frank::mock_list_devices *>(mock_data);
-  mock->pclose(file);
-}
+  char *fgets(char *buffer, int buffer_size, FILE *file) override {
+    return mock_.fgets(buffer, buffer_size, file);
+  }
 
-FILE *do_nothing_popen(char const *, char const *, void *mock_data) {
-  auto mock = static_cast<::test::frank::mock_list_devices *>(mock_data);
-  return mock->popen();
-}
+  void pclose(FILE *file) override { mock_.pclose(file); }
+
+  FILE *popen(char const *, char const *) override { return mock_.popen(); }
+
+private:
+  mock_list_devices &mock_;
+};
 
 } // namespace test::frank
 
@@ -125,10 +121,12 @@ SCENARIO("frank video list devices", "[list_devices]") {
       constexpr auto DEVICE_COUNT = 0;
       std::vector<std::string> no_device{};
       test::frank::mock_list_devices mock{no_device};
+      test::frank::mock_standard_io io{mock};
 
       REQUIRE(no_device.size() == DEVICE_COUNT);
 
-      auto results = frank::video::list_devices(&mock);
+      frank::video::video_devices devices{&io};
+      auto results = devices.list();
 
       THEN("an empty list of devices is returned") {
 #if defined(APPLE) && defined(UNIX)
@@ -140,10 +138,12 @@ SCENARIO("frank video list devices", "[list_devices]") {
       constexpr auto DEVICE_COUNT = 1;
       std::vector<std::string> one_device{"test device 0"};
       test::frank::mock_list_devices mock{one_device};
+      test::frank::mock_standard_io io{mock};
 
       REQUIRE(one_device.size() == DEVICE_COUNT);
 
-      auto results = frank::video::list_devices(&mock);
+      frank::video::video_devices devices{&io};
+      auto results = devices.list();
 
       THEN("a list of 1 devices is returned") {
 #if defined(APPLE) && defined(UNIX)
@@ -157,10 +157,12 @@ SCENARIO("frank video list devices", "[list_devices]") {
                                             "test device 2", "test device 3",
                                             "test device 4"};
       test::frank::mock_list_devices mock{five_devices};
+      test::frank::mock_standard_io io{mock};
 
       REQUIRE(five_devices.size() == DEVICE_COUNT);
 
-      auto results = frank::video::list_devices(&mock);
+      frank::video::video_devices devices{&io};
+      auto results = devices.list();
 
       THEN("a list of 5 devices is returned") {
 #if defined(APPLE) && defined(UNIX)
@@ -175,10 +177,12 @@ SCENARIO("frank video list devices", "[list_devices]") {
                                               "test device 2", "test device 3",
                                               "test device 4"};
         test::frank::mock_list_devices mock(five_devices, POPEN_FAILS);
+        test::frank::mock_standard_io io{mock};
 
         REQUIRE(five_devices.size() == 5);
 
-        auto results = frank::video::list_devices(&mock);
+        frank::video::video_devices devices{&io};
+        auto results = devices.list();
 
         THEN("an empty list of devices is returned") {
           REQUIRE(results.size() == DEVICE_COUNT);

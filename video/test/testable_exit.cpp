@@ -4,28 +4,26 @@
 WARNINGS_OFF
 #include <cstdlib>
 WARNINGS_ON
-#else
-#include "test/do_nothing_exit.h"
 #endif
 
 #include "testable_exit.h"
 
 namespace frank::video {
 
+aborter::~aborter() {}
+
+NO_RETURN void aborter::abort() noexcept {
 #if !defined(_DO_NOTHING_EXIT_)
-NO_RETURN void abort(void *) noexcept { ::abort(); }
-#else
-void abort(void *mock_data) noexcept {
-  test::frank::do_nothing_abort(mock_data);
-}
+  ::abort();
 #endif
+}
+
+exiter::~exiter() {}
 
 #if !defined(_DO_NOTHING_EXIT_)
-NO_RETURN void exit(int result, void *) noexcept { ::exit(result); }
+NO_RETURN void exiter::exit(int result) noexcept { ::exit(result); }
 #else
-void exit(int result, void *mock_data) noexcept {
-  test::frank::do_nothing_exit(result, mock_data);
-}
+NO_RETURN void exiter::exit(int) noexcept {}
 #endif
 
 } // namespace frank::video

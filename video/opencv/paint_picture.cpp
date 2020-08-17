@@ -1,9 +1,9 @@
 #include "config.h"
 
-#include "add_overlay.h"
-#include "opencv_window.h"
-#include "paint_picture.h"
-#include "take_picture.h"
+#include "opencv/add_overlay.h"
+#include "opencv/opencv_window.h"
+#include "opencv/paint_picture.h"
+#include "opencv/take_picture.h"
 
 namespace frank::video {
 

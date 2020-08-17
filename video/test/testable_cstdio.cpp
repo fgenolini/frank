@@ -4,56 +4,48 @@ WARNINGS_OFF
 #include <cstdio>
 WARNINGS_ON
 
-#if defined(_DO_NOTHING_STDIO_)
-#include "test/do_nothing_cstdio.h"
-#endif
-
 #include "testable_cstdio.h"
 
 namespace frank::video {
 
+standard_io::~standard_io() {}
+
 #if !defined(_DO_NOTHING_STDIO_)
+int standard_io::feof(FILE *pipe) { return ::feof(pipe); }
+#else
+int standard_io::feof(FILE *) { return 0; }
+#endif
 
-int feof(FILE *pipe, void *) { return ::feof(pipe); }
-
-char *fgets(char *buffer, int buffer_size, FILE *pipe, void *) {
+#if !defined(_DO_NOTHING_STDIO_)
+char *standard_io::fgets(char *buffer, int buffer_size, FILE *pipe) {
   return ::fgets(buffer, buffer_size, pipe);
 }
+#else
+char *standard_io::fgets(char *, int, FILE *) { return nullptr; }
+#endif
 
-FILE *popen(char const *command, char const *mode, void *) {
+#if !defined(_DO_NOTHING_STDIO_)
+FILE *standard_io::popen(char const *command, char const *mode) {
 #if defined(WIN32)
   return ::_popen(command, mode);
 #else
   return ::popen(command, mode);
 #endif
 }
+#else
+FILE *standard_io::popen(char const *, char const *) { return nullptr; }
+#endif
 
-void pclose(FILE *pipe, void *) {
+#if !defined(_DO_NOTHING_STDIO_)
+void standard_io::pclose(FILE *pipe) {
 #if defined(WIN32)
   ::_pclose(pipe);
 #else
   ::pclose(pipe);
 #endif
 }
-
 #else
-
-int feof(FILE *pipe, void *mock_data) {
-  return test::frank::do_nothing_feof(pipe, mock_data);
-}
-
-char *fgets(char *buffer, int buffer_size, FILE *pipe, void *mock_data) {
-  return test::frank::do_nothing_fgets(buffer, buffer_size, pipe, mock_data);
-}
-
-FILE *popen(char const *command, char const *mode, void *mock_data) {
-  return test::frank::do_nothing_popen(command, mode, mock_data);
-}
-
-void pclose(FILE *pipe, void *mock_data) {
-  test::frank::do_nothing_pclose(pipe, mock_data);
-}
-
+void standard_io::pclose(FILE *) {}
 #endif
 
 } // namespace frank::video

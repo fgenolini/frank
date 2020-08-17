@@ -10,16 +10,15 @@ WARNINGS_ON
 #ifdef _TEST_MAIN_2_
 namespace test::frank {
 
-int main(int argc, char const *argv[], void *mock_data)
+int main(int argc, char const *argv[], ::frank::video::application &app)
 #else
-static void *mock_data{};
+static ::frank::video::application app{};
 
 int main(int argc, char const *argv[])
 #endif
 {
   std::cerr << argv[0] << " v" << VIDEO_VERSION_MAJOR << "."
             << VIDEO_VERSION_MINOR << '\n';
-  ::frank::video::application app(mock_data);
   app.run(argc, argv);
   return argc;
 }

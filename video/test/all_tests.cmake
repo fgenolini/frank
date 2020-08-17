@@ -6,11 +6,11 @@ set(TEST_APP_NAME "${APP_LOW_NAME}_test")
 
 add_executable(${TEST_APP_NAME}_exceptions_handler
   test/catch_implementation.cpp
-  test/test_exceptions_handler.cpp exception/exceptions_handler.cpp)
+  test/test_exceptions_handler.cpp exception/exceptions.cpp)
 add_executable(${TEST_APP_NAME}_list_devices
   test/catch_implementation.cpp
   test/test_list_devices.cpp test/testable_cstdio.cpp
-  device/input_device.cpp device/linux_list_devices.cpp device/list_devices.cpp
+  device/input_device.cpp device/linux_list_devices.cpp device/video_devices.cpp
   device/macos_list_devices.cpp device/win32_list_devices.cpp)
 add_executable(${TEST_APP_NAME}_main_2
   test/catch_implementation.cpp
@@ -28,7 +28,7 @@ add_executable(${TEST_APP_NAME}_run_ui_3
   test/catch_implementation.cpp
   test/test_run_ui_3.cpp
   test/testable_exit.cpp
-  ui/run_ui.cpp
+  ui/ui.cpp
   device/input_device.cpp)
 add_executable(${TEST_APP_NAME}_video_gui_1
   test/catch_implementation.cpp

@@ -16,12 +16,14 @@ WARNINGS_ON
 
 using namespace gsl;
 
-#include "macos_list_devices.h"
+#include "device/macos_list_devices.h"
 #include "test/testable_cstdio.h"
 
 namespace frank::video {
 
-std::vector<std::string> macos_list_device_names(void *mock_data) {
+std::vector<std::string> macos_list_device_names(standard_io *stdio) {
+  standard_io default_io{};
+  auto io = stdio ? stdio : &default_io;
   constexpr auto SWIFT_SCRIPT =
       "echo "
       "'import AVFoundation;"
@@ -30,16 +32,16 @@ std::vector<std::string> macos_list_device_names(void *mock_data) {
       "print(device.localizedName);"
       "}'"
       "|swift -";
-  auto pipe = popen(SWIFT_SCRIPT, "r", mock_data);
+  auto pipe = io->popen(SWIFT_SCRIPT, "r");
   if (!pipe)
     return std::vector<std::string>();
 
-  auto _ = finally([&] { pclose(pipe, mock_data); });
+  auto _ = finally([&] { io->pclose(pipe); });
   constexpr auto BUFFER_SIZE = 4096;
   std::array<char, BUFFER_SIZE> buffer{};
   std::string result{};
-  while (!feof(pipe, mock_data)) {
-    if (!fgets(buffer.data(), BUFFER_SIZE, pipe, mock_data))
+  while (!io->feof(pipe)) {
+    if (!io->fgets(buffer.data(), BUFFER_SIZE, pipe))
       break;
 
     result += buffer.data();
@@ -57,8 +59,8 @@ std::vector<std::string> macos_list_device_names(void *mock_data) {
   return device_list;
 }
 
-std::vector<std::string> macos_list_devices(void *mock_data) {
-  auto device_names = macos_list_device_names(mock_data);
+std::vector<std::string> macos_list_devices(standard_io *stdio) {
+  auto device_names = macos_list_device_names(stdio);
   return device_names;
 }
 

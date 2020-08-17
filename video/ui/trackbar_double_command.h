@@ -10,7 +10,7 @@ namespace frank::video {
 
 struct trackbar_double_command {
   bool execute(int width, double *returned_value, double minimum,
-               double maximum, void *mock_data = nullptr) const;
+               double maximum);
 };
 
 } // namespace frank::video

@@ -1,8 +1,8 @@
 #include "config.h"
 
-#include "exit_requested.h"
-#include "open_webcam.h"
-#include "reduce_resolution.h"
+#include "opencv/exit_requested.h"
+#include "opencv/open_webcam.h"
+#include "opencv/reduce_resolution.h"
 
 namespace frank::video {
 

@@ -1,6 +1,6 @@
 #include "config.h"
 
-#include "reduce_resolution.h"
+#include "opencv/reduce_resolution.h"
 
 namespace frank::video {
 

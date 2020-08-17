@@ -8,11 +8,14 @@ WARNINGS_ON
 
 namespace frank::video {
 
-extern int feof(FILE *pipe, void *mock_data = nullptr);
-extern char *fgets(char *buffer, int buffer_size, FILE *pipe,
-                   void *mock_data = nullptr);
-extern void pclose(FILE *pipe, void *mock_data = nullptr);
-extern FILE *popen(char const *command, char const *mode,
-                   void *mock_data = nullptr);
+class standard_io {
+public:
+  virtual ~standard_io();
+
+  virtual int feof(FILE *pipe);
+  virtual char *fgets(char *buffer, int buffer_size, FILE *pipe);
+  virtual void pclose(FILE *pipe);
+  virtual FILE *popen(char const *command, char const *mode);
+};
 
 } // namespace frank::video

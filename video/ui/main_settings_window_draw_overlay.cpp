@@ -18,8 +18,7 @@ void main_settings_window::open_overlay_file(int webcam) {
 #endif
   auto file_names = dialogs_.open_file(
       "Choose image file to use as overlay", DEFAULT_PATH,
-      {"JPEG Files (.jpg .jpeg)", "*.jpg *.jpeg", "All Files", "*"},
-      mock_data_);
+      {"JPEG Files (.jpg .jpeg)", "*.jpg *.jpeg", "All Files", "*"});
   if (file_names.size() == 0 || webcam >= (int)state_.overlay_images.size())
     return;
 

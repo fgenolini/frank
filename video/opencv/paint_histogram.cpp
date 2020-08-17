@@ -4,7 +4,7 @@ WARNINGS_OFF
 #include <vector>
 WARNINGS_ON
 
-#include "paint_histogram.h"
+#include "opencv/paint_histogram.h"
 
 namespace frank::video {
 

@@ -4,8 +4,8 @@ WARNINGS_OFF
 #include <stdexcept>
 WARNINGS_ON
 
-#include "open_webcam.h"
-#include "take_picture.h"
+#include "opencv/open_webcam.h"
+#include "opencv/take_picture.h"
 
 namespace frank::video {
 

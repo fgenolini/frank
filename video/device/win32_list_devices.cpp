@@ -15,7 +15,7 @@ WARNINGS_ON
 
 using namespace gsl;
 
-#include "win32_list_devices.h"
+#include "device/win32_list_devices.h"
 
 #pragma comment(lib, "strmiids")
 #pragma comment(lib, "comsuppw.lib")
@@ -118,7 +118,7 @@ std::vector<std::string> video_devices() {
   return device_information(video_devices);
 }
 
-std::vector<std::string> win32_list_device_names() {
+std::vector<std::string> win32_list_device_names(standard_io *) {
   auto com = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
   if (FAILED(com))
     return std::vector<std::string>();
@@ -130,8 +130,8 @@ std::vector<std::string> win32_list_device_names() {
   return devices;
 }
 
-std::vector<std::string> win32_list_devices(void *) {
-  auto device_names = win32_list_device_names();
+std::vector<std::string> win32_list_devices(standard_io *stdio) {
+  auto device_names = win32_list_device_names(stdio);
   return device_names;
 }
 

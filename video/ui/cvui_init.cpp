@@ -6,8 +6,9 @@
 
 namespace frank::video {
 
-void cvui_init::execute(const std::string window_names[], size_t window_count,
-                        void *) const {
+cvui_init::~cvui_init() {}
+
+void cvui_init::execute(const std::string window_names[], size_t window_count) {
   cvui::init(&window_names[0], window_count);
 }
 

@@ -5,7 +5,7 @@ WARNINGS_OFF
 #include <iostream>
 WARNINGS_ON
 
-#include "add_overlay.h"
+#include "opencv/add_overlay.h"
 
 namespace fs = std::filesystem;
 

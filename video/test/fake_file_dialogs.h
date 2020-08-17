@@ -25,12 +25,12 @@ enum class opt : uint8_t {
 class open_file {
 public:
   open_file(std::string const &title, std::string const &default_path,
-            std::vector<std::string> const &filters, opt options,
-            void *mock_data = nullptr);
-  std::vector<std::string> result() const;
+            std::vector<std::string> const &filters, opt options);
+  std::vector<std::string> result();
 
-private:
-  void *mock_data_;
+  static bool execute_called;
+  static bool result_called;
+  static std::vector<std::string> fake_result;
 };
 
 } // namespace pfd

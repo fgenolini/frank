@@ -13,18 +13,25 @@ WARNINGS_ON
 
 namespace test::frank {
 
-struct video_gui_mock {
-  bool cvui_init_called{};
+class mock_cvui_init : public ::frank::video::cvui_init {
+public:
+  virtual void execute(const std::string[], size_t) override {
+    cvui_init_called_ = true;
+  }
+
+  bool cvui_init_called() { return cvui_init_called_; }
+
+private:
+  bool cvui_init_called_{};
 };
 
 } // namespace test::frank
 
 namespace frank::video {
 
-void cvui_init::execute(const std::string[], size_t, void *mock_data) const {
-  auto mock = static_cast<test::frank::video_gui_mock *>(mock_data);
-  mock->cvui_init_called = true;
-}
+cvui_init::~cvui_init() {}
+
+void cvui_init::execute(const std::string[], size_t) {}
 
 } // namespace frank::video
 
@@ -32,28 +39,26 @@ SCENARIO("frank video GUI 1", "[video_gui_1]") {
   GIVEN("Video GUI") {
     WHEN("constructing with 1 webcam") {
       constexpr auto WEBCAM_COUNT = 42;
-      frank::video::cvui_init mock_cvui_init{};
-      test::frank::video_gui_mock mock{};
+      test::frank::mock_cvui_init mock{};
 
       auto make_video_gui = [&]() {
-        frank::video::video_gui gui(WEBCAM_COUNT, mock_cvui_init, &mock);
+        frank::video::video_gui gui(WEBCAM_COUNT, &mock);
       };
       REQUIRE_NOTHROW(make_video_gui());
 
-      THEN("cvui_init is called") { REQUIRE(mock.cvui_init_called == true); }
+      THEN("cvui_init is called") { REQUIRE(mock.cvui_init_called() == true); }
     }
     WHEN("constructing using make_user_interface") {
       constexpr auto WEBCAM_COUNT = 0;
-      frank::video::cvui_init mock_cvui_init{};
-      test::frank::video_gui_mock mock{};
+      test::frank::mock_cvui_init mock{};
+      frank::video::user_interface_factory gui_factory{};
 
       auto make_video_gui = [&]() {
-        auto gui = frank::video::make_user_interface(WEBCAM_COUNT,
-                                                     mock_cvui_init, &mock);
+        auto gui = gui_factory.make(WEBCAM_COUNT, &mock);
       };
       REQUIRE_NOTHROW(make_video_gui());
 
-      THEN("cvui_init is called") { REQUIRE(mock.cvui_init_called == true); }
+      THEN("cvui_init is called") { REQUIRE(mock.cvui_init_called() == true); }
     }
   }
 }

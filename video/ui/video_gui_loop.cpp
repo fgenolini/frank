@@ -21,7 +21,8 @@ void video_gui::loop(std::vector<input_device> const &connected_webcams) {
 
 bool video_gui::one_iteration(int windows) {
   window_template_.set_histogram_threshold(histogram_threshold_[0]);
-  main_window(settings_, statistics_[0], state_, window_template_, mock_data_);
+  main_window main{};
+  main.draw(settings_, statistics_[0], state_, window_template_);
   histograms_[0] = window_template_.histograms();
   histogram_threshold_[0] = window_template_.histogram_threshold();
   save_settings();
@@ -46,12 +47,12 @@ bool video_gui::other_window_iteration(int webcam) {
   opencv_window window(
       window_name, video_capture, webcam, first_time, has_webcam, video_enabled,
       height_width_pair, &overlay_buffers_[(size_t)webcam],
-      window_template_.use_canny(), state_.overlay_enabled[(size_t)webcam],
+      state_.overlay_enabled[(size_t)webcam],
       state_.overlay_images[(size_t)webcam],
       state_.overlay_alpha[(size_t)webcam], window_template_.low_threshold(),
       window_template_.high_threshold(), histograms_[(size_t)webcam]);
   window.set_histogram_threshold(histogram_threshold_[(size_t)webcam]);
-  other_window(statistics_[(size_t)webcam], window);
+  other_window(statistics_[(size_t)webcam], state_, window);
   if (window.exit_requested())
     return true;
 

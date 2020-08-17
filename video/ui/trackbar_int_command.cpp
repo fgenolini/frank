@@ -7,7 +7,7 @@
 namespace frank::video {
 
 bool trackbar_int_command::execute(int width, int *returned_value, int minimum,
-                                   int maximum, void *) const {
+                                   int maximum) {
   return cvui::trackbar<int>(width, returned_value, minimum, maximum);
 }
 

@@ -8,9 +8,12 @@ WARNINGS_ON
 
 namespace frank::video {
 
-struct cvui_init {
-  void execute(const std::string window_names[], size_t window_count,
-               void *mock_data) const;
+class cvui_init {
+public:
+  virtual ~cvui_init();
+
+  virtual void execute(const std::string window_names[],
+                       size_t window_count);
 };
 
 } // namespace frank::video

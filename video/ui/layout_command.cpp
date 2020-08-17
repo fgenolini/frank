@@ -10,12 +10,12 @@ WARNINGS_ON
 
 namespace frank::video {
 
-void layout_command::begin_column(void *) const { cvui::beginColumn(); }
+void layout_command::begin_column() { cvui::beginColumn(); }
 
-void layout_command::begin_row(void *) const { cvui::beginRow(); }
+void layout_command::begin_row() { cvui::beginRow(); }
 
-void layout_command::end_column(void *) const { cvui::endColumn(); }
+void layout_command::end_column() { cvui::endColumn(); }
 
-void layout_command::end_row(void *) const { cvui::endRow(); }
+void layout_command::end_row() { cvui::endRow(); }
 
 } // namespace frank::video

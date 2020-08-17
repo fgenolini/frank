@@ -10,14 +10,13 @@ WARNINGS_ON
 namespace test::frank {
 
 int CALLBACK WinMain(HINSTANCE, HINSTANCE, LPSTR, int show_option,
-                     void *mock_data)
+                     ::frank::video::application &app)
 #else
-static void *mock_data{};
+static ::frank::video::application app{};
 
 int CALLBACK WinMain(HINSTANCE, HINSTANCE, LPSTR, int show_option)
 #endif
 {
-  ::frank::video::application app(mock_data);
   app.run();
   return show_option;
 }

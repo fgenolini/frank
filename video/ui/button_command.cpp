@@ -10,8 +10,7 @@ WARNINGS_ON
 
 namespace frank::video {
 
-bool button_command::execute(int width, int height, std::string const &label,
-                             void *) const {
+bool button_command::execute(int width, int height, std::string const &label) {
   return cvui::button(width, height, label);
 }
 

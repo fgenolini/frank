@@ -9,7 +9,7 @@ WARNINGS_ON
 namespace frank::video {
 
 struct text_command {
-  void execute(std::string const &label, void *mock_data = nullptr) const;
+  void execute(std::string const &label);
 };
 
 } // namespace frank::video

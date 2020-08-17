@@ -12,11 +12,11 @@ WARNINGS_ON
 
 namespace frank::video {
 
+user_interface_factory::~user_interface_factory() {}
+
 std::unique_ptr<user_interface>
-make_user_interface(int webcam_count, cvui_init const &initialise_windows,
-                    void *mock_data) {
-  return std::make_unique<video_gui>(webcam_count, initialise_windows,
-                                     mock_data);
+user_interface_factory::make(int webcam_count, cvui_init *initialise_windows) {
+  return std::make_unique<video_gui>(webcam_count, initialise_windows);
 }
 
 constexpr auto SETTINGS_HEIGHT = 280;
@@ -37,11 +37,9 @@ constexpr auto WINDOW1_NAME = "Frank video 1";
 constexpr auto WINDOW2_NAME = "Frank video 2";
 constexpr auto WINDOW3_NAME = "Frank video 3";
 
-video_gui::video_gui(int webcam_count, cvui_init const &initialise_windows,
-                     void *mock_data)
+video_gui::video_gui(int webcam_count, cvui_init *initialise_windows)
     : settings_(SETTINGS_X, SETTINGS_Y, SETTINGS_WIDTH, SETTINGS_HEIGHT,
-                SETTINGS_TITLE),
-      mock_data_(mock_data) {
+                SETTINGS_TITLE) {
   window_names_.push_back(WINDOW_NAME);
   window_names_.push_back(WINDOW1_NAME);
   window_names_.push_back(WINDOW2_NAME);
@@ -80,17 +78,16 @@ video_gui::video_gui(int webcam_count, cvui_init const &initialise_windows,
   constexpr auto HIGH_THRESHOLD = 150;
   constexpr auto LOW_THRESHOLD = 50;
   constexpr auto NO_OVERLAY_ALPHA = 0.0;
-  constexpr auto USE_CANNY = false;
   constexpr auto USE_OVERLAY = false;
   constexpr auto WEBCAM_INDEX = 0;
   cv::String overlay_image{};
   window_template_ = opencv_window(
       window_names_[0], input_video_devices_[0].get(), WEBCAM_INDEX, FIRST_TIME,
       state_.has_webcams[0], state_.video_enabled[0], std::make_pair(0.0, 0.0),
-      &overlay_buffers_[0], USE_CANNY, USE_OVERLAY, overlay_image,
-      NO_OVERLAY_ALPHA, LOW_THRESHOLD, HIGH_THRESHOLD, histograms_[0]);
-  initialise_windows.execute(&window_names_[0], window_names_.size(),
-                             mock_data_);
+      &overlay_buffers_[0], USE_OVERLAY, overlay_image, NO_OVERLAY_ALPHA,
+      LOW_THRESHOLD, HIGH_THRESHOLD, histograms_[0]);
+  if (initialise_windows)
+    initialise_windows->execute(&window_names_[0], window_names_.size());
 }
 
 video_gui::~video_gui() {
