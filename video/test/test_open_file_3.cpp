@@ -5,8 +5,6 @@
 #endif
 
 WARNINGS_OFF
-#include <iostream>
-
 #include <catch2/catch.hpp>
 WARNINGS_ON
 

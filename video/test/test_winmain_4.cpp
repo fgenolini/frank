@@ -19,6 +19,8 @@ extern int CALLBACK WinMain(HINSTANCE, HINSTANCE, LPSTR, int show_option,
 
 class mock_application : public ::frank::video::application {
 public:
+  ~mock_application() override {}
+
   void run(int, char const *[]) override { run_application_called_ = true; }
 
   bool run_application_called() { return run_application_called_; }
@@ -31,9 +33,10 @@ private:
 
 namespace frank::video {
 
-application::application(video_devices *devices = nullptr,
-                         ui *ui_runner = nullptr,
-                         exceptions *exception_handler = nullptr)
+application::~application() {}
+
+application::application(video_devices *devices, ui *ui_runner,
+                         exceptions *exception_handler)
     : exception_handler_(exception_handler), ui_runner_(ui_runner),
       devices_(devices) {}
 

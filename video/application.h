@@ -18,6 +18,7 @@ class application {
 public:
   application(video_devices *devices = nullptr, ui *ui_runner = nullptr,
               exceptions *exception_handler = nullptr);
+  virtual ~application();
 
   NO_RETURN virtual void run(int argc = 0, char const *argv[] = nullptr);
 

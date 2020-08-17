@@ -14,6 +14,8 @@ application::application(video_devices *devices, ui *ui_runner,
     : exception_handler_(exception_handler), ui_runner_(ui_runner),
       devices_(devices) {}
 
+application::~application() {}
+
 std::vector<input_device> application::list_devices() {
   video_devices default_devices{};
   auto devices = devices_ ? devices_ : &default_devices;

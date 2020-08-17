@@ -16,6 +16,7 @@
 #define WARNING_PUSH \
   __pragma(warning(push, 0))
 #define DISABLE_WARNING_GCC(X)
+#define DISABLE_WARNING_GCC_QUOTED(X)
 #define DISABLE_WARNING_MSC(X) \
   __pragma(warning(disable:X))
 #define WARNINGS_OFF \
@@ -30,6 +31,8 @@
   _Pragma(#X)
 #define DISABLE_WARNING_GCC(X) \
   DO_PRAGMA(GCC diagnostic ignored #X)
+#define DISABLE_WARNING_GCC_QUOTED(X) \
+  DO_PRAGMA(GCC diagnostic ignored X)
 #define DISABLE_WARNING_MSC(X)
 #define WARNINGS_OFF \
   WARNING_PUSH \
@@ -40,6 +43,7 @@
   _Pragma("GCC diagnostic pop")
 #else
 #define DISABLE_WARNING_GCC(X)
+#define DISABLE_WARNING_GCC_QUOTED(X)
 #define DISABLE_WARNING_MSC(X)
 #define WARNING_PUSH
 #define WARNINGS_OFF
