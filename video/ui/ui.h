@@ -12,6 +12,8 @@ WARNINGS_ON
 
 namespace frank::video {
 
+WARNING_PUSH
+DISABLE_WARNING_MSC(5027)
 class ui {
 public:
   ui(std::vector<input_device> const &connected_webcams,
@@ -32,5 +34,6 @@ private:
   void *mock_data_;
   WARNINGS_ON
 };
+WARNINGS_ON
 
 } // namespace frank::video
