@@ -96,7 +96,7 @@ foreach(Test_Target ${TESTS})
   
   target_compile_options(${Test_Target} PRIVATE
     $<$<OR:$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:GNU>>:-Wall -Wextra>
-    $<$<CXX_COMPILER_ID:MSVC>:/Wall /wd4365 /wd4868 /wd5038 /wd4820>)
+    $<$<CXX_COMPILER_ID:MSVC>:/Wall /wd4365 /wd4626 /wd4820 /wd4868 /wd5038>)
   add_test(${Test_Target} ${Test_Target})
 endforeach()
 
