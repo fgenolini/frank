@@ -12,15 +12,16 @@ namespace frank::video {
 
 class exceptions {
 public:
-  exceptions(aborter *injected_aborter = nullptr);
-  virtual ~exceptions();
+  exceptions(aborter *injected_aborter = nullptr, void *mock_data = nullptr);
 
   NO_RETURN
-  virtual void
-  handler(std::exception const *caught_exception = nullptr) noexcept;
+  void handler(std::exception const *caught_exception = nullptr) noexcept;
 
 private:
   aborter *aborter_;
+  WARNINGS_OFF
+  void *mock_data_;
+  WARNINGS_ON
 };
 
 extern aborter *global_injected_aborter;

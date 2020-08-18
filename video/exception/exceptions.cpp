@@ -9,10 +9,8 @@ WARNINGS_ON
 
 namespace frank::video {
 
-exceptions::exceptions(aborter *injected_aborter)
-    : aborter_(injected_aborter) {}
-
-exceptions::~exceptions() {}
+exceptions::exceptions(aborter *injected_aborter, void *mock_data)
+    : aborter_(injected_aborter), mock_data_(mock_data) {}
 
 NO_RETURN
 void exceptions::handler(std::exception const *caught_exception) noexcept {

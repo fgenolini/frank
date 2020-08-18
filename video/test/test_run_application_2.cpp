@@ -31,13 +31,9 @@ enum class exception_type {
 
 constexpr auto INT_EXCEPTION = 42;
 
-class mock_exceptions : public ::frank::video::exceptions {
+class mock_exceptions {
 public:
-  mock_exceptions() : ::frank::video::exceptions(nullptr) {}
-  ~mock_exceptions() {}
-
-  virtual void
-  handler(std::exception const *caught_exception = nullptr) noexcept {
+  void handler(std::exception const *caught_exception = nullptr) noexcept {
     handler_called_ = true;
     caught_exception_ = caught_exception;
   }
@@ -94,13 +90,15 @@ namespace frank::video {
 cvui_init::~cvui_init() {}
 void cvui_init::execute(const std::string[], size_t) {}
 
-exceptions::exceptions(aborter *) : aborter_(nullptr) {}
+exceptions::exceptions(aborter *, void *mock_data)
+    : aborter_(nullptr), mock_data_(mock_data) {}
 
-exceptions::~exceptions() {}
-
-void exceptions::handler(std::exception const *) noexcept {
+void exceptions::handler(std::exception const *caught_exception) noexcept {
   if (aborter_) {
   }
+
+  auto mock = static_cast<::test::frank::mock_exceptions *>(mock_data_);
+  mock->handler(caught_exception);
 }
 
 static std::vector<input_device> dummy_empty{};
@@ -139,9 +137,9 @@ SCENARIO("frank video run application 2", "[run_application_2]") {
       frank::video::ui ui(std::vector<frank::video::input_device>(), nullptr,
                           nullptr, nullptr, &mocked_ui);
       test::frank::mock_exceptions mocked_exceptions{};
+      frank::video::exceptions exceptions(nullptr, &mocked_exceptions);
 
-      frank::video::application app(&mocked_video_devices, &ui,
-                                    &mocked_exceptions);
+      frank::video::application app(&mocked_video_devices, &ui, &exceptions);
       app.run();
 
       THEN("list_devices is called") {
@@ -163,9 +161,9 @@ SCENARIO("frank video run application 2", "[run_application_2]") {
       frank::video::ui ui(std::vector<frank::video::input_device>(), nullptr,
                           nullptr, nullptr, &mocked_ui);
       test::frank::mock_exceptions mocked_exceptions{};
+      frank::video::exceptions exceptions(nullptr, &mocked_exceptions);
 
-      frank::video::application app(&mocked_video_devices, &ui,
-                                    &mocked_exceptions);
+      frank::video::application app(&mocked_video_devices, &ui, &exceptions);
       app.run();
 
       THEN("list_devices is called") {
@@ -187,9 +185,9 @@ SCENARIO("frank video run application 2", "[run_application_2]") {
       frank::video::ui ui(std::vector<frank::video::input_device>(), nullptr,
                           nullptr, nullptr, &mocked_ui);
       test::frank::mock_exceptions mocked_exceptions{};
+      frank::video::exceptions exceptions(nullptr, &mocked_exceptions);
 
-      frank::video::application app(&mocked_video_devices, &ui,
-                                    &mocked_exceptions);
+      frank::video::application app(&mocked_video_devices, &ui, &exceptions);
       app.run();
 
       THEN("list_devices is called") {
