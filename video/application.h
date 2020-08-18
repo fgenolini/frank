@@ -33,7 +33,9 @@ private:
   exceptions *exception_handler_;
   ui *ui_runner_;
   video_devices *devices_;
-  [[maybe_unused]] void *mock_data_;
+  WARNINGS_OFF
+  void *mock_data_;
+  WARNINGS_ON
 };
 
 } // namespace frank::video

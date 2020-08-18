@@ -15,7 +15,9 @@ public:
   NO_RETURN void abort() noexcept;
 
 private:
-  [[maybe_unused]] void *mock_data_;
+  WARNINGS_OFF
+  void *mock_data_;
+  WARNINGS_ON
 };
 
 class exiter {
@@ -25,7 +27,9 @@ public:
   NO_RETURN void exit(int result) noexcept;
 
 private:
-  [[maybe_unused]] void *mock_data_;
+  WARNINGS_OFF
+  void *mock_data_;
+  WARNINGS_ON
 };
 
 } // namespace frank::video

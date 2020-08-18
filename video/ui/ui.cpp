@@ -6,11 +6,10 @@ namespace frank::video {
 
 ui::ui(std::vector<input_device> const &connected_webcams,
        cvui_init *initialise_windows, user_interface_factory *make_ui,
-       exiter *injected_exiter)
+       exiter *injected_exiter, void *mock_data)
     : initialise_windows_(initialise_windows), exiter_(injected_exiter),
-      connected_webcams_(connected_webcams), make_ui_(make_ui) {}
-
-ui::~ui() {}
+      connected_webcams_(connected_webcams), make_ui_(make_ui),
+      mock_data_(mock_data) {}
 
 void ui::interface_with_user() {
   user_interface_factory default_factory{};
