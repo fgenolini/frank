@@ -56,8 +56,6 @@ public:
     mock_.loop(devices);
   }
 
-  bool loop_called() { return mock_.loop_called(); }
-
 private:
   mock_video_gui &mock_;
 };

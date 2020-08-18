@@ -95,6 +95,8 @@ private:
 };
 WARNINGS_ON
 
+WARNING_PUSH
+DISABLE_WARNING_MSC(5027)
 class mock_standard_io : public ::frank::video::standard_io {
 public:
   mock_standard_io(mock_list_devices &mock) : mock_(mock) {}
@@ -112,6 +114,7 @@ public:
 private:
   mock_list_devices &mock_;
 };
+WARNINGS_ON
 
 } // namespace test::frank
 
