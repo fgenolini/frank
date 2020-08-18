@@ -17,10 +17,10 @@ namespace frank::video {
 class application {
 public:
   application(video_devices *devices = nullptr, ui *ui_runner = nullptr,
-              exceptions *exception_handler = nullptr);
-  virtual ~application();
+              exceptions *exception_handler = nullptr,
+              void *mock_data = nullptr);
 
-  NO_RETURN virtual void run(int argc = 0, char const *argv[] = nullptr);
+  NO_RETURN void run(int argc = 0, char const *argv[] = nullptr);
 
 private:
   std::vector<input_device> list_devices();
@@ -33,6 +33,7 @@ private:
   exceptions *exception_handler_;
   ui *ui_runner_;
   video_devices *devices_;
+  [[maybe_unused]] void *mock_data_;
 };
 
 } // namespace frank::video

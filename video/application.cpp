@@ -2,7 +2,6 @@
 
 WARNINGS_OFF
 #include <exception>
-#include <iostream>
 WARNINGS_ON
 
 #include "application.h"
@@ -10,20 +9,14 @@ WARNINGS_ON
 namespace frank::video {
 
 application::application(video_devices *devices, ui *ui_runner,
-                         exceptions *exception_handler)
+                         exceptions *exception_handler, void *mock_data)
     : exception_handler_(exception_handler), ui_runner_(ui_runner),
-      devices_(devices) {}
-
-application::~application() {}
+      devices_(devices), mock_data_(mock_data) {}
 
 std::vector<input_device> application::list_devices() {
   video_devices default_devices{};
   auto devices = devices_ ? devices_ : &default_devices;
-  auto input_devices = devices->list();
-  if (input_devices.size() < 1)
-    std::cerr << "Could not list video / audio input devices\n";
-
-  return input_devices;
+  return devices->list();
 }
 
 NO_RETURN void

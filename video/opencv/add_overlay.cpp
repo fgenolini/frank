@@ -2,7 +2,6 @@
 
 WARNINGS_OFF
 #include <filesystem>
-#include <iostream>
 WARNINGS_ON
 
 #include "opencv/add_overlay.h"

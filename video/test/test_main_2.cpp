@@ -14,11 +14,9 @@ namespace test::frank {
 
 extern int main(int argc, char const *argv[], ::frank::video::application &app);
 
-class mock_application : public ::frank::video::application {
+class mock_application {
 public:
-  ~mock_application() override {}
-
-  void run(int, char const *[]) override { run_application_called_ = true; }
+  void run(int, char const *[]) { run_application_called_ = true; }
 
   bool run_application_called() { return run_application_called_; }
 
@@ -30,14 +28,15 @@ private:
 
 namespace frank::video {
 
-application::~application() {}
-
 application::application(video_devices *devices, ui *ui_runner,
-                         exceptions *exception_handler)
+                         exceptions *exception_handler, void *mock_data)
     : exception_handler_(exception_handler), ui_runner_(ui_runner),
-      devices_(devices) {}
+      devices_(devices), mock_data_(mock_data) {}
 
-void application::run(int, char const *[]) {}
+void application::run(int argc, char const *argv[]) {
+  auto mock = static_cast<::test::frank::mock_application *>(mock_data_);
+  mock->run(argc, argv);
+}
 
 } // namespace frank::video
 
@@ -49,8 +48,9 @@ SCENARIO("frank video main 2", "[main_2]") {
       constexpr auto ONE = 1;
       char const *one_argument[ONE]{TEST_APP_NAME};
       test::frank::mock_application mock{};
+      frank::video::application app(nullptr, nullptr, nullptr, &mock);
 
-      auto results = test::frank::main(ONE, one_argument, mock);
+      auto results = test::frank::main(ONE, one_argument, app);
 
       THEN("run_application is called") {
         REQUIRE(mock.run_application_called() == true);
@@ -62,8 +62,9 @@ SCENARIO("frank video main 2", "[main_2]") {
       constexpr auto TWO = 2;
       char const *two_arguments[TWO]{TEST_APP_NAME, "first_argument"};
       test::frank::mock_application mock{};
+      frank::video::application app(nullptr, nullptr, nullptr, &mock);
 
-      auto results = test::frank::main(TWO, two_arguments, mock);
+      auto results = test::frank::main(TWO, two_arguments, app);
 
       THEN("run_application is called") {
         REQUIRE(mock.run_application_called() == true);

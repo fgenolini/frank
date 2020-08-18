@@ -6,7 +6,6 @@
 
 WARNINGS_OFF
 #include <cstdlib>
-#include <iostream>
 
 #include <catch2/catch.hpp>
 WARNINGS_ON

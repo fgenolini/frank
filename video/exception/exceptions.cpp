@@ -14,13 +14,6 @@ exceptions::exceptions(aborter *injected_aborter)
 
 exceptions::~exceptions() {}
 
-WARNINGS_OFF
-NO_RETURN void abort_noreturn(aborter *a) {
-  // noreturn not guaranteed to be inherited by derived classes
-  a->abort();
-}
-WARNINGS_ON
-
 NO_RETURN
 void exceptions::handler(std::exception const *caught_exception) noexcept {
   if (caught_exception)
@@ -30,7 +23,7 @@ void exceptions::handler(std::exception const *caught_exception) noexcept {
 
   aborter default_aborter{};
   auto a = aborter_ ? aborter_ : &default_aborter;
-  abort_noreturn(a);
+  a->abort();
 }
 
 aborter *global_injected_aborter{};
