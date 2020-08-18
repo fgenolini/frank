@@ -27,7 +27,6 @@ add_executable(${TEST_APP_NAME}_run_application_2
 add_executable(${TEST_APP_NAME}_run_ui_3
   test/catch_implementation.cpp
   test/test_run_ui_3.cpp
-  test/testable_exit.cpp
   ui/ui.cpp
   device/input_device.cpp)
 add_executable(${TEST_APP_NAME}_video_gui_1

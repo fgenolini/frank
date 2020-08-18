@@ -16,9 +16,9 @@ WARNINGS_ON
 
 namespace test::frank {
 
-class mock_exiter : public ::frank::video::exiter {
+class mock_exiter {
 public:
-  virtual void exit(int value) noexcept override {
+  void exit(int value) noexcept {
     exit_called_ = true;
     exit_value_ = value;
   }
@@ -87,6 +87,13 @@ private:
 
 namespace frank::video {
 
+exiter::exiter(void *mock_data) : mock_data_(mock_data) {}
+
+void exiter::exit(int result) noexcept {
+  auto mock = static_cast<::test::frank::mock_exiter *>(mock_data_);
+  mock->exit(result);
+}
+
 user_interface_factory::~user_interface_factory() {}
 
 std::unique_ptr<user_interface> user_interface_factory::make(int, cvui_init *) {
@@ -100,6 +107,7 @@ SCENARIO("frank video run ui 3", "[run_ui_3]") {
     WHEN("no connected webcam") {
       std::vector<frank::video::input_device> no_device{};
       test::frank::mock_exiter mocked_exiter{};
+      frank::video::exiter exiter{&mocked_exiter};
       test::frank::mock_video_gui mocked_video_gui{};
       auto mocked_video_gui_holder =
           std::make_unique<test::frank::mock_video_gui_holder>(
@@ -108,7 +116,7 @@ SCENARIO("frank video run ui 3", "[run_ui_3]") {
           mocked_video_gui_holder);
 
       frank::video::ui ui_test(no_device, nullptr,
-                               &mocked_user_interface_factory, &mocked_exiter);
+                               &mocked_user_interface_factory, &exiter);
       ui_test.run();
 
       THEN("make user_interface is called") {
@@ -129,6 +137,7 @@ SCENARIO("frank video run ui 3", "[run_ui_3]") {
       std::vector<frank::video::input_device> one_device{
           frank::video::input_device()};
       test::frank::mock_exiter mocked_exiter{};
+      frank::video::exiter exiter{&mocked_exiter};
       test::frank::mock_video_gui mocked_video_gui{};
       auto mocked_video_gui_holder =
           std::make_unique<test::frank::mock_video_gui_holder>(
@@ -137,7 +146,7 @@ SCENARIO("frank video run ui 3", "[run_ui_3]") {
           mocked_video_gui_holder);
 
       frank::video::ui ui_test(one_device, nullptr,
-                               &mocked_user_interface_factory, &mocked_exiter);
+                               &mocked_user_interface_factory, &exiter);
       ui_test.run();
 
       THEN("make user_interface is called") {

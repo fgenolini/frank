@@ -21,9 +21,9 @@ struct test_exception : public std::exception {
   }
 };
 
-class mock_aborter : public ::frank::video::aborter {
+class mock_aborter {
 public:
-  void abort() noexcept override { abort_called_ = true; }
+  void abort() noexcept { abort_called_ = true; }
 
   bool abort_called() { return abort_called_; }
 
@@ -35,9 +35,12 @@ private:
 
 namespace frank::video {
 
-aborter::~aborter() {}
+aborter::aborter(void *mock_data) : mock_data_(mock_data) {}
 
-void aborter::abort() noexcept {}
+void aborter::abort() noexcept {
+  auto mock = static_cast<::test::frank::mock_aborter *>(mock_data_);
+  mock->abort();
+}
 
 } // namespace frank::video
 
@@ -45,7 +48,8 @@ SCENARIO("frank video exceptions_handler", "[exceptions_handler]") {
   GIVEN("exception thrown from the frank video application") {
     WHEN("no exception thrown") {
       test::frank::test_exception exception_object{};
-      test::frank::mock_aborter mock{};
+      test::frank::mock_aborter mocked_aborter{};
+      frank::video::aborter mock{&mocked_aborter};
       frank::video::global_injected_aborter = nullptr;
       frank::video::exceptions exception_test{&mock};
 
@@ -55,11 +59,14 @@ SCENARIO("frank video exceptions_handler", "[exceptions_handler]") {
         exception_test.handler();
       }
 
-      THEN("abort is not called") { REQUIRE(mock.abort_called() == false); }
+      THEN("abort is not called") {
+        REQUIRE(mocked_aborter.abort_called() == false);
+      }
     }
     WHEN("exception object thrown") {
       test::frank::test_exception exception_object{};
-      test::frank::mock_aborter mock{};
+      test::frank::mock_aborter mocked_aborter{};
+      frank::video::aborter mock{&mocked_aborter};
       frank::video::global_injected_aborter = nullptr;
       frank::video::exceptions exception_test{&mock};
 
@@ -69,11 +76,14 @@ SCENARIO("frank video exceptions_handler", "[exceptions_handler]") {
         exception_test.handler(&e);
       }
 
-      THEN("abort is called") { REQUIRE(mock.abort_called() == true); }
+      THEN("abort is called") {
+        REQUIRE(mocked_aborter.abort_called() == true);
+      }
     }
     WHEN("int number thrown") {
       constexpr auto INT_EXCEPTION = 42;
-      test::frank::mock_aborter mock{};
+      test::frank::mock_aborter mocked_aborter{};
+      frank::video::aborter mock{&mocked_aborter};
       frank::video::global_injected_aborter = nullptr;
       frank::video::exceptions exception_test{&mock};
 
@@ -83,10 +93,13 @@ SCENARIO("frank video exceptions_handler", "[exceptions_handler]") {
         exception_test.handler();
       }
 
-      THEN("abort is called") { REQUIRE(mock.abort_called() == true); }
+      THEN("abort is called") {
+        REQUIRE(mocked_aborter.abort_called() == true);
+      }
     }
     WHEN("exception thrown") {
-      test::frank::mock_aborter mock{};
+      test::frank::mock_aborter mocked_aborter{};
+      frank::video::aborter mock{&mocked_aborter};
       frank::video::global_injected_aborter = &mock;
 
       try {
@@ -95,7 +108,9 @@ SCENARIO("frank video exceptions_handler", "[exceptions_handler]") {
         frank::video::unhandled_exception_handler();
       }
 
-      THEN("abort is called") { REQUIRE(mock.abort_called() == true); }
+      THEN("abort is called") {
+        REQUIRE(mocked_aborter.abort_called() == true);
+      }
     }
   }
 }
