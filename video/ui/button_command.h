@@ -9,6 +9,7 @@ WARNINGS_ON
 namespace frank::video {
 
 struct button_command {
+  bool execute(std::string const &label);
   bool execute(int width, int height, std::string const &label);
 };
 

@@ -9,8 +9,10 @@ WARNINGS_ON
 #include "ui/protected_cvui.h"
 
 #include "device/input_device.h"
+#include "file/file_dialogs.h"
 #include "opencv/opencv_window.h"
 #include "ui/application_state.h"
+#include "ui/ui_controls.h"
 #include "ui/user_interface.h"
 #include "json/persisted_settings.h"
 
@@ -20,7 +22,8 @@ WARNING_PUSH
 DISABLE_WARNING_MSC(4820)
 class video_gui : public virtual user_interface {
 public:
-  video_gui(int webcam_count, cvui_init *initialise_windows);
+  video_gui(int webcam_count, cvui_init *initialise_windows,
+            ui_controls &controls, file_dialogs &dialogs);
   virtual ~video_gui();
 
   virtual void
@@ -35,6 +38,7 @@ private:
 
   application_state state_{MAXIMUM_VIDEO_COUNT};
   EnhancedWindow settings_;
+  file_dialogs &dialogs_;
   opencv_window window_template_;
   persisted_settings serialiser_{};
   std::vector<bool> histograms_{};
@@ -46,6 +50,7 @@ private:
   std::vector<int> histogram_threshold_{};
   std::vector<std::pair<double, double>> height_width_pairs_{};
   std::vector<std::unique_ptr<cv::VideoCapture>> input_video_devices_{};
+  ui_controls &controls_;
 };
 WARNINGS_ON
 

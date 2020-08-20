@@ -42,7 +42,9 @@ SCENARIO("frank video GUI 1", "[video_gui_1]") {
       test::frank::mock_cvui_init mock{};
 
       auto make_video_gui = [&]() {
-        frank::video::video_gui gui(WEBCAM_COUNT, &mock);
+        frank::video::ui_controls controls{};
+        frank::video::file_dialogs dialogs{};
+        frank::video::video_gui gui(WEBCAM_COUNT, &mock, controls, dialogs);
       };
       REQUIRE_NOTHROW(make_video_gui());
 
@@ -54,7 +56,9 @@ SCENARIO("frank video GUI 1", "[video_gui_1]") {
       frank::video::user_interface_factory gui_factory{};
 
       auto make_video_gui = [&]() {
-        auto gui = gui_factory.make(WEBCAM_COUNT, &mock);
+        frank::video::ui_controls controls{};
+        frank::video::file_dialogs dialogs{};
+        auto gui = gui_factory.make(WEBCAM_COUNT, &mock, controls, dialogs);
       };
       REQUIRE_NOTHROW(make_video_gui());
 

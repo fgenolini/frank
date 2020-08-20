@@ -106,7 +106,8 @@ foreach(Link_With_Gsl ${TESTS_WITH_GSL})
 endforeach()
 
 set(TESTS_WITH_OPENCV_AND_LIB
-  ${TEST_APP_NAME}_main_settings_window_draw_4 ${TEST_APP_NAME}_video_gui_1)
+  ${TEST_APP_NAME}_main_settings_window_draw_4 ${TEST_APP_NAME}_video_gui_1
+  ${TEST_APP_NAME}_run_ui_3)
 foreach(Link_With_OpenCV_And_Lib ${TESTS_WITH_OPENCV_AND_LIB})
   target_link_libraries(${Link_With_OpenCV_And_Lib} ${LIB_NAME} ${OpenCV_LIBS}
     Microsoft.GSL::GSL)

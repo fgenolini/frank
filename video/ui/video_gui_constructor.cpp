@@ -15,8 +15,10 @@ namespace frank::video {
 user_interface_factory::~user_interface_factory() {}
 
 std::unique_ptr<user_interface>
-user_interface_factory::make(int webcam_count, cvui_init *initialise_windows) {
-  return std::make_unique<video_gui>(webcam_count, initialise_windows);
+user_interface_factory::make(int webcam_count, cvui_init *initialise_windows,
+                             ui_controls &controls, file_dialogs &dialogs) {
+  return std::make_unique<video_gui>(webcam_count, initialise_windows, controls,
+                                     dialogs);
 }
 
 constexpr auto SETTINGS_HEIGHT = 280;
@@ -37,9 +39,11 @@ constexpr auto WINDOW1_NAME = "Frank video 1";
 constexpr auto WINDOW2_NAME = "Frank video 2";
 constexpr auto WINDOW3_NAME = "Frank video 3";
 
-video_gui::video_gui(int webcam_count, cvui_init *initialise_windows)
+video_gui::video_gui(int webcam_count, cvui_init *initialise_windows,
+                     ui_controls &controls, file_dialogs &dialogs)
     : settings_(SETTINGS_X, SETTINGS_Y, SETTINGS_WIDTH, SETTINGS_HEIGHT,
-                SETTINGS_TITLE) {
+                SETTINGS_TITLE),
+      dialogs_(dialogs), controls_(controls) {
   window_names_.push_back(WINDOW_NAME);
   window_names_.push_back(WINDOW1_NAME);
   window_names_.push_back(WINDOW2_NAME);

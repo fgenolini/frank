@@ -46,12 +46,18 @@ public:
 
   void begin_row() override { ++begin_row_count; }
 
-  bool button(int, int, std::string const &label) override {
+  void begin_row(cv::Mat &, int, int) { ++begin_row_count; }
+
+  bool button(std::string const &label) override {
     ++button_count;
     if (label.compare(::frank::video::OVERLAY_BUTTON_LABEL) == 0)
       return true;
 
     return false;
+  }
+
+  bool button(int, int, std::string const &label) override {
+    return button(label);
   }
 
   bool checkbox(std::string const &, bool *) override {
@@ -97,28 +103,6 @@ file_dialogs::open_file(std::string const &, std::string const &,
                         std::vector<std::string> const &) {
   return std::vector<std::string>();
 }
-
-ui_controls::~ui_controls() {}
-
-void ui_controls::begin_column() {}
-
-void ui_controls::begin_row() {}
-
-bool ui_controls::button(int, int, std::string const &) { return false; }
-
-bool ui_controls::checkbox(std::string const &, bool *) { return false; }
-
-void ui_controls::end_column() {}
-
-void ui_controls::end_row() {}
-
-void ui_controls::text(std::string const &) {}
-
-bool ui_controls::trackbar_double(int, double *, double, double) {
-  return false;
-}
-
-bool ui_controls::trackbar_int(int, int *, int, int) { return false; }
 
 } // namespace frank::video
 

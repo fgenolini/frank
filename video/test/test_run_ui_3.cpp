@@ -68,7 +68,8 @@ public:
   ~mock_user_interface_factory() {}
 
   virtual std::unique_ptr<::frank::video::user_interface>
-  make(int, ::frank::video::cvui_init *) override {
+  make(int, ::frank::video::cvui_init *, ::frank::video::ui_controls &,
+       ::frank::video::file_dialogs &) override {
     make_called_ = true;
     return std::move(mock_);
   }
@@ -89,12 +90,6 @@ exiter::exiter(void *mock_data) : mock_data_(mock_data) {}
 void exiter::exit(int result) noexcept {
   auto mock = static_cast<::test::frank::mock_exiter *>(mock_data_);
   mock->exit(result);
-}
-
-user_interface_factory::~user_interface_factory() {}
-
-std::unique_ptr<user_interface> user_interface_factory::make(int, cvui_init *) {
-  return nullptr;
 }
 
 } // namespace frank::video

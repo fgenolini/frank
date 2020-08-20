@@ -4,6 +4,8 @@
 
 WARNINGS_OFF
 #include <string>
+
+#include <opencv2/opencv.hpp>
 WARNINGS_ON
 
 #include "ui/button_command.h"
@@ -21,10 +23,15 @@ public:
 
   virtual void begin_column();
   virtual void begin_row();
+  virtual void begin_row(cv::Mat &frame, int x, int y);
+  virtual bool button(std::string const &label);
   virtual bool button(int width, int height, std::string const &label);
   virtual bool checkbox(std::string const &label, bool *returned_value);
+  virtual void context(std::string const &window_name);
   virtual void end_column();
   virtual void end_row();
+  virtual void imshow(std::string const &window_name, cv::Mat image);
+  virtual void printf(const char *format...);
   virtual void text(std::string const &label);
   virtual bool trackbar_double(int width, double *returned_value,
                                double minimum, double maximum);

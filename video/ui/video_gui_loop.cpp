@@ -21,7 +21,7 @@ void video_gui::loop(std::vector<input_device> const &connected_webcams) {
 
 bool video_gui::one_iteration(int windows) {
   window_template_.set_histogram_threshold(histogram_threshold_[0]);
-  main_window main{};
+  main_window main(controls_, dialogs_);
   main.draw(settings_, statistics_[0], state_, window_template_);
   histograms_[0] = window_template_.histograms();
   histogram_threshold_[0] = window_template_.histogram_threshold();

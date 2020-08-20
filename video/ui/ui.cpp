@@ -14,7 +14,10 @@ ui::ui(std::vector<input_device> const &connected_webcams,
 void ui::interface_with_user() {
   user_interface_factory default_factory{};
   auto make_ui = make_ui_ ? make_ui_ : &default_factory;
-  auto ui = make_ui->make((int)connected_webcams_.size(), initialise_windows_);
+  ui_controls controls{};
+  file_dialogs dialogs{};
+  auto ui = make_ui->make((int)connected_webcams_.size(), initialise_windows_,
+                          controls, dialogs);
   ui->loop(connected_webcams_);
 }
 
