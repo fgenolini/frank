@@ -6,45 +6,47 @@ WARNINGS_OFF
 #include <vector>
 WARNINGS_ON
 
-#include "protected_cvui.h"
+#include "ui/protected_cvui.h"
 
 #include "device/input_device.h"
 #include "opencv/opencv_window.h"
+#include "ui/application_state.h"
+#include "ui/user_interface.h"
 #include "json/persisted_settings.h"
 
 namespace frank::video {
 
-constexpr auto MAXIMUM_VIDEO_COUNT = 4;
-
-class video_gui {
+WARNING_PUSH
+DISABLE_WARNING_MSC(4820)
+class video_gui : public virtual user_interface {
 public:
-  video_gui(int webcam_count);
-  ~video_gui();
+  video_gui(int webcam_count, cvui_init *initialise_windows);
+  virtual ~video_gui();
 
-  bool loop(std::vector<input_device> &connected_webcams);
+  virtual void
+  loop(std::vector<input_device> const &connected_webcams) override;
 
 private:
   void load_settings();
+  bool one_iteration(int windows);
+  bool other_window_iteration(int webcam);
   void save_settings();
   bool settings_changed() const;
 
-  cv::Mat overlay_buffers[MAXIMUM_VIDEO_COUNT]{};
-  double overlay_alpha[MAXIMUM_VIDEO_COUNT]{};
-  EnhancedWindow settings;
-  int histogram_threshold[MAXIMUM_VIDEO_COUNT]{};
-  opencv_window *window_template;
+  application_state state_{MAXIMUM_VIDEO_COUNT};
+  EnhancedWindow settings_;
+  opencv_window window_template_;
   persisted_settings serialiser_{};
-  std::vector<bool> has_webcams{};
-  std::vector<bool> histograms{};
-  std::vector<cv::String> overlay_images{};
+  std::vector<bool> histograms_{};
+  std::vector<cv::Mat> overlay_buffers_{};
   std::vector<cv::String> overlay_images_last_{};
-  std::vector<cv::String> window_names{};
+  std::vector<cv::String> window_names_{};
   std::vector<double> overlay_alpha_last_{};
   std::vector<EnhancedWindow> statistics_{};
-  std::vector<std::pair<double, double>> height_width_pairs{};
-  std::vector<std::unique_ptr<cv::VideoCapture>> input_video_devices{};
-  bool overlay_enabled[MAXIMUM_VIDEO_COUNT]{};
-  bool video_enabled[MAXIMUM_VIDEO_COUNT]{};
+  std::vector<int> histogram_threshold_{};
+  std::vector<std::pair<double, double>> height_width_pairs_{};
+  std::vector<std::unique_ptr<cv::VideoCapture>> input_video_devices_{};
 };
+WARNINGS_ON
 
 } // namespace frank::video

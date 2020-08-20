@@ -20,7 +20,7 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-project(frank VERSION 1.1.0)
+project(frank VERSION 1.2.0)
 
 include(CTest)
 enable_testing()

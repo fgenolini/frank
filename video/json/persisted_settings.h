@@ -3,8 +3,8 @@
 #include "config.h"
 
 WARNINGS_OFF
-#include <string>
 #include <map>
+#include <string>
 WARNINGS_ON
 
 namespace frank::video {

@@ -10,7 +10,7 @@ WARNINGS_OFF
 #include <nlohmann/json.hpp>
 WARNINGS_ON
 
-#include "persisted_settings.h"
+#include "json/persisted_settings.h"
 
 namespace fs = std::filesystem;
 
@@ -26,12 +26,11 @@ persisted_settings::persisted_settings() {
   constexpr auto HOME = "HOME";
 #endif
 
-WARNINGS_OFF
+  WARNINGS_OFF
   char const *home = std::getenv(HOME);
-WARNINGS_ON
-  if (!home) {
+  WARNINGS_ON
+  if (!home)
     home = CURRENT_DIRECTORY;
-  }
 
   fs::path settings_file_path = home;
   settings_file_path /= FRANK_VIDEO_JSON;
@@ -47,9 +46,8 @@ void persisted_settings::write(
 
 std::map<std::string, std::string> persisted_settings::read() const {
   std::map<std::string, std::string> empty{};
-  if (!fs::exists(settings_file)) {
+  if (!fs::exists(settings_file))
     return empty;
-  }
 
   try {
     std::ifstream file(settings_file);

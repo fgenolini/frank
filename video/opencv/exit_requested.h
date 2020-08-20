@@ -2,6 +2,6 @@
 
 namespace frank::video {
 
-bool exit_requested();
+extern bool exit_requested();
 
 } // namespace frank::video

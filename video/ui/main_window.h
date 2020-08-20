@@ -6,18 +6,19 @@ WARNINGS_OFF
 #include <vector>
 WARNINGS_ON
 
-#include "protected_cvui.h"
+#include "ui/protected_cvui.h"
 
-#include "device/input_device.h"
 #include "opencv/opencv_window.h"
+#include "ui/application_state.h"
 
 namespace frank::video {
 
-void main_window(EnhancedWindow &settings, EnhancedWindow &statistics,
-                 std::vector<input_device> &input_devices,
-                 std::vector<bool> &has_webcams, bool *video_enabled,
-                 bool *overlay_enabled, double *overlay_alpha,
-                 std::vector<cv::String> &overlay_images,
-                 opencv_window &window);
+class main_window {
+public:
+  virtual ~main_window();
+
+  virtual void draw(EnhancedWindow &settings, EnhancedWindow &statistics,
+                    application_state &state, opencv_window &window);
+};
 
 } // namespace frank::video

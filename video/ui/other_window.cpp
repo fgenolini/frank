@@ -1,13 +1,29 @@
-#include "protected_cvui.h"
+#include "config.h"
+
+#include "ui/protected_cvui.h"
 
 #include "opencv/opencv_window.h"
 #include "opencv/paint_picture.h"
-#include "other_window.h"
-#include "statistics_window.h"
+#include "ui/other_window.h"
+#include "ui/statistics_window.h"
 
 namespace frank::video {
 
-void other_window(EnhancedWindow &statistics, opencv_window &window) {
+bool first_row(bool has_webcam, bool first_time, int webcam_index,
+               bool *histograms) {
+  if (!has_webcam)
+    return false;
+
+  if (first_time)
+    cvui::printf("Opening webcam %d...", webcam_index);
+  else
+    cvui::checkbox(STATISTICS_TITLE, histograms);
+
+  return !first_time;
+}
+
+void other_window(EnhancedWindow &statistics, application_state &state,
+                  opencv_window &window) {
   constexpr auto FIRST_ROW_X = 10;
   constexpr auto FIRST_ROW_Y = 10;
   constexpr auto WINDOW_HEIGHT = 180;
@@ -20,7 +36,7 @@ void other_window(EnhancedWindow &statistics, opencv_window &window) {
   auto const overlay_buffer = window.overlay_buffer();
   auto const overlay_enabled = window.use_overlay();
   auto const overlay_image = window.overlay_image();
-  auto const use_canny = window.use_canny();
+  auto const use_canny = state.use_canny;
   auto const video_enabled = window.video_enabled();
   auto const webcam_index = window.webcam_index();
   auto histogram_threshold = window.histogram_threshold();
@@ -34,24 +50,15 @@ void other_window(EnhancedWindow &statistics, opencv_window &window) {
       paint_picture(first_time, has_webcam, video_enabled, window, use_canny,
                     low_threshold, high_threshold, overlay_enabled,
                     overlay_alpha, overlay_image, overlay_buffer, &raw_picture);
-  if (!picture.empty()) {
+  if (!picture.empty())
     frame = picture;
-  }
 
   cvui::beginRow(frame, FIRST_ROW_X, FIRST_ROW_Y);
-  {
-    if (window.has_webcam()) {
-      if (first_time) {
-        cvui::printf("Opening webcam %d...", webcam_index);
-      } else {
-        cvui::checkbox(STATISTICS_TITLE, &histograms);
-        if (histograms) {
-          statistics_window(statistics, frame, raw_picture,
-                            &histogram_threshold);
-        }
-      }
-    }
-  }
+  auto show_stats =
+      first_row(has_webcam, first_time, webcam_index, &histograms);
+  if (show_stats && histograms)
+    statistics_window(statistics, frame, raw_picture, &histogram_threshold);
+
   cvui::endRow();
   cvui::imshow(window.name(), frame);
   window.set_histogram_threshold(histogram_threshold);
