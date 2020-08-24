@@ -12,7 +12,7 @@ on:
 jobs:
   analyze:
     name: Analyze
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
     - name: Checkout repository
@@ -34,6 +34,41 @@ jobs:
       # with:
       #   languages: go, javascript, csharp, python, cpp, java
 
+    - name: Install dev dependencies
+      run: |
+        # Install OpenCV dev libraries
+        sudo add-apt-repository "deb http://security.ubuntu.com/ubuntu focal-security main"
+        sudo apt-get update
+        sudo apt-get remove x264 libx264-dev -y
+        sudo apt-get install -y \
+                build-essential checkinstall cmake pkg-config \
+                git \
+                libopencv-dev python3-opencv
+                
+    - name: Download Microsoft GSL
+      run: |
+        curl -sL https://github.com/microsoft/GSL/archive/master.zip > GSL.zip
+        unzip -q GSL.zip
+
+    - name: Install Microsoft GSL (${{ matrix.compiler }})
+      run: |
+        # Microsoft GSL install code
+        cd GSL-master
+        # Create a new 'build' folder.
+        mkdir build
+        cd build
+        # Set build instructions for Ubuntu distro.
+        nice cmake -D CMAKE_BUILD_TYPE=RELEASE \
+              -D CMAKE_CXX_COMPILER=${{ matrix.COMPILER }} \
+              -D CMAKE_INSTALL_PREFIX=/usr/local \
+              ..
+        nice make
+        # Install to OS.
+        sudo nice make install
+        echo "Microsoft GSL installed."
+        # We need to return to the repo "root" folder, so we can then 'cd' into the C++ project folder.
+        cd ..
+        
     # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
     # If this step fails, then you should remove it and run the build manually (see below)
     - name: Autobuild
