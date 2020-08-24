@@ -1,3 +1,8 @@
+# Download, configure, and install OpenCV before building frank and then running CodeQL
+# Relies on
+#   Linux Ubuntu 20.04
+#   OpenCV 4.2.0, 4.4.0...
+#
 name: "CodeQL"
 
 on:
@@ -13,6 +18,13 @@ jobs:
   analyze:
     name: Analyze
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        # Supported version for OpenCV
+        opencv: [
+          4.2.0
+        ]
+        compiler: [g++]
 
     steps:
     - name: Checkout repository
